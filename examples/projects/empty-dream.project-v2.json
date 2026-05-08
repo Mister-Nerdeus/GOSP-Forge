@@ -1,0 +1,16 @@
+{
+  "kind": "ProjectManifestV2",
+  "manifestVersion": "2",
+  "id": "empty-dream-project",
+  "version": "0.1.0",
+  "title": "Empty Dream Project",
+  "mode": "dream",
+  "refs": [],
+  "design": {
+    "title": "Incomplete concept",
+    "status": "incomplete",
+    "notes": [
+      "Allowed in Dream Mode."
+    ]
+  }
+}

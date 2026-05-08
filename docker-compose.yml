@@ -1,0 +1,16 @@
+services:
+  gosp-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.local-validation
+    command: ["pnpm", "--filter", "@gosp/api", "start"]
+    ports:
+      - "3080:3080"
+    environment:
+      GOSP_ENV: local
+      PORT: "3080"
+  local-validation:
+    build:
+      context: .
+      dockerfile: Dockerfile.local-validation
+    command: ["node", "scripts/controls/write-local-validation.mjs"]

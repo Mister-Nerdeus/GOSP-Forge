@@ -1,0 +1,21 @@
+{
+  "id": "attribution-example",
+  "attribution": {
+    "creators": [
+      {
+        "name": "GOSP Forge foundation examples"
+      }
+    ],
+    "sourceRefs": []
+  },
+  "license": {
+    "id": "CC-BY-4.0",
+    "shareAlike": false
+  },
+  "remixLineage": {
+    "parentModuleIds": [
+      "raw-water-tank"
+    ],
+    "remixNotes": "Example remix lineage."
+  }
+}

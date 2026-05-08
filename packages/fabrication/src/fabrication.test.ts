@@ -1,0 +1,2 @@
+import { describe, expect, it } from 'vitest'; import { estimateFdm, manufacturingRouteEstimate } from './index.js';
+describe('fabrication foundation',()=>{it('separates machine and labor time and warns on missing print rate',()=>{const out=estimateFdm({grams:100}); expect(out.machineTimeMinutes).toBe(300); expect(out.laborMinutes).toBe(15); expect(out.warnings.length).toBe(1);}); it('creates deterministic route estimates',()=>{expect(manufacturingRouteEstimate()).toEqual(manufacturingRouteEstimate());});});

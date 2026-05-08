@@ -1,0 +1,1 @@
+import { execSync } from 'node:child_process'; export function versionResponse(){let gitSha:string|null=null; try{gitSha=execSync('git rev-parse HEAD',{stdio:['ignore','pipe','ignore']}).toString().trim();}catch{gitSha=null;} return {appVersion:'0.1.0',gitSha,runtime:process.version,environment:process.env.GOSP_ENV??'local',packages:{api:'0.1.0'}};}

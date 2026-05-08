@@ -1,0 +1,2 @@
+import { z } from 'zod'; import { IdSchema, VersionSchema } from '../shared/primitives.js'; import { ScoringComponentSchema } from './scoringComponent.js';
+export const ScoringProfileSchema=z.object({id:IdSchema,version:VersionSchema,components:z.array(ScoringComponentSchema).min(1),sponsorNeutral:z.literal(true)}).superRefine((v,c)=>{if(v.components.some(x=>/sponsor/i.test(x.id+' '+(x.source??''))))c.addIssue({code:z.ZodIssueCode.custom,message:'Sponsor support cannot affect score'});});

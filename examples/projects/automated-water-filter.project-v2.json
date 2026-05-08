@@ -1,0 +1,41 @@
+{
+  "kind": "ProjectManifestV2",
+  "manifestVersion": "2",
+  "id": "automated-water-filter",
+  "version": "0.1.0",
+  "title": "Automated Water Filter System",
+  "mode": "education",
+  "problemRef": {
+    "id": "clean-water-problem",
+    "kind": "problem",
+    "path": "examples/problems/clean-water.problem.json",
+    "required": true
+  },
+  "refs": [
+    {
+      "id": "raw-water-tank",
+      "kind": "module",
+      "path": "examples/modules/water/raw-water-tank.module.json",
+      "required": true
+    },
+    {
+      "id": "pump",
+      "kind": "module",
+      "path": "examples/modules/water/pump.module.json",
+      "required": true
+    },
+    {
+      "id": "automated-water-filter-resource-flow",
+      "kind": "graph",
+      "path": "examples/graphs/automated-water-filter.resource-flow.json",
+      "required": true
+    }
+  ],
+  "design": {
+    "title": "Foundation vertical slice manifest",
+    "status": "draft",
+    "notes": [
+      "Problem-first, refs-only manifest."
+    ]
+  }
+}

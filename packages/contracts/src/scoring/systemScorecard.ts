@@ -1,0 +1,1 @@
+import { z } from 'zod'; import { IdSchema, ConfidenceSchema } from '../shared/primitives.js'; export const SystemScorecardSchema=z.object({projectId:IdSchema,profileId:IdSchema,score:z.number().min(0),confidence:ConfidenceSchema,moduleScoreRefs:z.array(IdSchema).default([])});

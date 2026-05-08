@@ -1,0 +1,15 @@
+{
+  "name": "clean-water",
+  "decision": "GO",
+  "checks": [
+    {
+      "file": "examples/projects/automated-water-filter.project-v2.json",
+      "exists": true
+    },
+    {
+      "file": "docs/audits/CLEAN_WATER_VERTICAL_SLICE_AUDIT.md",
+      "exists": true
+    }
+  ],
+  "generatedAt": "2026-05-08T09:14:47.969Z"
+}

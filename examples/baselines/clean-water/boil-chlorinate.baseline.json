@@ -1,0 +1,10 @@
+{
+  "id": "boil-chlorinate",
+  "name": "boil chlorinate",
+  "description": "Foundation comparison baseline for classroom discussion.",
+  "confidence": {
+    "level": "medium",
+    "rationale": "Foundation example; not professional validation."
+  },
+  "sourceRefs": []
+}

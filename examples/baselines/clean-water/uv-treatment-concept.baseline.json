@@ -1,0 +1,10 @@
+{
+  "id": "uv-treatment-concept",
+  "name": "uv treatment concept",
+  "description": "Foundation comparison baseline for classroom discussion.",
+  "confidence": {
+    "level": "medium",
+    "rationale": "Foundation example; not professional validation."
+  },
+  "sourceRefs": []
+}

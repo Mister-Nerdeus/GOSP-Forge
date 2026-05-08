@@ -1,0 +1,35 @@
+{
+  "kind": "ProductBinding",
+  "id": "filter-media-cartridge",
+  "version": "0.1.0",
+  "name": "Filter Media Cartridge",
+  "moduleIds": [
+    "pump"
+  ],
+  "specs": [
+    {
+      "id": "capacity",
+      "name": "Capacity",
+      "value": 20,
+      "unit": "L",
+      "meaning": {
+        "affects": [
+          "simulation",
+          "compatibility"
+        ],
+        "explanation": "Capacity changes downstream model behavior.",
+        "targetField": "filterCapacityL"
+      },
+      "simulationUse": "Foundation screening model input."
+    }
+  ],
+  "provenance": {
+    "status": "community-submitted",
+    "sourceRefs": []
+  },
+  "sponsored": false,
+  "confidence": {
+    "level": "medium",
+    "rationale": "Foundation example; not professional validation."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "foundation",
+  "decision": "GO",
+  "checks": [
+    {
+      "file": "README.md",
+      "exists": true
+    },
+    {
+      "file": "package.json",
+      "exists": true
+    },
+    {
+      "file": "docs/audits/GOSP_FORGE_FOUNDATION_CLOSEOUT_AUDIT.md",
+      "exists": true
+    }
+  ],
+  "generatedAt": "2026-05-08T09:14:48.274Z"
+}

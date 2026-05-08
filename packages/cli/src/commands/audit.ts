@@ -1,0 +1,1 @@
+import { writeAuditReport } from '../audit/auditReport.js'; export function auditCommand(name:string){const files=name==='clean-water'?['examples/projects/automated-water-filter.project-v2.json','docs/audits/CLEAN_WATER_VERTICAL_SLICE_AUDIT.md']:['README.md','package.json','docs/audits/GOSP_FORGE_FOUNDATION_CLOSEOUT_AUDIT.md']; return writeAuditReport(name,files);}

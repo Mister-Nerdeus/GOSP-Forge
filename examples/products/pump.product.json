@@ -1,0 +1,50 @@
+{
+  "kind": "ProductBinding",
+  "id": "pump-product",
+  "version": "0.1.0",
+  "name": "Pump Product",
+  "moduleIds": [
+    "pump"
+  ],
+  "specs": [
+    {
+      "id": "flow-rate",
+      "name": "Flow rate",
+      "value": 2,
+      "unit": "L/min",
+      "meaning": {
+        "affects": [
+          "simulation",
+          "compatibility"
+        ],
+        "explanation": "Flow rate changes downstream model behavior.",
+        "targetField": "pumpFlowLpm"
+      },
+      "simulationUse": "Foundation screening model input."
+    },
+    {
+      "id": "voltage",
+      "name": "Voltage",
+      "value": 12,
+      "unit": "V",
+      "meaning": {
+        "affects": [
+          "simulation",
+          "compatibility"
+        ],
+        "explanation": "Voltage changes downstream model behavior.",
+        "targetField": "voltageV"
+      },
+      "simulationUse": "Foundation screening model input."
+    }
+  ],
+  "provenance": {
+    "status": "community-submitted",
+    "sourceRefs": []
+  },
+  "sponsored": false,
+  "confidence": {
+    "level": "medium",
+    "rationale": "Foundation example; not professional validation."
+  }
+}

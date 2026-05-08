@@ -1,0 +1,7 @@
+{
+  "mode": "scoring",
+  "missingData": "block",
+  "requiresAttribution": true,
+  "requiresConfidence": true,
+  "protectsStudents": true
+}

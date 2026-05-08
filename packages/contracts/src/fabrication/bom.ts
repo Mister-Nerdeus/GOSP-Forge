@@ -1,0 +1,2 @@
+import { z } from 'zod'; import { IdSchema, ConfidenceSchema } from '../shared/primitives.js';
+export const BomLineSchema=z.object({id:IdSchema,kind:z.enum(['product','material','custom-part','labor','process']),description:z.string().min(1),quantity:z.number().nonnegative(),unit:z.string().min(1),sourceModuleId:IdSchema.optional(),confidence:ConfidenceSchema}); export const BomSchema=z.object({lines:z.array(BomLineSchema).default([])});

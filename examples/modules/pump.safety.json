@@ -1,0 +1,8 @@
+{
+  "id": "pump-safety-profile",
+  "category": "not-for-real-world-use",
+  "notes": [
+    "Classroom model only."
+  ],
+  "realWorldUseLimit": "No potable-water or professional-use claim."
+}

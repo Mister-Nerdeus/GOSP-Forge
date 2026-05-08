@@ -1,0 +1,1 @@
+export type AiProposal={id:string;status:'draft'|'review-required'|'accepted'|'rejected';visibleAssumptions:string[]}; export function createAiProposal(id:string):AiProposal{return {id,status:'review-required',visibleAssumptions:[]};}

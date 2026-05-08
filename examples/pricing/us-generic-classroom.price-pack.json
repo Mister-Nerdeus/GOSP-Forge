@@ -1,0 +1,63 @@
+{
+  "kind": "PricePack",
+  "id": "us-generic-classroom",
+  "version": "0.1.0",
+  "region": "US classroom generic",
+  "quantityTakeoffs": [
+    {
+      "id": "pump-qty",
+      "itemId": "pump",
+      "quantity": 1,
+      "unit": "each",
+      "confidence": {
+        "level": "medium",
+        "rationale": "Foundation example; not professional validation."
+      }
+    }
+  ],
+  "estimates": [
+    {
+      "id": "clean-water-estimate",
+      "projectId": "automated-water-filter",
+      "lines": [
+        {
+          "id": "pump-cost",
+          "kind": "product",
+          "description": "Classroom pump",
+          "quantity": 1,
+          "unitCost": 18,
+          "currency": "USD",
+          "confidence": {
+            "level": "medium",
+            "rationale": "Foundation example; not professional validation."
+          },
+          "sourceRefs": []
+        }
+      ],
+      "lifecycle": {
+        "horizonYears": 3,
+        "operatingCost": 0,
+        "maintenanceCost": 36,
+        "replacementReserve": 24,
+        "total": 60,
+        "confidence": {
+          "level": "medium",
+          "rationale": "Foundation example; not professional validation."
+        },
+        "assumptions": [
+          "Annual media replacement."
+        ]
+      },
+      "contingency": 4,
+      "total": 82,
+      "confidence": {
+        "level": "medium",
+        "rationale": "Foundation example; not professional validation."
+      },
+      "assumptions": [
+        "Generic classroom pricing only."
+      ],
+      "sourceRefs": []
+    }
+  ]
+}

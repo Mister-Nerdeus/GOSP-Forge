@@ -1,0 +1,1 @@
+export function assertNoPlaintextProductionSecret(value:{environment:string;secretStorage:string}):void{if(value.environment==='production'&&value.secretStorage==='plaintext')throw new Error('Plaintext long-lived secrets are forbidden in production');}

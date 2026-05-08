@@ -1,0 +1,1 @@
+import { estimateFdm } from './fdmEstimate.js'; import { laborEstimate } from './laborEstimate.js'; export function manufacturingRouteEstimate(){const fdm=estimateFdm({grams:120}); return {machineTimeMinutes:fdm.machineTimeMinutes,laborMinutes:laborEstimate(fdm.laborMinutes,20,10),warnings:fdm.warnings,confidence:fdm.confidence};}

@@ -1,0 +1,21 @@
+{
+  "id": "pump-import-draft",
+  "productName": "Example pump",
+  "extractedFields": [
+    {
+      "field": "flow-rate",
+      "value": 2,
+      "sourceRef": "datasheet",
+      "confidence": {
+        "level": "medium",
+        "rationale": "Foundation example; not professional validation."
+      }
+    }
+  ],
+  "missingFields": [
+    "current"
+  ],
+  "assumedValues": [],
+  "contradictions": [],
+  "reviewStatus": "needs-review"
+}

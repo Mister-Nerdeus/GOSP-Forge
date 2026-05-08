@@ -1,0 +1,42 @@
+{
+  "kind": "ProblemDefinition",
+  "id": "clean-water-problem",
+  "version": "0.1.0",
+  "title": "Classroom Clean Water System",
+  "summary": "Design a classroom-scale system for exploring water movement and treatment tradeoffs without claiming potable water.",
+  "mode": "education",
+  "constraints": [
+    {
+      "id": "classroom-budget",
+      "description": "Keep materials accessible for classrooms.",
+      "unit": "USD",
+      "max": 150
+    }
+  ],
+  "metrics": [
+    {
+      "id": "treated-volume",
+      "name": "Treated water volume",
+      "unit": "L",
+      "direction": "maximize",
+      "baselineRefs": [
+        "commercial-gravity-filter"
+      ]
+    }
+  ],
+  "baselines": [
+    {
+      "id": "commercial-gravity-filter",
+      "name": "Commercial gravity filter",
+      "description": "Purchased classroom comparison baseline.",
+      "confidence": {
+        "level": "medium",
+        "rationale": "Foundation example; not professional validation."
+      },
+      "sourceRefs": []
+    }
+  ],
+  "safetyNotes": [
+    "No potable-water claim."
+  ]
+}

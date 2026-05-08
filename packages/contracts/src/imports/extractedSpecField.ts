@@ -1,0 +1,1 @@
+import { z } from 'zod'; import { ConfidenceSchema } from '../shared/primitives.js'; export const ExtractedSpecFieldSchema=z.object({field:z.string().min(1),value:z.unknown(),sourceRef:z.string().optional(),confidence:ConfidenceSchema,unitConversion:z.string().optional(),assumed:z.boolean().default(false)});

@@ -1,0 +1,1 @@
+export type EstimateLine={id:string;quantity:number;unitCost:number}; export function estimateTotals(lines:EstimateLine[],contingencyRate=0.1){const subtotal=Number(lines.reduce((s,l)=>s+l.quantity*l.unitCost,0).toFixed(2)); const contingency=Number((subtotal*contingencyRate).toFixed(2)); return {subtotal,contingency,total:Number((subtotal+contingency).toFixed(2))};}

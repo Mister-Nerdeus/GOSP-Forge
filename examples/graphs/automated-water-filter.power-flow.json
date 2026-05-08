@@ -1,0 +1,25 @@
+{
+  "id": "automated-water-filter-power-flow",
+  "projectId": "automated-water-filter",
+  "kind": "power-flow",
+  "nodes": [
+    "raw-water-tank",
+    "pump",
+    "filter-housing",
+    "clean-water-tank"
+  ],
+  "edges": [
+    [
+      "raw-water-tank",
+      "pump"
+    ],
+    [
+      "pump",
+      "filter-housing"
+    ],
+    [
+      "filter-housing",
+      "clean-water-tank"
+    ]
+  ]
+}

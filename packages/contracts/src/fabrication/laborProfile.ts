@@ -1,0 +1,1 @@
+import { z } from 'zod'; export const LaborProfileSchema=z.object({setupMinutes:z.number().nonnegative(),assemblyMinutes:z.number().nonnegative(),inspectionMinutes:z.number().nonnegative(),notes:z.array(z.string()).default([])});

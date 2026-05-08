@@ -1,0 +1,35 @@
+{
+  "kind": "ProductBinding",
+  "id": "classroom-diaphragm-pump",
+  "version": "0.1.0",
+  "name": "Classroom Diaphragm Pump",
+  "moduleIds": [
+    "pump"
+  ],
+  "specs": [
+    {
+      "id": "flow-rate",
+      "name": "Flow rate",
+      "value": 2,
+      "unit": "L/min",
+      "meaning": {
+        "affects": [
+          "simulation",
+          "compatibility"
+        ],
+        "explanation": "Flow rate changes downstream model behavior.",
+        "targetField": "pumpFlowLpm"
+      },
+      "simulationUse": "Foundation screening model input."
+    }
+  ],
+  "provenance": {
+    "status": "community-submitted",
+    "sourceRefs": []
+  },
+  "sponsored": false,
+  "confidence": {
+    "level": "medium",
+    "rationale": "Foundation example; not professional validation."
+  }
+}

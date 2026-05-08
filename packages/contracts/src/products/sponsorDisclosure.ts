@@ -1,0 +1,1 @@
+import { z } from 'zod'; export const SponsorDisclosureSchema=z.object({sponsorName:z.string().min(1),relationship:z.enum(['funding','donated-product','discount','educational-grant','none']),statement:z.string().min(1)});

@@ -1,0 +1,2 @@
+import { z } from 'zod'; import { IdSchema, ConfidenceSchema } from '../shared/primitives.js';
+export const CostLineSchema=z.object({id:IdSchema,kind:z.enum(['bom','product','fabrication','labor','installation','operation','maintenance','replacement','contingency']),description:z.string().min(1),quantity:z.number().nonnegative(),unitCost:z.number().nonnegative(),currency:z.string().min(3),confidence:ConfidenceSchema,sourceRefs:z.array(IdSchema).default([])});

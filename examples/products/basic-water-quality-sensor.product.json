@@ -1,0 +1,35 @@
+{
+  "kind": "ProductBinding",
+  "id": "basic-water-quality-sensor",
+  "version": "0.1.0",
+  "name": "Basic Water Quality Sensor",
+  "moduleIds": [
+    "pump"
+  ],
+  "specs": [
+    {
+      "id": "range",
+      "name": "Sensor range",
+      "value": 100,
+      "unit": "NTU",
+      "meaning": {
+        "affects": [
+          "simulation",
+          "compatibility"
+        ],
+        "explanation": "Sensor range changes downstream model behavior.",
+        "targetField": "turbidityRange"
+      },
+      "simulationUse": "Foundation screening model input."
+    }
+  ],
+  "provenance": {
+    "status": "community-submitted",
+    "sourceRefs": []
+  },
+  "sponsored": false,
+  "confidence": {
+    "level": "medium",
+    "rationale": "Foundation example; not professional validation."
+  }
+}

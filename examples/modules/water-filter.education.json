@@ -1,0 +1,11 @@
+{
+  "id": "water-filter-education-profile",
+  "gradeBand": "6-12",
+  "objectives": [
+    "Understand constraints, tradeoffs, and visible assumptions."
+  ],
+  "estimatedTimeMinutes": 45,
+  "teacherNotes": [
+    "Use with supervised classroom discussion."
+  ]
+}

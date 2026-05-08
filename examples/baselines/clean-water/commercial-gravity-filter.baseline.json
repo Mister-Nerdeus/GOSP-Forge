@@ -1,0 +1,10 @@
+{
+  "id": "commercial-gravity-filter",
+  "name": "commercial gravity filter",
+  "description": "Foundation comparison baseline for classroom discussion.",
+  "confidence": {
+    "level": "medium",
+    "rationale": "Foundation example; not professional validation."
+  },
+  "sourceRefs": []
+}

@@ -1,0 +1,51 @@
+{
+  "kind": "ModulePackage",
+  "id": "pump",
+  "version": "0.1.0",
+  "name": "Pump",
+  "type": "physical",
+  "attribution": {
+    "creators": [
+      {
+        "name": "GOSP Forge foundation examples"
+      }
+    ],
+    "sourceRefs": []
+  },
+  "license": {
+    "id": "CC-BY-4.0",
+    "shareAlike": false
+  },
+  "capabilities": {
+    "capabilities": [
+      "foundation-example"
+    ],
+    "requiresFabrication": false,
+    "supportsSimulation": true,
+    "supportsEstimation": true
+  },
+  "representation": {
+    "representations": [
+      "symbolic"
+    ],
+    "primary": "symbolic"
+  },
+  "validationStatus": "draft",
+  "safetyProfile": {
+    "category": "not-for-real-world-use",
+    "notes": [
+      "Classroom model only."
+    ],
+    "realWorldUseLimit": "No potable-water or professional-use claim."
+  },
+  "educationProfile": {
+    "gradeBand": "6-12",
+    "objectives": [
+      "Understand constraints, tradeoffs, and visible assumptions."
+    ],
+    "estimatedTimeMinutes": 45,
+    "teacherNotes": [
+      "Use with supervised classroom discussion."
+    ]
+  }
+}
