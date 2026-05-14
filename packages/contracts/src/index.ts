@@ -22,6 +22,7 @@ export * from './attribution/moduleAttribution.js';
 export * from './attribution/moduleLicense.js';
 export * from './attribution/remixLineage.js';
 export * from './safety/safetyProfile.js';
+export * from './safety/safetyValidation.js';
 export * from './education/educationProfile.js';
 export * from './products/productBinding.js';
 export * from './products/productSpec.js';

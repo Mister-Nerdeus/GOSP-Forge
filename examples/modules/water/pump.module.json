@@ -34,7 +34,8 @@
   "safetyProfile": {
     "category": "not-for-real-world-use",
     "notes": [
-      "Classroom model only."
+      "Classroom model only.",
+      "Education mode does not approve real-world use."
     ],
     "realWorldUseLimit": "No potable-water or professional-use claim."
   },

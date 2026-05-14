@@ -12,6 +12,7 @@ import {
   ScoringProfileSchema,
   SimulationRunEnvelopeSchema,
   validateModeRequirements,
+  validateModuleSafety,
 } from './index.js';
 
 const confidence = { level: 'medium' as const, rationale: 'foundation fixture' };
@@ -315,6 +316,39 @@ describe('foundation contracts', () => {
         safetyProfile,
       }).success,
     ).toBe(false);
+  });
+
+  it('validates safety policy claims and education-mode warnings', () => {
+    const module = {
+      kind: 'ModulePackage',
+      id: 'classroom-pump',
+      version: '1',
+      name: 'Classroom Pump',
+      type: 'physical',
+      attribution,
+      license,
+      capabilities: { capabilities: ['water', 'pump'] },
+      validationStatus: 'draft',
+      safetyProfile,
+      educationProfile: {
+        gradeBand: '6-12',
+        objectives: ['Discuss safety boundaries.'],
+        estimatedTimeMinutes: 45,
+      },
+    };
+
+    expect(validateModuleSafety(module).map((issue) => issue.code)).toContain(
+      'education-mode-not-approval',
+    );
+    expect(
+      validateModuleSafety({
+        ...module,
+        safetyProfile: {
+          ...safetyProfile,
+          realWorldUseLimit: 'Certified potable water output.',
+        },
+      }).some((issue) => issue.severity === 'blocker'),
+    ).toBe(true);
   });
 
   it('validates graph topology and rejects missing edge endpoints', () => {

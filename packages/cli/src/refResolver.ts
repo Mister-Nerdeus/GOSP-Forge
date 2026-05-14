@@ -80,9 +80,10 @@ export function resolveProjectRefs(project: Parameters<typeof collectProjectRefs
         });
       }
 
-      const kindError = validateRefKind(ref, value);
-      if (kindError) errors.push(kindError);
-      else {
+      const kindDiagnostics = validateRefKind(ref, value);
+      errors.push(...kindDiagnostics.errors);
+      warnings.push(...kindDiagnostics.warnings);
+      if (kindDiagnostics.errors.length === 0) {
         const path = resolveRepoPath(ref.path);
         resolved.push({ id: ref.id, kind: ref.kind, path });
         documents.push({ id: ref.id, kind: ref.kind, path, value });
