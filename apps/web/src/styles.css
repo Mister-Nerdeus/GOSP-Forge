@@ -78,6 +78,19 @@ h2 {
   font-weight: 650;
 }
 
+.compact-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.compact-list li {
+  color: #253140;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .notice {
   padding: 14px 16px;
   color: #4c3f16;
