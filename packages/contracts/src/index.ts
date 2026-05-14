@@ -57,6 +57,8 @@ export * from './imports/importReviewStatus.js';
 export * from './imports/externalSourceRecord.js';
 export * from './imports/licenseProfile.js';
 export * from './imports/importRecord.js';
+export * from './ai/aiProposal.js';
+export * from './ai/aiProposalReview.js';
 export * from './sponsorship/sponsorDisclosure.js';
 export * from './sponsorship/sponsorInfluenceCheck.js';
 export * from './submissions/signedSubmission.js';

@@ -1,0 +1,35 @@
+{
+  "kind": "AIProposal",
+  "id": "clean-water-filter-housing-ai-draft",
+  "proposalType": "module-draft",
+  "draftStatus": "draft",
+  "truthStatus": "unreviewed-draft",
+  "sourceRefs": [
+    "examples/projects/automated-water-filter.project-v2.json",
+    "examples/modules/water/filter-housing.module.json"
+  ],
+  "confidence": {
+    "level": "low",
+    "rationale": "AI draft created from existing foundation examples and missing physical test evidence."
+  },
+  "missingData": [
+    "domain review",
+    "supervised classroom build notes",
+    "physical safety review"
+  ],
+  "review": {
+    "status": "pending-human-review",
+    "notes": [
+      "Review required before this draft can affect contracts, safety, or scoring."
+    ]
+  },
+  "proposedChange": {
+    "moduleId": "filter-housing",
+    "summary": "Suggest adding a draft inspection note for housing inlet/outlet orientation."
+  },
+  "limitations": [
+    "Draft proposal only.",
+    "No potable-water or professional-use claim.",
+    "Cannot change score, truth status, safety status, or manufacturer status."
+  ]
+}
