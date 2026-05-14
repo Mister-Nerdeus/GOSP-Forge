@@ -3,6 +3,7 @@ import { sendJson, HttpError } from './http/errors.js';
 import { readJsonBody } from './http/readJsonBody.js';
 import { rateLimit } from './http/rateLimit.js';
 import { healthResponse } from './routes/health.js';
+import { validateProjectBody } from './routes/validate.js';
 import { versionResponse } from './routes/version.js';
 export function createGospServer() {
   return createServer(async (req, res) => {
@@ -15,7 +16,8 @@ export function createGospServer() {
         return sendJson(res, 200, versionResponse());
       if (req.method === 'POST' && req.url === '/validate') {
         const body = await readJsonBody(req);
-        return sendJson(res, 200, { ok: true, received: body });
+        const result = validateProjectBody(body);
+        return sendJson(res, result.status, result.body);
       }
       return sendJson(res, 404, { error: 'not_found' });
     } catch (error) {
