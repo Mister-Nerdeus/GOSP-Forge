@@ -11,4 +11,5 @@ export * from './logic/ruleEngine.js';
 export * from './cleanWater/controllerLogic.js';
 export * from './cleanWater/compileCleanWaterInput.js';
 export * from './cleanWater/baselineComparison.js';
+export * from './cleanWater/impactReport.js';
 export * from './specMeaning/applyProductSpecEffects.js';

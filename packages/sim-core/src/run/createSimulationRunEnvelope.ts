@@ -1,4 +1,5 @@
 import { SimulationRunEnvelopeSchema } from '@gosp/contracts';
+import { createCleanWaterImpactReport } from '../cleanWater/impactReport.js';
 import { stableStringify } from '../hash/stableStringify.js';
 import { sha256 } from '../hash/sha256.js';
 export function createSimulationRunEnvelope(input: {
@@ -13,7 +14,13 @@ export function createSimulationRunEnvelope(input: {
   defaultedInputs?: string[];
   confidence?: { level: 'low' | 'medium' | 'high' | 'reviewed'; rationale: string };
   limitations?: Array<{ id: string; description: string }>;
+  impacts?: ReturnType<typeof createCleanWaterImpactReport>;
 }) {
+  const impacts =
+    input.impacts ??
+    createCleanWaterImpactReport(
+      input.output as Parameters<typeof createCleanWaterImpactReport>[0],
+    );
   const envelope = {
     kind: 'SimulationRunEnvelope' as const,
     runId: input.runId,
@@ -46,5 +53,5 @@ export function createSimulationRunEnvelope(input: {
       },
     ],
   };
-  return SimulationRunEnvelopeSchema.parse(envelope);
+  return { ...SimulationRunEnvelopeSchema.parse(envelope), impacts };
 }

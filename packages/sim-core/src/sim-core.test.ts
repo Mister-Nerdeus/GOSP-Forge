@@ -3,6 +3,7 @@ import {
   createSimulationRunEnvelope,
   applyProductSpecEffects,
   compareCleanWaterBaselines,
+  createCleanWaterImpactReport,
   runWaterWarningController,
   sha256,
   simulatePowerFlow,
@@ -67,5 +68,15 @@ describe('sim-core foundation', () => {
 
     expect(comparison.comparisonType).toBe('anchor-only-not-superiority-claim');
     expect(comparison.baselines[0].interpretation).toContain('not a claim of superiority');
+  });
+  it('reports direct and downstream impacts separately', () => {
+    const report = createCleanWaterImpactReport({
+      flow: { cleanWaterLiters: 8 },
+      power: { compatible: true },
+    });
+
+    expect(report.direct[0].id).toBe('direct-pump-flow');
+    expect(report.downstream.length).toBeGreaterThan(0);
+    expect(report.limitations.join(' ')).toContain('No potable-water certification');
   });
 });
