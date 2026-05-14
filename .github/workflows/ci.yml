@@ -21,3 +21,7 @@ jobs:
       - run: pnpm -r build
       - run: pnpm -r typecheck
       - run: pnpm -r test
+      - run: pnpm validate:examples
+      - run: pnpm simulate:clean-water
+      - run: pnpm estimate:clean-water
+      - run: pnpm audit
