@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { IdSchema, VersionSchema } from '../shared/primitives.js';
+import { findSponsorScoringInfluence } from '../sponsorship/sponsorInfluenceCheck.js';
 import { ScoringComponentSchema } from './scoringComponent.js';
 export const ScoringProfileSchema = z
   .object({
@@ -10,6 +11,11 @@ export const ScoringProfileSchema = z
     sponsorNeutral: z.literal(true),
   })
   .superRefine((v, c) => {
-    if (v.components.some((x) => /sponsor/i.test(x.id + ' ' + (x.source ?? ''))))
-      c.addIssue({ code: z.ZodIssueCode.custom, message: 'Sponsor support cannot affect score' });
+    for (const diagnostic of findSponsorScoringInfluence(v)) {
+      c.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: diagnostic.message,
+        path: ['components', diagnostic.componentId, diagnostic.field],
+      });
+    }
   });
