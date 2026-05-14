@@ -1,7 +1,16 @@
 # Storage and Secret Policy
 
-JSON storage is local-only. Production rejects plaintext long-lived secrets and needs managed secret storage.
+The API storage boundary is intentionally narrow in the foundation slice.
+
+## Policy
+
+- `StorageAdapter` is an interface boundary only.
+- `LocalMemoryStorage` is local-only and is not production storage.
+- JSON-file storage is local-only and is not production storage.
+- Production storage must be managed, encrypted, monitored, backed up, and reviewed before use.
+- Plaintext long-lived secrets are forbidden in production.
+- Future secret storage must use managed secret storage or an equivalent reviewed secret-management boundary.
 
 ## Current Implementation Limits
 
-This document describes foundation policy and contract intent. The current repository provides placeholder packages, example fixtures, and validation gates only. It does not claim production readiness or professional approval.
+This repository provides local foundation packages, examples, tests, and validation gates. It does not provide production storage, production secret management, production identity, professional approval, potable-water certification, or production manufacturing approval.
