@@ -34,10 +34,10 @@ export const defaultClassroomPricePack = {
     },
     {
       id: 'filter-housing',
-      unitCost: 6,
+      unitCost: 0,
       currency: 'USD' as const,
       source: 'foundation-classroom-assumption',
-      assumption: 'Conceptual classroom fabricated housing allowance.',
+      assumption: 'Fabricated housing container line; material, machine, and labor priced separately.',
     },
     {
       id: 'filter-housing:pla',
@@ -45,6 +45,20 @@ export const defaultClassroomPricePack = {
       currency: 'USD' as const,
       source: 'foundation-classroom-assumption',
       assumption: 'Approximate PLA material allowance for one classroom housing.',
+    },
+    {
+      id: 'filter-housing:machine-time',
+      unitCost: 0.05,
+      currency: 'USD' as const,
+      source: 'foundation-classroom-assumption',
+      assumption: 'Conceptual classroom machine-time allowance per minute.',
+    },
+    {
+      id: 'filter-housing:labor',
+      unitCost: 0.25,
+      currency: 'USD' as const,
+      source: 'foundation-classroom-assumption',
+      assumption: 'Conceptual supervised classroom labor allowance per minute.',
     },
     {
       id: 'filter-media-cartridge',

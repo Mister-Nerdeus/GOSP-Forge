@@ -69,6 +69,35 @@ describe('estimation foundation', () => {
     ]);
   });
 
+  it('adds separate fabrication machine and labor BOM lines from profiles', () => {
+    const result = buildBomFromProject({
+      refs: [
+        {
+          id: 'filter-housing',
+          kind: 'module',
+          value: {
+            kind: 'ModulePackage',
+            id: 'filter-housing',
+            name: 'Filter Housing',
+            capabilities: { requiresFabrication: true },
+            fabricationProfile: {
+              materials: [{ id: 'pla', name: 'PLA', unit: 'g', quantity: 120 }],
+              routes: [{ process: 'fdm-print', machineTimeMinutes: 300, laborMinutes: 20 }],
+              labor: { setupMinutes: 15, assemblyMinutes: 20, inspectionMinutes: 10 },
+            },
+          },
+        },
+      ],
+    });
+
+    expect(result.lines.map((line) => [line.id, line.kind, line.quantity])).toEqual([
+      ['filter-housing', 'custom-part', 1],
+      ['filter-housing:labor', 'labor', 65],
+      ['filter-housing:machine-time', 'process', 300],
+      ['filter-housing:pla', 'material', 120],
+    ]);
+  });
+
   it('creates a conceptual cost estimate from BOM lines and price entries', () => {
     const result = estimateFromProject({
       projectId: 'project',

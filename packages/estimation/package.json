@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@gosp/contracts": "workspace:*",
+    "@gosp/fabrication": "workspace:*",
     "@gosp/estimation": "workspace:*"
   }
 }

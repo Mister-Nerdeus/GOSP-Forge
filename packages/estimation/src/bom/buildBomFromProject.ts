@@ -1,3 +1,4 @@
+import { estimateFabricationFromProfile } from '@gosp/fabrication';
 import { buildBom } from './buildBom.js';
 import type { BomBuildResult, BomInputLine } from './bomTypes.js';
 
@@ -30,6 +31,16 @@ type ModulePackageLike = {
       unit: string;
       quantity: number;
     }>;
+    routes?: Array<{
+      process: string;
+      machineTimeMinutes?: number;
+      laborMinutes?: number;
+    }>;
+    labor?: {
+      setupMinutes?: number;
+      assemblyMinutes?: number;
+      inspectionMinutes?: number;
+    };
   };
   quantity?: number;
 };
@@ -69,30 +80,59 @@ export function buildBomFromProject(input: { refs: RefDocument[] }): BomBuildRes
     }
 
     if (ref.kind === 'module' && isModulePackage(ref.value) && ref.value.fabricationProfile) {
-      const moduleQuantity = typeof ref.value.quantity === 'number' ? ref.value.quantity : 1;
-      if (ref.value.capabilities?.requiresFabrication) {
-        if (typeof ref.value.quantity !== 'number') {
-          warnings.push(`Missing quantity for fabricated module ${ref.value.id}; defaulted to 1 each.`);
-          defaultedQuantityIds.add(ref.value.id);
+      const moduleValue = ref.value;
+      const fabricationProfile = moduleValue.fabricationProfile;
+      if (!fabricationProfile) continue;
+      const moduleQuantity = typeof moduleValue.quantity === 'number' ? moduleValue.quantity : 1;
+      const fabrication = estimateFabricationFromProfile(fabricationProfile);
+      warnings.push(
+        ...fabrication.warnings.map((warning) => `${moduleValue.id}: ${warning}`),
+      );
+      if (moduleValue.capabilities?.requiresFabrication) {
+        if (typeof moduleValue.quantity !== 'number') {
+          warnings.push(`Missing quantity for fabricated module ${moduleValue.id}; defaulted to 1 each.`);
+          defaultedQuantityIds.add(moduleValue.id);
         }
         lines.push({
-          id: ref.value.id,
+          id: moduleValue.id,
           kind: 'custom-part',
-          description: ref.value.name,
+          description: moduleValue.name,
           quantity: moduleQuantity,
           unit: 'each',
-          sourceModuleId: ref.value.id,
+          sourceModuleId: moduleValue.id,
         });
       }
 
-      for (const material of ref.value.fabricationProfile.materials ?? []) {
+      for (const material of fabrication.materials) {
         lines.push({
-          id: `${ref.value.id}:${material.id}`,
+          id: `${moduleValue.id}:${material.id}`,
           kind: 'material',
-          description: `${ref.value.name}: ${material.name}`,
+          description: `${moduleValue.name}: ${material.name}`,
           quantity: material.quantity * moduleQuantity,
           unit: material.unit,
-          sourceModuleId: ref.value.id,
+          sourceModuleId: moduleValue.id,
+        });
+      }
+
+      if (fabrication.machineTimeMinutes > 0) {
+        lines.push({
+          id: `${moduleValue.id}:machine-time`,
+          kind: 'process',
+          description: `${moduleValue.name}: machine time`,
+          quantity: fabrication.machineTimeMinutes * moduleQuantity,
+          unit: 'minute',
+          sourceModuleId: moduleValue.id,
+        });
+      }
+
+      if (fabrication.laborMinutes > 0) {
+        lines.push({
+          id: `${moduleValue.id}:labor`,
+          kind: 'labor',
+          description: `${moduleValue.name}: labor time`,
+          quantity: fabrication.laborMinutes * moduleQuantity,
+          unit: 'minute',
+          sourceModuleId: moduleValue.id,
         });
       }
     }

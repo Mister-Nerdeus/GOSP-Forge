@@ -77,6 +77,9 @@ importers:
       '@gosp/estimation':
         specifier: workspace:*
         version: 'link:'
+      '@gosp/fabrication':
+        specifier: workspace:*
+        version: link:../fabrication
 
   packages/fabrication:
     dependencies:
