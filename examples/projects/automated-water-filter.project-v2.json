@@ -25,6 +25,54 @@
       "required": true
     },
     {
+      "id": "filter-housing",
+      "kind": "module",
+      "path": "examples/modules/water/filter-housing.module.json",
+      "required": true
+    },
+    {
+      "id": "clean-water-tank",
+      "kind": "module",
+      "path": "examples/modules/water/clean-water-tank.module.json",
+      "required": true
+    },
+    {
+      "id": "filter-media",
+      "kind": "module",
+      "path": "examples/modules/water/filter-media.module.json",
+      "required": true
+    },
+    {
+      "id": "water-quality-sensor",
+      "kind": "module",
+      "path": "examples/modules/water/water-quality-sensor.module.json",
+      "required": true
+    },
+    {
+      "id": "controller-logic",
+      "kind": "module",
+      "path": "examples/modules/control/controller-logic.module.json",
+      "required": true
+    },
+    {
+      "id": "status-dashboard-module",
+      "kind": "module",
+      "path": "examples/modules/digital/status-dashboard.module.json",
+      "required": true
+    },
+    {
+      "id": "classroom-battery",
+      "kind": "module",
+      "path": "examples/modules/power/classroom-battery.module.json",
+      "required": true
+    },
+    {
+      "id": "assembly-test-process",
+      "kind": "module",
+      "path": "examples/modules/process/assembly-test-process.module.json",
+      "required": true
+    },
+    {
       "id": "automated-water-filter-resource-flow",
       "kind": "graph",
       "path": "examples/graphs/automated-water-filter.resource-flow.json",
@@ -61,6 +109,54 @@
         "id": "pump",
         "kind": "module",
         "path": "examples/modules/water/pump.module.json",
+        "required": true
+      },
+      {
+        "id": "filter-housing",
+        "kind": "module",
+        "path": "examples/modules/water/filter-housing.module.json",
+        "required": true
+      },
+      {
+        "id": "clean-water-tank",
+        "kind": "module",
+        "path": "examples/modules/water/clean-water-tank.module.json",
+        "required": true
+      },
+      {
+        "id": "filter-media",
+        "kind": "module",
+        "path": "examples/modules/water/filter-media.module.json",
+        "required": true
+      },
+      {
+        "id": "water-quality-sensor",
+        "kind": "module",
+        "path": "examples/modules/water/water-quality-sensor.module.json",
+        "required": true
+      },
+      {
+        "id": "controller-logic",
+        "kind": "module",
+        "path": "examples/modules/control/controller-logic.module.json",
+        "required": true
+      },
+      {
+        "id": "status-dashboard-module",
+        "kind": "module",
+        "path": "examples/modules/digital/status-dashboard.module.json",
+        "required": true
+      },
+      {
+        "id": "classroom-battery",
+        "kind": "module",
+        "path": "examples/modules/power/classroom-battery.module.json",
+        "required": true
+      },
+      {
+        "id": "assembly-test-process",
+        "kind": "module",
+        "path": "examples/modules/process/assembly-test-process.module.json",
         "required": true
       }
     ],

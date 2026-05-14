@@ -1,0 +1,53 @@
+{
+  "kind": "ModulePackage",
+  "id": "classroom-battery",
+  "version": "0.1.0",
+  "name": "Classroom Battery",
+  "type": "physical",
+  "attribution": {
+    "creators": [
+      {
+        "name": "GOSP Forge foundation examples"
+      }
+    ],
+    "sourceRefs": []
+  },
+  "license": {
+    "id": "CC-BY-4.0",
+    "shareAlike": false
+  },
+  "capabilities": {
+    "capabilities": [
+      "foundation-example",
+      "low-voltage-power"
+    ],
+    "requiresFabrication": false,
+    "supportsSimulation": true,
+    "supportsEstimation": true
+  },
+  "representation": {
+    "representations": [
+      "symbolic"
+    ],
+    "primary": "symbolic"
+  },
+  "validationStatus": "draft",
+  "safetyProfile": {
+    "category": "not-for-real-world-use",
+    "notes": [
+      "Classroom low-voltage demonstration only.",
+      "Use teacher-provided, protected battery packs only."
+    ],
+    "realWorldUseLimit": "No professional electrical approval or production-use claim."
+  },
+  "educationProfile": {
+    "gradeBand": "6-12",
+    "objectives": [
+      "Understand energy constraints and safe low-voltage classroom discussion."
+    ],
+    "estimatedTimeMinutes": 45,
+    "teacherNotes": [
+      "Use supervised classroom discussion; do not improvise battery packs."
+    ]
+  }
+}
