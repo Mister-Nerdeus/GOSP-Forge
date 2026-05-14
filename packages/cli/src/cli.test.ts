@@ -4,10 +4,9 @@ import { simulateCommand } from './commands/simulate.js';
 import { validateCommand } from './commands/validate.js';
 describe('cli commands', () => {
   it('validates, simulates, and estimates clean water project', () => {
-    expect(validateCommand('examples/projects/automated-water-filter.project-v2.json').ok).toBe(
-      true,
-    );
-    expect(simulateCommand('x').ok).toBe(true);
+    const manifest = 'examples/projects/automated-water-filter.project-v2.json';
+    expect(validateCommand(manifest).ok).toBe(true);
+    expect(simulateCommand(manifest).ok).toBe(true);
     expect(estimateCommand('x').ok).toBe(true);
   });
 });
