@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createSimulationRunEnvelope,
   applyProductSpecEffects,
+  compareCleanWaterBaselines,
   runWaterWarningController,
   sha256,
   simulatePowerFlow,
@@ -50,5 +51,21 @@ describe('sim-core foundation', () => {
     expect(result.warnings).toEqual([
       expect.objectContaining({ code: 'unknown-product-spec-target' }),
     ]);
+  });
+  it('compares clean water baselines as anchors without superiority claims', () => {
+    const comparison = compareCleanWaterBaselines({
+      mode: 'education',
+      simulatedCleanWaterLiters: 8,
+      baselines: [
+        {
+          id: 'commercial-gravity-filter',
+          name: 'Commercial gravity filter',
+          description: 'Classroom comparison baseline.',
+        },
+      ],
+    });
+
+    expect(comparison.comparisonType).toBe('anchor-only-not-superiority-claim');
+    expect(comparison.baselines[0].interpretation).toContain('not a claim of superiority');
   });
 });

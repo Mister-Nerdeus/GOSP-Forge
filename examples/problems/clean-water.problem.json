@@ -20,7 +20,11 @@
       "unit": "L",
       "direction": "maximize",
       "baselineRefs": [
-        "commercial-gravity-filter"
+        "commercial-gravity-filter",
+        "boil-chlorinate",
+        "simple-sand-filter",
+        "pump-cartridge-filter",
+        "uv-treatment-concept"
       ]
     }
   ],
@@ -29,6 +33,46 @@
       "id": "commercial-gravity-filter",
       "name": "Commercial gravity filter",
       "description": "Purchased classroom comparison baseline.",
+      "confidence": {
+        "level": "medium",
+        "rationale": "Foundation example; not professional validation."
+      },
+      "sourceRefs": []
+    },
+    {
+      "id": "boil-chlorinate",
+      "name": "Boil chlorinate",
+      "description": "Classroom discussion anchor for treatment tradeoffs; not a potable-water claim.",
+      "confidence": {
+        "level": "medium",
+        "rationale": "Foundation example; not professional validation."
+      },
+      "sourceRefs": []
+    },
+    {
+      "id": "simple-sand-filter",
+      "name": "Simple sand filter",
+      "description": "Classroom discussion anchor for filtration tradeoffs; not a potable-water claim.",
+      "confidence": {
+        "level": "medium",
+        "rationale": "Foundation example; not professional validation."
+      },
+      "sourceRefs": []
+    },
+    {
+      "id": "pump-cartridge-filter",
+      "name": "Pump cartridge filter",
+      "description": "Classroom discussion anchor for powered filtration tradeoffs; not a potable-water claim.",
+      "confidence": {
+        "level": "medium",
+        "rationale": "Foundation example; not professional validation."
+      },
+      "sourceRefs": []
+    },
+    {
+      "id": "uv-treatment-concept",
+      "name": "UV treatment concept",
+      "description": "Classroom discussion anchor for energy and treatment tradeoffs; not a potable-water claim.",
       "confidence": {
         "level": "medium",
         "rationale": "Foundation example; not professional validation."
