@@ -4,6 +4,8 @@ import {
   applyProductSpecEffects,
   compareCleanWaterBaselines,
   createCleanWaterImpactReport,
+  generateModuleScorecards,
+  generateSystemScorecard,
   runWaterWarningController,
   scoreCleanWater,
   sha256,
@@ -112,5 +114,37 @@ describe('sim-core foundation', () => {
       'clean-water-volume': 80,
       'power-compatibility': 100,
     });
+  });
+
+  it('generates module and system scorecards with data-gap confidence', () => {
+    const profile = {
+      id: 'clean-water-scoring-profile',
+      version: '0.1.0',
+      sponsorNeutral: true as const,
+      components: [
+        { id: 'clean-water-volume', weight: 0.45 },
+        { id: 'power-compatibility', weight: 0.25 },
+        { id: 'confidence', weight: 0.2 },
+        { id: 'warning-penalty', weight: 0.1 },
+      ],
+    };
+    const moduleScorecards = generateModuleScorecards({
+      moduleIds: ['pump', 'filter-media'],
+      profileId: profile.id,
+      defaultedInputs: ['water.minutes'],
+    });
+    const systemScorecard = generateSystemScorecard({
+      projectId: 'automated-water-filter',
+      profile,
+      flow: { cleanWaterLiters: 8 },
+      power: { compatible: true },
+      confidenceLevel: 'medium',
+      moduleScorecards,
+    });
+
+    expect(moduleScorecards[0]?.confidence.level).toBe('low');
+    expect(moduleScorecards[0]?.rationale.join(' ')).toContain('Educational scorecard only');
+    expect(systemScorecard.moduleScoreRefs).toEqual(['pump', 'filter-media']);
+    expect(systemScorecard.rationale.join(' ')).toContain('Sponsor status is ignored');
   });
 });
