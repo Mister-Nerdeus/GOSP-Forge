@@ -3,6 +3,7 @@ import { IdSchema, VersionSchema } from '../shared/primitives.js';
 import { ScoringComponentSchema } from './scoringComponent.js';
 export const ScoringProfileSchema = z
   .object({
+    kind: z.literal('ScoringProfile').default('ScoringProfile'),
     id: IdSchema,
     version: VersionSchema,
     components: z.array(ScoringComponentSchema).min(1),

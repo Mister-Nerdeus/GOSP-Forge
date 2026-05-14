@@ -5,6 +5,7 @@ import {
   compareCleanWaterBaselines,
   createCleanWaterImpactReport,
   runWaterWarningController,
+  scoreCleanWater,
   sha256,
   simulatePowerFlow,
   simulateWaterFlow,
@@ -84,5 +85,32 @@ describe('sim-core foundation', () => {
     expect(report.direct[0].id).toBe('direct-pump-flow');
     expect(report.downstream.length).toBeGreaterThan(0);
     expect(report.limitations.join(' ')).toContain('No potable-water certification');
+  });
+  it('scores clean water output with sponsor-neutral inputs', () => {
+    const profile = {
+      id: 'clean-water-scoring-profile',
+      version: '0.1.0',
+      sponsorNeutral: true as const,
+      components: [
+        { id: 'clean-water-volume', weight: 0.45 },
+        { id: 'power-compatibility', weight: 0.25 },
+        { id: 'confidence', weight: 0.2 },
+        { id: 'warning-penalty', weight: 0.1 },
+      ],
+    };
+    const input = {
+      cleanWaterLiters: 8,
+      powerCompatible: true,
+      confidenceLevel: 'medium' as const,
+      warningCount: 0,
+    };
+
+    expect(scoreCleanWater(profile, { ...input, sponsored: false }).score).toBe(
+      scoreCleanWater(profile, { ...input, sponsored: true }).score,
+    );
+    expect(scoreCleanWater(profile, input).componentScores).toMatchObject({
+      'clean-water-volume': 80,
+      'power-compatibility': 100,
+    });
   });
 });

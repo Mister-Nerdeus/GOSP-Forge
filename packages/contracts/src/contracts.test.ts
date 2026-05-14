@@ -274,12 +274,23 @@ describe('foundation contracts', () => {
   it('blocks sponsor scoring influence and applies mode requirements', () => {
     expect(
       ScoringProfileSchema.safeParse({
+        kind: 'ScoringProfile',
         id: 's',
         version: '1',
         sponsorNeutral: true,
         components: [{ id: 'sponsor-boost', label: 'Sponsor', weight: 1, formula: '1' }],
       }).success,
     ).toBe(false);
+
+    expect(
+      ScoringProfileSchema.safeParse({
+        kind: 'ScoringProfile',
+        id: 'clean-water-scoring-profile',
+        version: '1',
+        sponsorNeutral: true,
+        components: [{ id: 'clean-water-volume', label: 'Volume', weight: 1, formula: 'x' }],
+      }).success,
+    ).toBe(true);
 
     expect(
       validateModeRequirements('dream', {}).some((issue) => issue.severity === 'warning'),

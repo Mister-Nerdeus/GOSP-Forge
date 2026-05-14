@@ -1,0 +1,36 @@
+{
+  "kind": "ScoringProfile",
+  "id": "clean-water-scoring-profile",
+  "version": "0.1.0",
+  "sponsorNeutral": true,
+  "components": [
+    {
+      "id": "clean-water-volume",
+      "label": "Modeled clean-water volume",
+      "weight": 0.45,
+      "formula": "min(cleanWaterLiters / 10, 1) * 100",
+      "source": "SimulationRunEnvelope.flow.cleanWaterLiters"
+    },
+    {
+      "id": "power-compatibility",
+      "label": "Power compatibility",
+      "weight": 0.25,
+      "formula": "powerCompatible ? 100 : 0",
+      "source": "SimulationRunEnvelope.power.compatible"
+    },
+    {
+      "id": "confidence",
+      "label": "Model confidence",
+      "weight": 0.2,
+      "formula": "confidenceLevel mapped to low=35, medium=70, high=90, reviewed=100",
+      "source": "SimulationRunEnvelope.confidence.level"
+    },
+    {
+      "id": "warning-penalty",
+      "label": "Warning penalty",
+      "weight": 0.1,
+      "formula": "max(0, 100 - warningCount * 15)",
+      "source": "SimulationRunEnvelope.warnings"
+    }
+  ]
+}
