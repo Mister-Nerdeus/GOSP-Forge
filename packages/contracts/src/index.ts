@@ -61,3 +61,7 @@ export * from './submissions/submissionReviewStatus.js';
 export * from './registry/moduleRegistryEntry.js';
 export * from './registry/moduleTrustLevel.js';
 export * from './registry/moderationStatus.js';
+export * from './graphs/graphBase.js';
+export * from './graphs/resourceFlowGraph.js';
+export * from './graphs/powerFlowGraph.js';
+export * from './graphs/controlFlowGraph.js';

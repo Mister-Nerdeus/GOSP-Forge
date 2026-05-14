@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   CostEstimateSchema,
+  ResourceFlowGraphSchema,
   FabricationProfileSchema,
   ModulePackageSchema,
   ProblemDefinitionSchema,
@@ -266,6 +267,30 @@ describe('foundation contracts', () => {
         capabilities: { capabilities: ['housing'], requiresFabrication: true },
         validationStatus: 'draft',
         safetyProfile,
+      }).success,
+    ).toBe(false);
+  });
+
+  it('validates graph topology and rejects missing edge endpoints', () => {
+    expect(
+      ResourceFlowGraphSchema.safeParse({
+        kind: 'ResourceFlowGraph',
+        id: 'water-graph',
+        projectId: 'project',
+        resourceType: 'water',
+        nodes: [{ id: 'source' }, { id: 'sink' }],
+        edges: [{ id: 'source-to-sink', from: 'source', to: 'sink' }],
+      }).success,
+    ).toBe(true);
+
+    expect(
+      ResourceFlowGraphSchema.safeParse({
+        kind: 'ResourceFlowGraph',
+        id: 'water-graph',
+        projectId: 'project',
+        resourceType: 'water',
+        nodes: [{ id: 'source' }, { id: 'source' }],
+        edges: [{ id: 'missing-to', from: 'source', to: 'sink' }],
       }).success,
     ).toBe(false);
   });
