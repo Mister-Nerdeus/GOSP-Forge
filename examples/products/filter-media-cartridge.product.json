@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "name": "Filter Media Cartridge",
   "moduleIds": [
-    "pump"
+    "filter-media"
   ],
   "specs": [
     {

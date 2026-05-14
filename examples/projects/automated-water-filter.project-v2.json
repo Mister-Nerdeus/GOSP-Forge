@@ -73,6 +73,30 @@
       "required": true
     },
     {
+      "id": "classroom-diaphragm-pump",
+      "kind": "product",
+      "path": "examples/products/classroom-diaphragm-pump.product.json",
+      "required": true
+    },
+    {
+      "id": "basic-water-quality-sensor",
+      "kind": "product",
+      "path": "examples/products/basic-water-quality-sensor.product.json",
+      "required": true
+    },
+    {
+      "id": "classroom-battery-pack",
+      "kind": "product",
+      "path": "examples/products/classroom-battery-pack.product.json",
+      "required": true
+    },
+    {
+      "id": "filter-media-cartridge",
+      "kind": "product",
+      "path": "examples/products/filter-media-cartridge.product.json",
+      "required": true
+    },
+    {
       "id": "automated-water-filter-resource-flow",
       "kind": "graph",
       "path": "examples/graphs/automated-water-filter.resource-flow.json",
@@ -160,7 +184,32 @@
         "required": true
       }
     ],
-    "products": [],
+    "products": [
+      {
+        "id": "classroom-diaphragm-pump",
+        "kind": "product",
+        "path": "examples/products/classroom-diaphragm-pump.product.json",
+        "required": true
+      },
+      {
+        "id": "basic-water-quality-sensor",
+        "kind": "product",
+        "path": "examples/products/basic-water-quality-sensor.product.json",
+        "required": true
+      },
+      {
+        "id": "classroom-battery-pack",
+        "kind": "product",
+        "path": "examples/products/classroom-battery-pack.product.json",
+        "required": true
+      },
+      {
+        "id": "filter-media-cartridge",
+        "kind": "product",
+        "path": "examples/products/filter-media-cartridge.product.json",
+        "required": true
+      }
+    ],
     "graphs": [
       {
         "id": "automated-water-filter-resource-flow",
