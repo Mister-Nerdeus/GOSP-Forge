@@ -3,4 +3,6 @@ dist/
 coverage/
 .env
 .DS_Store
-artifacts/controls/local-validation/latest.json
+artifacts/controls/local-validation/*
+!artifacts/controls/local-validation/.gitkeep
+!artifacts/controls/local-validation/README.md
