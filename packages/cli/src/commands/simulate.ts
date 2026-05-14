@@ -29,8 +29,7 @@ export function simulateCommand(file: string) {
     return { ok: false, errors: resolvedRefs.errors, warnings: resolvedRefs.warnings };
   }
 
-  const refs = resolvedRefs.resolved.map((ref) => ({ ...ref, value: readJsonFile(ref.path) }));
-  const input = compileCleanWaterInput(project, refs);
+  const input = compileCleanWaterInput(project, resolvedRefs.documents);
   const flow = simulateWaterFlow(input.water);
   const power = simulatePowerFlow(input.powerSource, input.powerLoads);
   const warnings = [...input.warnings, ...flow.warnings];

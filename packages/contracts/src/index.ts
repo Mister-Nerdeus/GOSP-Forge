@@ -24,6 +24,7 @@ export * from './attribution/remixLineage.js';
 export * from './safety/safetyProfile.js';
 export * from './safety/safetyValidation.js';
 export * from './education/educationProfile.js';
+export * from './education/educationValidation.js';
 export * from './products/productBinding.js';
 export * from './products/productSpec.js';
 export * from './products/productProvenance.js';

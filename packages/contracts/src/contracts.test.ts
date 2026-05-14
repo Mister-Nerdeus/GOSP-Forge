@@ -12,6 +12,7 @@ import {
   ScoringProfileSchema,
   SimulationRunEnvelopeSchema,
   validateModeRequirements,
+  validateEducationGuide,
   validateModuleSafety,
 } from './index.js';
 
@@ -348,6 +349,24 @@ describe('foundation contracts', () => {
           realWorldUseLimit: 'Certified potable water output.',
         },
       }).some((issue) => issue.severity === 'blocker'),
+    ).toBe(true);
+  });
+
+  it('validates education guides and rejects student payment prompts', () => {
+    expect(
+      validateEducationGuide(
+        [
+          'This guide is free for public-school use.',
+          'Safety: supervised classroom use only with no potable-water claim.',
+        ].join('\n'),
+        'student',
+      ),
+    ).toEqual([]);
+
+    expect(
+      validateEducationGuide('Student must pay now to continue.', 'student').some(
+        (issue) => issue.severity === 'blocker',
+      ),
     ).toBe(true);
   });
 

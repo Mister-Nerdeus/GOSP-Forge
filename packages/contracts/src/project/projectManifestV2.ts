@@ -44,6 +44,7 @@ export const ProjectManifestV2Schema = z
       ['graphs', 'graph', v.refGroups.graphs],
       ['estimates', 'estimate', v.refGroups.estimates],
       ['scorecards', 'scorecard', v.refGroups.scorecards],
+      ['education', 'education', v.refGroups.education],
     ];
 
     if (v.refGroups.problem && v.refGroups.problem.kind !== 'problem') {

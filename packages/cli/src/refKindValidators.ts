@@ -9,6 +9,7 @@ import {
   ProductBindingSchema,
   ResourceFlowGraphSchema,
   SimulationRunEnvelopeSchema,
+  validateEducationGuide,
   SystemScorecardSchema,
   validateModuleSafety,
 } from '@gosp/contracts';
@@ -41,7 +42,31 @@ const RefKindSchemas: Record<string, z.ZodTypeAny[]> = {
   baseline: [BaselineSolutionSchema],
 };
 
+function educationGuideKind(ref: ProjectRef) {
+  const text = `${ref.id} ${ref.path ?? ''}`.toLowerCase();
+  if (text.includes('teacher')) return 'teacher' as const;
+  if (text.includes('student')) return 'student' as const;
+  return 'unknown' as const;
+}
+
 export function validateRefKind(ref: ProjectRef, value: unknown) {
+  if (ref.kind === 'education') {
+    const guideDiagnostics = validateEducationGuide(String(value), educationGuideKind(ref)).map(
+      (issue) => ({
+        code: issue.code,
+        message: issue.message,
+        severity: issue.severity,
+        refId: ref.id,
+        refKind: ref.kind,
+        path: ref.path,
+      }),
+    );
+    return {
+      errors: guideDiagnostics.filter((issue) => issue.severity === 'blocker'),
+      warnings: guideDiagnostics.filter((issue) => issue.severity === 'warning'),
+    };
+  }
+
   const schemas = RefKindSchemas[ref.kind];
   if (!schemas) {
     return {

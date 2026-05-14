@@ -1,4 +1,4 @@
-import { listExampleJson, readJsonFile, resolveRepoPath } from './exampleRegistry.js';
+import { listExampleJson, readJsonFile, readTextFile, resolveRepoPath } from './exampleRegistry.js';
 import { type ProjectRef, type RefDiagnostic, validateRefKind } from './refKindValidators.js';
 
 export function resolveExampleRefs() {
@@ -67,7 +67,7 @@ export function resolveProjectRefs(project: Parameters<typeof collectProjectRefs
     }
 
     try {
-      const value = readJsonFile(ref.path);
+      const value = ref.kind === 'education' ? readTextFile(ref.path) : readJsonFile(ref.path);
       const refId =
         typeof value === 'object' && value && 'id' in value ? String(value.id) : undefined;
       if (refId && refId !== ref.id) {

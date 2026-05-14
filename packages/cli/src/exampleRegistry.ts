@@ -23,6 +23,10 @@ export function readJsonFile(file: string): unknown {
   return JSON.parse(fs.readFileSync(resolveRepoPath(file), 'utf8'));
 }
 
+export function readTextFile(file: string): string {
+  return fs.readFileSync(resolveRepoPath(file), 'utf8');
+}
+
 export function listExampleJson(root = 'examples'): string[] {
   const out: string[] = [];
   const walk = (dir: string) => {

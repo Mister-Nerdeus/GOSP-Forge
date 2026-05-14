@@ -232,7 +232,20 @@
     ],
     "estimates": [],
     "scorecards": [],
-    "education": [],
+    "education": [
+      {
+        "id": "clean-water-teacher-guide",
+        "kind": "education",
+        "path": "docs/education/clean-water/TEACHER_GUIDE.md",
+        "required": true
+      },
+      {
+        "id": "clean-water-student-guide",
+        "kind": "education",
+        "path": "docs/education/clean-water/STUDENT_GUIDE.md",
+        "required": true
+      }
+    ],
     "safety": []
   },
   "design": {
