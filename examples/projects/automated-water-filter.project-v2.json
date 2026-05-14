@@ -31,6 +31,41 @@
       "required": true
     }
   ],
+  "refGroups": {
+    "problem": {
+      "id": "clean-water-problem",
+      "kind": "problem",
+      "path": "examples/problems/clean-water.problem.json",
+      "required": true
+    },
+    "modules": [
+      {
+        "id": "raw-water-tank",
+        "kind": "module",
+        "path": "examples/modules/water/raw-water-tank.module.json",
+        "required": true
+      },
+      {
+        "id": "pump",
+        "kind": "module",
+        "path": "examples/modules/water/pump.module.json",
+        "required": true
+      }
+    ],
+    "products": [],
+    "graphs": [
+      {
+        "id": "automated-water-filter-resource-flow",
+        "kind": "graph",
+        "path": "examples/graphs/automated-water-filter.resource-flow.json",
+        "required": true
+      }
+    ],
+    "estimates": [],
+    "scorecards": [],
+    "education": [],
+    "safety": []
+  },
   "design": {
     "title": "Foundation vertical slice manifest",
     "status": "draft",
