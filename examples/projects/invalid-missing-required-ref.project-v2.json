@@ -1,0 +1,23 @@
+{
+  "kind": "ProjectManifestV2",
+  "manifestVersion": "2",
+  "id": "invalid-missing-required-ref-project",
+  "version": "0.1.0",
+  "title": "Invalid Missing Required Ref Project",
+  "mode": "education",
+  "refs": [
+    {
+      "id": "missing-required-module",
+      "kind": "module",
+      "path": "examples/modules/missing-required-module.module.json",
+      "required": true
+    }
+  ],
+  "design": {
+    "title": "Missing required ref fixture",
+    "status": "draft",
+    "notes": [
+      "Negative fixture for required ref validation."
+    ]
+  }
+}

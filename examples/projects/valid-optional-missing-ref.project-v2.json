@@ -1,0 +1,23 @@
+{
+  "kind": "ProjectManifestV2",
+  "manifestVersion": "2",
+  "id": "valid-optional-missing-ref-project",
+  "version": "0.1.0",
+  "title": "Valid Optional Missing Ref Project",
+  "mode": "education",
+  "refs": [
+    {
+      "id": "missing-optional-module",
+      "kind": "module",
+      "path": "examples/modules/missing-optional-module.module.json",
+      "required": false
+    }
+  ],
+  "design": {
+    "title": "Optional missing ref fixture",
+    "status": "draft",
+    "notes": [
+      "Positive fixture for optional ref warning behavior."
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "kind": "ProjectManifestV2",
+  "manifestVersion": "2",
+  "id": "invalid-wrong-ref-kind-project",
+  "version": "0.1.0",
+  "title": "Invalid Wrong Ref Kind Project",
+  "mode": "education",
+  "refs": [
+    {
+      "id": "pump",
+      "kind": "product",
+      "path": "examples/modules/water/pump.module.json",
+      "required": true
+    }
+  ],
+  "design": {
+    "title": "Wrong ref kind fixture",
+    "status": "draft",
+    "notes": [
+      "Negative fixture for schema kind validation."
+    ]
+  }
+}
