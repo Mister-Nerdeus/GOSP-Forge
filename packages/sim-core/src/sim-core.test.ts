@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   createSimulationRunEnvelope,
+  applyProductSpecEffects,
   runWaterWarningController,
   sha256,
   simulatePowerFlow,
@@ -34,5 +35,20 @@ describe('sim-core foundation', () => {
         output: { ok: true },
       }),
     ).toBeTruthy();
+  });
+  it('maps known product spec targets and warns on unknown targets', () => {
+    const result = applyProductSpecEffects(
+      [
+        { id: 'flow', value: 2, meaning: { targetField: 'pumpFlowLpm' } },
+        { id: 'sponsor', value: true, meaning: { targetField: 'sponsoredBoost' } },
+      ],
+      {},
+    );
+
+    expect(result.target.pumpFlowLpm).toBe(2);
+    expect(result.target.sponsoredBoost).toBeUndefined();
+    expect(result.warnings).toEqual([
+      expect.objectContaining({ code: 'unknown-product-spec-target' }),
+    ]);
   });
 });

@@ -1,4 +1,5 @@
 import type { WaterFlowInput } from './waterFlowTypes.js';
+import { applyProductSpecEffects } from '../specMeaning/applyProductSpecEffects.js';
 
 type RefValue = {
   id: string;
@@ -33,11 +34,6 @@ function isProductBinding(value: unknown): value is ProductBindingLike {
   );
 }
 
-function numberSpec(product: ProductBindingLike, targetField: string): number | undefined {
-  const spec = product.specs.find((item) => item.meaning?.targetField === targetField);
-  return typeof spec?.value === 'number' ? spec.value : undefined;
-}
-
 export function compileCleanWaterInput(project: { id: string }, refs: RefValue[]) {
   const warnings: Warning[] = [];
   const defaultedInputs: string[] = [];
@@ -47,10 +43,14 @@ export function compileCleanWaterInput(project: { id: string }, refs: RefValue[]
     .map((ref) => ref.id)
     .sort();
 
-  const pump = products.find((product) => product.moduleIds.includes('pump'));
-  const battery = products.find((product) => product.moduleIds.includes('classroom-battery'));
-  const pumpFlowLpm = pump ? numberSpec(pump, 'pumpFlowLpm') : undefined;
-  const voltageV = battery ? numberSpec(battery, 'voltageV') : undefined;
+  const effects = applyProductSpecEffects(
+    products.flatMap((product) => product.specs),
+    {},
+  );
+  warnings.push(...effects.warnings);
+  const pumpFlowLpm =
+    typeof effects.target.pumpFlowLpm === 'number' ? effects.target.pumpFlowLpm : undefined;
+  const voltageV = typeof effects.target.voltageV === 'number' ? effects.target.voltageV : undefined;
 
   if (pumpFlowLpm === undefined) {
     warnings.push({
