@@ -1,1 +1,19 @@
-export type Rule={when:{field:string;op:'gt'|'lt'|'eq';value:number|string|boolean};then:{field:string;value:number|string|boolean}}; export function evaluateRules(state:Record<string,number|string|boolean>,rules:Rule[]){const next={...state}; const warnings:string[]=[]; for(const rule of rules){const actual=next[rule.when.field]; const pass=rule.when.op==='gt'?Number(actual)>Number(rule.when.value):rule.when.op==='lt'?Number(actual)<Number(rule.when.value):actual===rule.when.value; if(pass)next[rule.then.field]=rule.then.value;} return {state:next,warnings};}
+export type Rule = {
+  when: { field: string; op: 'gt' | 'lt' | 'eq'; value: number | string | boolean };
+  then: { field: string; value: number | string | boolean };
+};
+export function evaluateRules(state: Record<string, number | string | boolean>, rules: Rule[]) {
+  const next = { ...state };
+  const warnings: string[] = [];
+  for (const rule of rules) {
+    const actual = next[rule.when.field];
+    const pass =
+      rule.when.op === 'gt'
+        ? Number(actual) > Number(rule.when.value)
+        : rule.when.op === 'lt'
+          ? Number(actual) < Number(rule.when.value)
+          : actual === rule.when.value;
+    if (pass) next[rule.then.field] = rule.then.value;
+  }
+  return { state: next, warnings };
+}

@@ -1,1 +1,22 @@
-import type { BomBuildResult, BomInputLine } from './bomTypes.js'; export function buildBom(input:BomInputLine[]):BomBuildResult{const warnings:string[]=[]; const rolled=new Map<string,BomBuildResult['lines'][number]>(); for(const line of input){const quantity=line.quantity??0; if(line.quantity===undefined)warnings.push('Unknown quantity for '+line.id+'; treated as zero with low confidence.'); const existing=rolled.get(line.id); const next={...line,quantity,confidence:{level:line.quantity===undefined?'low' as const:'medium' as const,rationale:line.quantity===undefined?'Quantity missing.':'Quantity supplied.'}}; if(existing)existing.quantity+=quantity; else rolled.set(line.id,next);} return {lines:[...rolled.values()].sort((a,b)=>a.id.localeCompare(b.id)),warnings};}
+import type { BomBuildResult, BomInputLine } from './bomTypes.js';
+export function buildBom(input: BomInputLine[]): BomBuildResult {
+  const warnings: string[] = [];
+  const rolled = new Map<string, BomBuildResult['lines'][number]>();
+  for (const line of input) {
+    const quantity = line.quantity ?? 0;
+    if (line.quantity === undefined)
+      warnings.push('Unknown quantity for ' + line.id + '; treated as zero with low confidence.');
+    const existing = rolled.get(line.id);
+    const next = {
+      ...line,
+      quantity,
+      confidence: {
+        level: line.quantity === undefined ? ('low' as const) : ('medium' as const),
+        rationale: line.quantity === undefined ? 'Quantity missing.' : 'Quantity supplied.',
+      },
+    };
+    if (existing) existing.quantity += quantity;
+    else rolled.set(line.id, next);
+  }
+  return { lines: [...rolled.values()].sort((a, b) => a.id.localeCompare(b.id)), warnings };
+}

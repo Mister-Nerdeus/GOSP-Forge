@@ -56,8 +56,13 @@ export function resolveExampleRefs() {
   return { ids: [...seen].sort(), duplicates: [...duplicates].sort() };
 }
 
-function collectProjectRefs(project: { problemRef?: ProjectRef; refs?: ProjectRef[] }): ProjectRef[] {
-  return [project.problemRef, ...(project.refs ?? [])].filter((ref): ref is ProjectRef => Boolean(ref));
+function collectProjectRefs(project: {
+  problemRef?: ProjectRef;
+  refs?: ProjectRef[];
+}): ProjectRef[] {
+  return [project.problemRef, ...(project.refs ?? [])].filter((ref): ref is ProjectRef =>
+    Boolean(ref),
+  );
 }
 
 function validateRefKind(ref: ProjectRef, value: unknown): RefDiagnostic | undefined {
@@ -74,7 +79,8 @@ function validateRefKind(ref: ProjectRef, value: unknown): RefDiagnostic | undef
 
   if (schemas.some((schema) => schema.safeParse(value).success)) return undefined;
 
-  const actualKind = typeof value === 'object' && value && 'kind' in value ? String(value.kind) : 'unknown';
+  const actualKind =
+    typeof value === 'object' && value && 'kind' in value ? String(value.kind) : 'unknown';
   return {
     code: 'wrong-ref-kind',
     message: `Ref "${ref.id}" declares kind "${ref.kind}" but referenced file has schema kind "${actualKind}".`,
@@ -103,7 +109,8 @@ export function resolveProjectRefs(project: { problemRef?: ProjectRef; refs?: Pr
 
     try {
       const value = readJsonFile(ref.path);
-      const refId = typeof value === 'object' && value && 'id' in value ? String(value.id) : undefined;
+      const refId =
+        typeof value === 'object' && value && 'id' in value ? String(value.id) : undefined;
       if (refId && refId !== ref.id) {
         errors.push({
           code: 'ref-id-mismatch',

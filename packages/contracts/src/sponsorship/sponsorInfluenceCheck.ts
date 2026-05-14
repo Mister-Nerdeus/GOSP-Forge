@@ -1,1 +1,6 @@
-export function assertNoSponsorScoringInfluence(profile:{components?:Array<{id:string;source?:string}>}):void{const bad=profile.components?.find(c=>/sponsor/i.test(c.id+' '+(c.source??''))); if(bad) throw new Error('Sponsor fields cannot affect scoring');}
+export function assertNoSponsorScoringInfluence(profile: {
+  components?: Array<{ id: string; source?: string }>;
+}): void {
+  const bad = profile.components?.find((c) => /sponsor/i.test(c.id + ' ' + (c.source ?? '')));
+  if (bad) throw new Error('Sponsor fields cannot affect scoring');
+}

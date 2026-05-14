@@ -1,1 +1,25 @@
-import { createSimulationRunEnvelope, simulatePowerFlow, simulateWaterFlow } from '@gosp/sim-core'; export function simulateCommand(_file:string){const flow=simulateWaterFlow({pumpFlowLpm:2,filterEfficiency:0.8,sourceLiters:20,minutes:5}); const power=simulatePowerFlow({id:'battery',voltageV:12},[{id:'pump',voltageV:12,currentA:1}]); return {ok:true,flow,power,envelope:createSimulationRunEnvelope({runId:'clean-water-run-v0',projectId:'automated-water-filter',moduleIds:['pump','filter-housing'],modelVersion:'0.1.0',assumptions:[{id:'clean-water.no-potable-claim',description:'No potable-water claim.'}],output:{flow,power}})};}
+import { createSimulationRunEnvelope, simulatePowerFlow, simulateWaterFlow } from '@gosp/sim-core';
+export function simulateCommand(_file: string) {
+  const flow = simulateWaterFlow({
+    pumpFlowLpm: 2,
+    filterEfficiency: 0.8,
+    sourceLiters: 20,
+    minutes: 5,
+  });
+  const power = simulatePowerFlow({ id: 'battery', voltageV: 12 }, [
+    { id: 'pump', voltageV: 12, currentA: 1 },
+  ]);
+  return {
+    ok: true,
+    flow,
+    power,
+    envelope: createSimulationRunEnvelope({
+      runId: 'clean-water-run-v0',
+      projectId: 'automated-water-filter',
+      moduleIds: ['pump', 'filter-housing'],
+      modelVersion: '0.1.0',
+      assumptions: [{ id: 'clean-water.no-potable-claim', description: 'No potable-water claim.' }],
+      output: { flow, power },
+    }),
+  };
+}

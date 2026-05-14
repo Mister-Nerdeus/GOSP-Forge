@@ -3,7 +3,9 @@ import { validateCommand } from './validate.js';
 
 describe('validateCommand ref fixtures', () => {
   it('returns stable JSON errors for a missing required ref', () => {
-    const result = validateCommand('examples/projects/invalid-missing-required-ref.project-v2.json');
+    const result = validateCommand(
+      'examples/projects/invalid-missing-required-ref.project-v2.json',
+    );
 
     expect(result.ok).toBe(false);
     expect(result.errors).toEqual([

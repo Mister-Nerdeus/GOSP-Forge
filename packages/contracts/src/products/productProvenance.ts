@@ -1,1 +1,10 @@
-import { z } from 'zod'; export const ProductProvenanceSchema=z.object({status:z.enum(['community-submitted','manufacturer-submitted','manufacturer-verified','reviewed']),sourceRefs:z.array(z.string()).default([])});
+import { z } from 'zod';
+export const ProductProvenanceSchema = z.object({
+  status: z.enum([
+    'community-submitted',
+    'manufacturer-submitted',
+    'manufacturer-verified',
+    'reviewed',
+  ]),
+  sourceRefs: z.array(z.string()).default([]),
+});

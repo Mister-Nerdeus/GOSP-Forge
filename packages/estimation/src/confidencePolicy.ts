@@ -1,1 +1,8 @@
-export function combineConfidence(levels:Array<'low'|'medium'|'high'|'reviewed'>):'low'|'medium'|'high'|'reviewed'{if(levels.includes('low'))return 'low'; if(levels.includes('medium'))return 'medium'; if(levels.includes('high'))return 'high'; return 'reviewed';}
+export function combineConfidence(
+  levels: Array<'low' | 'medium' | 'high' | 'reviewed'>,
+): 'low' | 'medium' | 'high' | 'reviewed' {
+  if (levels.includes('low')) return 'low';
+  if (levels.includes('medium')) return 'medium';
+  if (levels.includes('high')) return 'high';
+  return 'reviewed';
+}

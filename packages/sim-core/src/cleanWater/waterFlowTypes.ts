@@ -1,1 +1,11 @@
-export type WaterFlowInput={pumpFlowLpm?:number;filterEfficiency?:number;sourceLiters:number;minutes:number}; export type WaterFlowOutput={cleanWaterLiters:number;warnings:Array<{code:string;message:string;severity:'info'|'warning'|'blocker'}>;confidence:{level:'low'|'medium'|'high';rationale:string}};
+export type WaterFlowInput = {
+  pumpFlowLpm?: number;
+  filterEfficiency?: number;
+  sourceLiters: number;
+  minutes: number;
+};
+export type WaterFlowOutput = {
+  cleanWaterLiters: number;
+  warnings: Array<{ code: string; message: string; severity: 'info' | 'warning' | 'blocker' }>;
+  confidence: { level: 'low' | 'medium' | 'high'; rationale: string };
+};

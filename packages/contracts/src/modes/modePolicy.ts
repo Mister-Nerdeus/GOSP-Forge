@@ -1,3 +1,46 @@
-import { z } from 'zod'; import { DesignModeSchema } from './designMode.js';
-export const ModePolicySchema=z.object({mode:DesignModeSchema,missingData:z.enum(['warn','block']),requiresAttribution:z.boolean(),requiresConfidence:z.boolean(),protectsStudents:z.boolean().default(false)});
-export const modePolicies={dream:{mode:'dream',missingData:'warn',requiresAttribution:false,requiresConfidence:false,protectsStudents:false},education:{mode:'education',missingData:'warn',requiresAttribution:true,requiresConfidence:false,protectsStudents:true},scoring:{mode:'scoring',missingData:'block',requiresAttribution:true,requiresConfidence:true,protectsStudents:true},professional:{mode:'professional',missingData:'block',requiresAttribution:true,requiresConfidence:true,protectsStudents:false},research:{mode:'research',missingData:'warn',requiresAttribution:true,requiresConfidence:true,protectsStudents:false}} as const;
+import { z } from 'zod';
+import { DesignModeSchema } from './designMode.js';
+export const ModePolicySchema = z.object({
+  mode: DesignModeSchema,
+  missingData: z.enum(['warn', 'block']),
+  requiresAttribution: z.boolean(),
+  requiresConfidence: z.boolean(),
+  protectsStudents: z.boolean().default(false),
+});
+export const modePolicies = {
+  dream: {
+    mode: 'dream',
+    missingData: 'warn',
+    requiresAttribution: false,
+    requiresConfidence: false,
+    protectsStudents: false,
+  },
+  education: {
+    mode: 'education',
+    missingData: 'warn',
+    requiresAttribution: true,
+    requiresConfidence: false,
+    protectsStudents: true,
+  },
+  scoring: {
+    mode: 'scoring',
+    missingData: 'block',
+    requiresAttribution: true,
+    requiresConfidence: true,
+    protectsStudents: true,
+  },
+  professional: {
+    mode: 'professional',
+    missingData: 'block',
+    requiresAttribution: true,
+    requiresConfidence: true,
+    protectsStudents: false,
+  },
+  research: {
+    mode: 'research',
+    missingData: 'warn',
+    requiresAttribution: true,
+    requiresConfidence: true,
+    protectsStudents: false,
+  },
+} as const;

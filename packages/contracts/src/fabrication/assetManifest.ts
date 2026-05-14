@@ -1,1 +1,12 @@
-import { z } from 'zod'; export const AssetManifestSchema=z.object({assets:z.array(z.object({path:z.string().min(1),kind:z.enum(['cad','mesh','drawing','document','fixture']),hash:z.string().optional()})).default([])});
+import { z } from 'zod';
+export const AssetManifestSchema = z.object({
+  assets: z
+    .array(
+      z.object({
+        path: z.string().min(1),
+        kind: z.enum(['cad', 'mesh', 'drawing', 'document', 'fixture']),
+        hash: z.string().optional(),
+      }),
+    )
+    .default([]),
+});

@@ -1,1 +1,21 @@
-import type { IncomingMessage } from 'node:http'; import { HttpError } from './errors.js'; export async function readJsonBody(req:IncomingMessage,maxBytes=64*1024):Promise<unknown>{const contentType=req.headers['content-type']; if(contentType&&!String(contentType).includes('application/json'))throw new HttpError(415,'Content-Type must be application/json'); let size=0; const chunks:Buffer[]=[]; for await(const chunk of req){const b=Buffer.isBuffer(chunk)?chunk:Buffer.from(chunk); size+=b.length; if(size>maxBytes)throw new HttpError(413,'JSON body exceeds maximum size'); chunks.push(b);} if(chunks.length===0)return {}; try{return JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw new HttpError(400,'Invalid JSON body');}}
+import type { IncomingMessage } from 'node:http';
+import { HttpError } from './errors.js';
+export async function readJsonBody(req: IncomingMessage, maxBytes = 64 * 1024): Promise<unknown> {
+  const contentType = req.headers['content-type'];
+  if (contentType && !String(contentType).includes('application/json'))
+    throw new HttpError(415, 'Content-Type must be application/json');
+  let size = 0;
+  const chunks: Buffer[] = [];
+  for await (const chunk of req) {
+    const b = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    size += b.length;
+    if (size > maxBytes) throw new HttpError(413, 'JSON body exceeds maximum size');
+    chunks.push(b);
+  }
+  if (chunks.length === 0) return {};
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  } catch {
+    throw new HttpError(400, 'Invalid JSON body');
+  }
+}

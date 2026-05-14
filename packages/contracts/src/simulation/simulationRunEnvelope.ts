@@ -1,2 +1,27 @@
-import { z } from 'zod'; import { IdSchema, ConfidenceSchema, AssumptionSchema, WarningSchema, LimitationSchema } from '../shared/primitives.js'; import { FidelityLevelSchema } from './fidelityLevel.js';
-export const SimulationRunEnvelopeSchema=z.object({kind:z.literal('SimulationRunEnvelope'),runId:IdSchema,projectId:IdSchema,moduleIds:z.array(IdSchema).min(1),inputHash:z.string().min(16),outputHash:z.string().min(16),modelVersion:z.string().min(1),fidelityLevel:FidelityLevelSchema,assumptions:z.array(AssumptionSchema).min(1),units:z.record(z.string().min(1)),sourceRefs:z.array(IdSchema).default([]),unknownInputs:z.array(z.string()).default([]),defaultedInputs:z.array(z.string()).default([]),confidence:ConfidenceSchema,warnings:z.array(WarningSchema).default([]),limitations:z.array(LimitationSchema).min(1)});
+import { z } from 'zod';
+import {
+  IdSchema,
+  ConfidenceSchema,
+  AssumptionSchema,
+  WarningSchema,
+  LimitationSchema,
+} from '../shared/primitives.js';
+import { FidelityLevelSchema } from './fidelityLevel.js';
+export const SimulationRunEnvelopeSchema = z.object({
+  kind: z.literal('SimulationRunEnvelope'),
+  runId: IdSchema,
+  projectId: IdSchema,
+  moduleIds: z.array(IdSchema).min(1),
+  inputHash: z.string().min(16),
+  outputHash: z.string().min(16),
+  modelVersion: z.string().min(1),
+  fidelityLevel: FidelityLevelSchema,
+  assumptions: z.array(AssumptionSchema).min(1),
+  units: z.record(z.string().min(1)),
+  sourceRefs: z.array(IdSchema).default([]),
+  unknownInputs: z.array(z.string()).default([]),
+  defaultedInputs: z.array(z.string()).default([]),
+  confidence: ConfidenceSchema,
+  warnings: z.array(WarningSchema).default([]),
+  limitations: z.array(LimitationSchema).min(1),
+});

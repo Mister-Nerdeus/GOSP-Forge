@@ -1,1 +1,16 @@
-import { z } from 'zod'; export const LicenseProfileSchema=z.object({licenseId:z.enum(['MIT','Apache-2.0','CC-BY-4.0','CC-BY-SA-4.0','CERN-OHL-S-2.0','ODbL-1.0','Unlicensed']),attributionRequired:z.boolean(),shareAlike:z.boolean(),dataBoundary:z.boolean().default(false),publicImportAllowed:z.boolean()});
+import { z } from 'zod';
+export const LicenseProfileSchema = z.object({
+  licenseId: z.enum([
+    'MIT',
+    'Apache-2.0',
+    'CC-BY-4.0',
+    'CC-BY-SA-4.0',
+    'CERN-OHL-S-2.0',
+    'ODbL-1.0',
+    'Unlicensed',
+  ]),
+  attributionRequired: z.boolean(),
+  shareAlike: z.boolean(),
+  dataBoundary: z.boolean().default(false),
+  publicImportAllowed: z.boolean(),
+});

@@ -24,7 +24,11 @@ const productSpec = {
   name: 'Flow rate',
   value: 2,
   unit: 'L/min',
-  meaning: { affects: ['simulation'], explanation: 'Maps to output flow.', targetField: 'flowRateLpm' },
+  meaning: {
+    affects: ['simulation'],
+    explanation: 'Maps to output flow.',
+    targetField: 'flowRateLpm',
+  },
   simulationUse: 'Water flow cap',
 };
 const lifecycle = {
@@ -177,7 +181,9 @@ describe('foundation contracts', () => {
     };
 
     expect(SimulationRunEnvelopeSchema.safeParse(envelope).success).toBe(true);
-    expect(SimulationRunEnvelopeSchema.safeParse({ ...envelope, limitations: [] }).success).toBe(false);
+    expect(SimulationRunEnvelopeSchema.safeParse({ ...envelope, limitations: [] }).success).toBe(
+      false,
+    );
   });
 
   it('validates cost estimates and rejects missing confidence', () => {
@@ -239,8 +245,12 @@ describe('foundation contracts', () => {
       }).success,
     ).toBe(false);
 
-    expect(validateModeRequirements('dream', {}).some((issue) => issue.severity === 'warning')).toBe(true);
-    expect(validateModeRequirements('scoring', {}).some((issue) => issue.severity === 'blocker')).toBe(true);
+    expect(
+      validateModeRequirements('dream', {}).some((issue) => issue.severity === 'warning'),
+    ).toBe(true);
+    expect(
+      validateModeRequirements('scoring', {}).some((issue) => issue.severity === 'blocker'),
+    ).toBe(true);
   });
 
   it('requires fabricated modules to include fabrication profiles', () => {

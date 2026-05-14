@@ -1,1 +1,7 @@
-import { z } from 'zod'; export const ManufacturingRouteSchema=z.object({process:z.enum(['fdm-print','laser-cut','cnc','hand-assembly','inspection']),machineTimeMinutes:z.number().nonnegative().optional(),laborMinutes:z.number().nonnegative(),assumptions:z.array(z.string()).default([])});
+import { z } from 'zod';
+export const ManufacturingRouteSchema = z.object({
+  process: z.enum(['fdm-print', 'laser-cut', 'cnc', 'hand-assembly', 'inspection']),
+  machineTimeMinutes: z.number().nonnegative().optional(),
+  laborMinutes: z.number().nonnegative(),
+  assumptions: z.array(z.string()).default([]),
+});

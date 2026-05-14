@@ -1,1 +1,9 @@
-import { z } from 'zod'; import { IdSchema, ConfidenceSchema } from '../shared/primitives.js'; export const ModuleScorecardSchema=z.object({moduleId:IdSchema,profileId:IdSchema,score:z.number().min(0),confidence:ConfidenceSchema,componentScores:z.record(z.number())});
+import { z } from 'zod';
+import { IdSchema, ConfidenceSchema } from '../shared/primitives.js';
+export const ModuleScorecardSchema = z.object({
+  moduleId: IdSchema,
+  profileId: IdSchema,
+  score: z.number().min(0),
+  confidence: ConfidenceSchema,
+  componentScores: z.record(z.number()),
+});

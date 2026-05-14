@@ -1,3 +1,29 @@
-import type { DesignMode } from './designMode.js'; import { modePolicies } from './modePolicy.js';
-export type ModeIssue={code:string;severity:'warning'|'blocker';message:string};
-export function validateModeRequirements(mode:DesignMode,value:{attribution?:unknown;confidence?:unknown;costData?:unknown}):ModeIssue[]{const p=modePolicies[mode], issues:ModeIssue[]=[]; if(p.requiresAttribution&&!value.attribution)issues.push({code:'missing-attribution',severity:'blocker',message:'Attribution is required'}); if(p.requiresConfidence&&!value.confidence)issues.push({code:'missing-confidence',severity:'blocker',message:'Confidence is required'}); if(!value.costData)issues.push({code:'missing-cost-data',severity:p.missingData==='block'?'blocker':'warning',message:'Cost data is missing'}); return issues;}
+import type { DesignMode } from './designMode.js';
+import { modePolicies } from './modePolicy.js';
+export type ModeIssue = { code: string; severity: 'warning' | 'blocker'; message: string };
+export function validateModeRequirements(
+  mode: DesignMode,
+  value: { attribution?: unknown; confidence?: unknown; costData?: unknown },
+): ModeIssue[] {
+  const p = modePolicies[mode],
+    issues: ModeIssue[] = [];
+  if (p.requiresAttribution && !value.attribution)
+    issues.push({
+      code: 'missing-attribution',
+      severity: 'blocker',
+      message: 'Attribution is required',
+    });
+  if (p.requiresConfidence && !value.confidence)
+    issues.push({
+      code: 'missing-confidence',
+      severity: 'blocker',
+      message: 'Confidence is required',
+    });
+  if (!value.costData)
+    issues.push({
+      code: 'missing-cost-data',
+      severity: p.missingData === 'block' ? 'blocker' : 'warning',
+      message: 'Cost data is missing',
+    });
+  return issues;
+}

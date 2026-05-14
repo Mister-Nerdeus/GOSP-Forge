@@ -1,2 +1,12 @@
-import { z } from 'zod'; import { IdSchema, VersionSchema } from '../shared/primitives.js'; import { CostEstimateSchema } from './costEstimate.js'; import { QuantityTakeoffSchema } from './quantityTakeoff.js';
-export const PricePackSchema=z.object({kind:z.literal('PricePack'),id:IdSchema,version:VersionSchema,region:z.string().min(1),quantityTakeoffs:z.array(QuantityTakeoffSchema).default([]),estimates:z.array(CostEstimateSchema).min(1)});
+import { z } from 'zod';
+import { IdSchema, VersionSchema } from '../shared/primitives.js';
+import { CostEstimateSchema } from './costEstimate.js';
+import { QuantityTakeoffSchema } from './quantityTakeoff.js';
+export const PricePackSchema = z.object({
+  kind: z.literal('PricePack'),
+  id: IdSchema,
+  version: VersionSchema,
+  region: z.string().min(1),
+  quantityTakeoffs: z.array(QuantityTakeoffSchema).default([]),
+  estimates: z.array(CostEstimateSchema).min(1),
+});

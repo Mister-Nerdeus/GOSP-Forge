@@ -5,7 +5,9 @@ import { resolveExampleRefs, resolveProjectRefs } from '../refResolver.js';
 export function validateCommand(file: string) {
   const parsed = ProjectManifestV2Schema.safeParse(readJsonFile(file));
   const examples = resolveExampleRefs();
-  const projectRefs = parsed.success ? resolveProjectRefs(parsed.data) : { resolved: [], errors: [], warnings: [] };
+  const projectRefs = parsed.success
+    ? resolveProjectRefs(parsed.data)
+    : { resolved: [], errors: [], warnings: [] };
   const duplicateErrors = examples.duplicates.map((id) => ({
     code: 'duplicate-id',
     message: `Duplicate example id "${id}".`,

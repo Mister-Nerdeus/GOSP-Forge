@@ -1,2 +1,15 @@
-import { z } from 'zod'; import { IdSchema, ConfidenceSchema } from '../shared/primitives.js'; import { CostLineSchema } from './costLine.js'; import { LifecycleCostSchema } from './lifecycleCost.js';
-export const CostEstimateSchema=z.object({id:IdSchema,projectId:IdSchema,lines:z.array(CostLineSchema).min(1),lifecycle:LifecycleCostSchema,contingency:z.number().nonnegative(),total:z.number().nonnegative(),confidence:ConfidenceSchema,assumptions:z.array(z.string()).min(1),sourceRefs:z.array(IdSchema).default([])});
+import { z } from 'zod';
+import { IdSchema, ConfidenceSchema } from '../shared/primitives.js';
+import { CostLineSchema } from './costLine.js';
+import { LifecycleCostSchema } from './lifecycleCost.js';
+export const CostEstimateSchema = z.object({
+  id: IdSchema,
+  projectId: IdSchema,
+  lines: z.array(CostLineSchema).min(1),
+  lifecycle: LifecycleCostSchema,
+  contingency: z.number().nonnegative(),
+  total: z.number().nonnegative(),
+  confidence: ConfidenceSchema,
+  assumptions: z.array(z.string()).min(1),
+  sourceRefs: z.array(IdSchema).default([]),
+});
