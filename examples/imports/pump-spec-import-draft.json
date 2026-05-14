@@ -1,0 +1,30 @@
+{
+  "kind": "SpecImportDraft",
+  "id": "pump-spec-import-draft",
+  "productName": "Classroom Diaphragm Pump",
+  "extractionMethod": "ai-assisted",
+  "humanReviewRequired": true,
+  "manufacturerVerified": false,
+  "extractedFields": [
+    {
+      "field": "flow-rate",
+      "value": 2,
+      "sourceRef": "datasheet-page-1",
+      "confidence": {
+        "level": "medium",
+        "rationale": "AI-assisted extraction from a cited draft source; not manufacturer verified."
+      },
+      "unitConversion": "2 L/min retained as source unit.",
+      "assumed": false
+    }
+  ],
+  "missingFields": [
+    "current-draw",
+    "replacement-interval"
+  ],
+  "assumedValues": [
+    "No lifetime or warranty claim imported."
+  ],
+  "contradictions": [],
+  "reviewStatus": "draft"
+}

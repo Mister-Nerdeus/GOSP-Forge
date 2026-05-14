@@ -1,0 +1,29 @@
+{
+  "kind": "SpecImportDraft",
+  "id": "pump-spec-import-with-contradiction",
+  "productName": "Classroom Diaphragm Pump",
+  "extractionMethod": "ai-assisted",
+  "humanReviewRequired": true,
+  "manufacturerVerified": false,
+  "extractedFields": [
+    {
+      "field": "flow-rate",
+      "value": 2,
+      "sourceRef": "datasheet-page-1",
+      "confidence": {
+        "level": "low",
+        "rationale": "Two source snippets disagree; human review required before use."
+      },
+      "unitConversion": "One source used L/min; another used gal/hour.",
+      "assumed": false
+    }
+  ],
+  "missingFields": [
+    "tested-head-height"
+  ],
+  "assumedValues": [],
+  "contradictions": [
+    "Source A states 2 L/min while Source B implies approximately 1.5 L/min after conversion."
+  ],
+  "reviewStatus": "needs-review"
+}
