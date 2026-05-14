@@ -7,6 +7,7 @@ import {
   LimitationSchema,
 } from '../shared/primitives.js';
 import { FidelityLevelSchema } from './fidelityLevel.js';
+import { ImpactReportSchema } from './impactReport.js';
 export const SimulationRunEnvelopeSchema = z.object({
   kind: z.literal('SimulationRunEnvelope'),
   runId: IdSchema,
@@ -24,4 +25,5 @@ export const SimulationRunEnvelopeSchema = z.object({
   confidence: ConfidenceSchema,
   warnings: z.array(WarningSchema).default([]),
   limitations: z.array(LimitationSchema).min(1),
+  impacts: ImpactReportSchema.optional(),
 });

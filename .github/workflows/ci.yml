@@ -25,3 +25,4 @@ jobs:
       - run: pnpm simulate:clean-water
       - run: pnpm estimate:clean-water
       - run: pnpm audit
+      - run: pnpm run audit

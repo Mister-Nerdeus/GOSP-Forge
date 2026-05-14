@@ -52,6 +52,7 @@ export function createSimulationRunEnvelope(input: {
         description: 'This run does not certify potable water or professional use.',
       },
     ],
+    impacts,
   };
-  return { ...SimulationRunEnvelopeSchema.parse(envelope), impacts };
+  return SimulationRunEnvelopeSchema.parse(envelope);
 }

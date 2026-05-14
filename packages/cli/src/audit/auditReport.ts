@@ -4,12 +4,19 @@ import { resolveRepoPath } from '../exampleRegistry.js';
 import type { FoundationRequiredFile } from './foundationRequiredFiles.js';
 
 type AuditFileInput = string | FoundationRequiredFile;
+type AuditReportOptions = {
+  writeArtifacts?: boolean;
+};
 
 function normalizeFile(input: AuditFileInput): FoundationRequiredFile {
   return typeof input === 'string' ? { file: input, required: true } : input;
 }
 
-export function writeAuditReport(name: string, files: AuditFileInput[]) {
+export function writeAuditReport(
+  name: string,
+  files: AuditFileInput[],
+  options: AuditReportOptions = {},
+) {
   const checks = files.map((input) => {
     const item = normalizeFile(input);
     const exists = fs.existsSync(resolveRepoPath(item.file));
@@ -36,21 +43,23 @@ export function writeAuditReport(name: string, files: AuditFileInput[]) {
     checks,
     generatedAt: new Date().toISOString(),
   };
-  const dir = resolveRepoPath(path.join('artifacts', 'batches', name));
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'audit.json'), JSON.stringify(report, null, 2));
-  fs.writeFileSync(
-    path.join(dir, 'audit.md'),
-    [
-      '# ' + name + ' Audit',
-      '',
-      'Decision: ' + report.decision,
-      '',
-      `Pass: ${counts.pass}`,
-      `Warn: ${counts.warn}`,
-      `Fail: ${counts.fail}`,
-      '',
-    ].join('\n'),
-  );
+  if (options.writeArtifacts) {
+    const dir = resolveRepoPath(path.join('artifacts', 'batches', name));
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'audit.json'), JSON.stringify(report, null, 2));
+    fs.writeFileSync(
+      path.join(dir, 'audit.md'),
+      [
+        '# ' + name + ' Audit',
+        '',
+        'Decision: ' + report.decision,
+        '',
+        `Pass: ${counts.pass}`,
+        `Warn: ${counts.warn}`,
+        `Fail: ${counts.fail}`,
+        '',
+      ].join('\n'),
+    );
+  }
   return report;
 }

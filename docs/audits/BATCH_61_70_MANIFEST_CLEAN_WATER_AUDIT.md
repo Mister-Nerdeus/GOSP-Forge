@@ -53,7 +53,7 @@ Review notes:
 - Estimation remains hardcoded until issue #71.
 - API `/validate` remains placeholder until issue #81.
 - Education and safety guide refs remain empty until later issues.
-- Impact output is attached outside the strict simulation envelope schema and should be formalized in a future contract if it becomes a stable API surface.
+- Impact output is now represented by the validated `ImpactReportSchema` inside `SimulationRunEnvelopeSchema`.
 
 ## Non-Claims
 

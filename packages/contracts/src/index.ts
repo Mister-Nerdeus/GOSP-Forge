@@ -29,6 +29,7 @@ export * from './products/productProvenance.js';
 export * from './products/productSpecMeaning.js';
 export * from './products/sponsorDisclosure.js';
 export * from './simulation/simulationRunEnvelope.js';
+export * from './simulation/impactReport.js';
 export * from './simulation/simulationConfidence.js';
 export * from './simulation/fidelityLevel.js';
 export * from './simulation/assumption.js';

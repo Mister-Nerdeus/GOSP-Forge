@@ -8,5 +8,7 @@ export function auditCommand(name: string) {
           'docs/audits/CLEAN_WATER_VERTICAL_SLICE_AUDIT.md',
         ]
       : FoundationRequiredFiles;
-  return writeAuditReport(name, files);
+  return writeAuditReport(name, files, {
+    writeArtifacts: process.env.GOSP_WRITE_AUDIT_ARTIFACTS === '1',
+  });
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   CostEstimateSchema,
+  ImpactReportSchema,
   ResourceFlowGraphSchema,
   FabricationProfileSchema,
   ModulePackageSchema,
@@ -179,9 +180,30 @@ describe('foundation contracts', () => {
       units: { flow: 'L/min' },
       confidence,
       limitations: [{ id: 'l', description: 'No potable water claim.' }],
+      impacts: {
+        kind: 'CleanWaterImpactReport',
+        direct: [
+          {
+            id: 'direct-pump-flow',
+            metric: 'cleanWaterLiters',
+            value: 8,
+            unit: 'L',
+            interpretation: 'Classroom comparison only.',
+          },
+        ],
+        downstream: [
+          {
+            id: 'downstream-power-runtime',
+            affectedArea: 'power-runtime',
+            interpretation: 'Educational downstream effect.',
+          },
+        ],
+        limitations: ['No potable-water certification or professional engineering claim.'],
+      },
     };
 
     expect(SimulationRunEnvelopeSchema.safeParse(envelope).success).toBe(true);
+    expect(ImpactReportSchema.safeParse(envelope.impacts).success).toBe(true);
     expect(SimulationRunEnvelopeSchema.safeParse({ ...envelope, limitations: [] }).success).toBe(
       false,
     );

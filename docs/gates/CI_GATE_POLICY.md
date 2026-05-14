@@ -7,7 +7,10 @@ CI complements local evidence and runs the repository truth gates that do not wr
 - Runtime policy verification: `node scripts/controls/verify-runtime-version.mjs`
 - Frozen install: `pnpm install --frozen-lockfile`
 - Static and package gates: `pnpm lint`, `pnpm -r build`, `pnpm -r typecheck`, `pnpm -r test`
-- Foundation proof commands: `pnpm validate:examples`, `pnpm simulate:clean-water`, `pnpm estimate:clean-water`, `pnpm audit`
+- Dependency audit: `pnpm audit`
+- Foundation proof commands: `pnpm validate:examples`, `pnpm simulate:clean-water`, `pnpm estimate:clean-water`, `pnpm run audit`
+
+`pnpm audit` is pnpm's dependency-vulnerability audit. The repository foundation audit is a package script and must be invoked as `pnpm run audit` or via `pnpm --filter @gosp/cli start audit foundation`.
 
 ## Local-Only Evidence
 
