@@ -36,6 +36,6 @@ export const FoundationRequiredFiles: FoundationRequiredFile[] = [
   {
     file: 'apps/web/package.json',
     required: false,
-    note: 'Builder UI package is intentionally absent in the current foundation slice.',
+    note: 'Builder UI is a read-only foundation shell only; no CAD editor, persistence, potable-water, professional, or production-manufacturing claim.',
   },
 ];
