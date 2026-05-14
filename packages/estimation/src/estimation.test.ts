@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { buildBom, buildBomFromProject, estimateTotals, lifecycleCost } from './index.js';
+import {
+  buildBom,
+  buildBomFromProject,
+  estimateFromProject,
+  estimateTotals,
+  lifecycleCost,
+} from './index.js';
 describe('estimation foundation', () => {
   it('rolls duplicate BOM lines deterministically and warns on unknown quantities', () => {
     const r = buildBom([
@@ -61,5 +67,54 @@ describe('estimation foundation', () => {
       'Missing quantity for product pump-product; defaulted to 1 each.',
       'Missing quantity for fabricated module housing; defaulted to 1 each.',
     ]);
+  });
+
+  it('creates a conceptual cost estimate from BOM lines and price entries', () => {
+    const result = estimateFromProject({
+      projectId: 'project',
+      refs: [
+        {
+          id: 'classroom-diaphragm-pump',
+          kind: 'product',
+          value: {
+            kind: 'ProductBinding',
+            id: 'classroom-diaphragm-pump',
+            name: 'Classroom Diaphragm Pump',
+            moduleIds: ['pump'],
+          },
+        },
+      ],
+    });
+
+    expect(result.estimate.total).toBe(19.8);
+    expect(result.estimate.lines[0]).toMatchObject({
+      id: 'classroom-diaphragm-pump',
+      kind: 'product',
+      unitCost: 18,
+      currency: 'USD',
+    });
+    expect(result.estimate.assumptions.join(' ').toLowerCase()).toContain('not a quote');
+  });
+
+  it('lowers confidence when a BOM line has no price entry', () => {
+    const result = estimateFromProject({
+      projectId: 'project',
+      refs: [
+        {
+          id: 'unknown-product',
+          kind: 'product',
+          value: {
+            kind: 'ProductBinding',
+            id: 'unknown-product',
+            name: 'Unknown Product',
+            moduleIds: ['unknown'],
+          },
+        },
+      ],
+    });
+
+    expect(result.estimate.total).toBe(0);
+    expect(result.estimate.confidence.level).toBe('low');
+    expect(result.warnings).toContain('Missing unit cost for unknown-product; defaulted to 0 USD.');
   });
 });

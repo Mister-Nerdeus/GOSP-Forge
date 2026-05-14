@@ -1,5 +1,5 @@
 import { ProjectManifestV2Schema } from '@gosp/contracts';
-import { buildBomFromProject, estimateTotals, lifecycleCost } from '@gosp/estimation';
+import { estimateFromProject } from '@gosp/estimation';
 import { readJsonFile } from '../exampleRegistry.js';
 import { resolveProjectRefs } from '../refResolver.js';
 
@@ -10,22 +10,16 @@ export function estimateCommand(file: string) {
     return { ok: false, errors: resolvedRefs.errors, warnings: resolvedRefs.warnings };
   }
 
-  const bom = buildBomFromProject({ refs: resolvedRefs.documents });
-  const totals = estimateTotals(
-    bom.lines.map((line) => ({ id: line.id, quantity: line.quantity, unitCost: 0 })),
-  );
+  const result = estimateFromProject({ projectId: project.id, refs: resolvedRefs.documents });
   return {
     ok: true,
-    bom,
+    bom: result.bom,
     refs: {
       warnings: resolvedRefs.warnings,
     },
-    totals,
-    lifecycle: lifecycleCost({
-      horizonYears: 3,
-      annualMaintenance: 12,
-      replacementCost: 8,
-      replacementIntervalYears: 1,
-    }),
+    totals: result.totals,
+    lifecycle: result.lifecycle,
+    estimate: result.estimate,
+    warnings: result.warnings,
   };
 }

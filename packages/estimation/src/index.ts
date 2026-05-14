@@ -1,4 +1,5 @@
 export * from './estimateTotals.js';
+export * from './estimateFromProject.js';
 export * from './validateEstimate.js';
 export * from './confidencePolicy.js';
 export * from './bom/buildBom.js';
@@ -8,3 +9,4 @@ export * from './bom/bomTypes.js';
 export * from './lifecycle/lifecycleCost.js';
 export * from './lifecycle/replacementSchedule.js';
 export * from './lifecycle/maintenanceEstimate.js';
+export * from './price/defaultClassroomPricePack.js';
