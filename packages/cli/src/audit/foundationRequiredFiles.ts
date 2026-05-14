@@ -30,8 +30,7 @@ export const FoundationRequiredFiles: FoundationRequiredFile[] = [
   {
     file: 'packages/api/src/server.ts',
     required: true,
-    placeholder: true,
-    note: 'API /validate is currently a foundation placeholder and must not be treated as production validation.',
+    note: 'API validation is foundation-local behavior only and must not be treated as production hosting, identity, or storage.',
   },
   {
     file: 'apps/web/package.json',
