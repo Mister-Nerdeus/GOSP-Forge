@@ -1,30 +1,25 @@
-import { buildBom, estimateTotals, lifecycleCost } from '@gosp/estimation';
-export function estimateCommand(_file: string) {
-  const bom = buildBom([
-    { id: 'pump', kind: 'product', description: 'Classroom pump', quantity: 1, unit: 'each' },
-    {
-      id: 'filter-media',
-      kind: 'material',
-      description: 'Filter media',
-      quantity: 1,
-      unit: 'cartridge',
-    },
-    {
-      id: 'housing',
-      kind: 'custom-part',
-      description: 'FDM filter housing',
-      quantity: 1,
-      unit: 'each',
-    },
-  ]);
-  const totals = estimateTotals([
-    { id: 'pump', quantity: 1, unitCost: 18 },
-    { id: 'filter-media', quantity: 1, unitCost: 8 },
-    { id: 'housing', quantity: 1, unitCost: 6 },
-  ]);
+import { ProjectManifestV2Schema } from '@gosp/contracts';
+import { buildBomFromProject, estimateTotals, lifecycleCost } from '@gosp/estimation';
+import { readJsonFile } from '../exampleRegistry.js';
+import { resolveProjectRefs } from '../refResolver.js';
+
+export function estimateCommand(file: string) {
+  const project = ProjectManifestV2Schema.parse(readJsonFile(file));
+  const resolvedRefs = resolveProjectRefs(project);
+  if (resolvedRefs.errors.length > 0) {
+    return { ok: false, errors: resolvedRefs.errors, warnings: resolvedRefs.warnings };
+  }
+
+  const bom = buildBomFromProject({ refs: resolvedRefs.documents });
+  const totals = estimateTotals(
+    bom.lines.map((line) => ({ id: line.id, quantity: line.quantity, unitCost: 0 })),
+  );
   return {
     ok: true,
     bom,
+    refs: {
+      warnings: resolvedRefs.warnings,
+    },
     totals,
     lifecycle: lifecycleCost({
       horizonYears: 3,

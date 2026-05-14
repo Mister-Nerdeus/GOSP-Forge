@@ -52,6 +52,7 @@ export function resolveProjectRefs(project: Parameters<typeof collectProjectRefs
   const errors: RefDiagnostic[] = [];
   const warnings: RefDiagnostic[] = [];
   const resolved: Array<{ id: string; kind: string; path: string }> = [];
+  const documents: Array<{ id: string; kind: string; path: string; value: unknown }> = [];
 
   for (const ref of collectProjectRefs(project)) {
     if (!ref.path) {
@@ -81,7 +82,11 @@ export function resolveProjectRefs(project: Parameters<typeof collectProjectRefs
 
       const kindError = validateRefKind(ref, value);
       if (kindError) errors.push(kindError);
-      else resolved.push({ id: ref.id, kind: ref.kind, path: resolveRepoPath(ref.path) });
+      else {
+        const path = resolveRepoPath(ref.path);
+        resolved.push({ id: ref.id, kind: ref.kind, path });
+        documents.push({ id: ref.id, kind: ref.kind, path, value });
+      }
     } catch (error) {
       const diagnostic = {
         code: ref.required === false ? 'optional-ref-missing' : 'required-ref-missing',
@@ -94,5 +99,5 @@ export function resolveProjectRefs(project: Parameters<typeof collectProjectRefs
     }
   }
 
-  return { resolved, errors, warnings };
+  return { resolved, documents, errors, warnings };
 }

@@ -31,7 +31,11 @@ export function validateCommand(file: string) {
     schema: parsed.success ? 'ProjectManifestV2' : 'invalid',
     refs: {
       examples,
-      project: projectRefs,
+      project: {
+        resolved: projectRefs.resolved,
+        errors: projectRefs.errors,
+        warnings: projectRefs.warnings,
+      },
     },
     errors,
     warnings: projectRefs.warnings,

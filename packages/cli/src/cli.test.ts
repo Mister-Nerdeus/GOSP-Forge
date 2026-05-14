@@ -7,6 +7,6 @@ describe('cli commands', () => {
     const manifest = 'examples/projects/automated-water-filter.project-v2.json';
     expect(validateCommand(manifest).ok).toBe(true);
     expect(simulateCommand(manifest).ok).toBe(true);
-    expect(estimateCommand('x').ok).toBe(true);
+    expect(estimateCommand(manifest).ok).toBe(true);
   });
 });

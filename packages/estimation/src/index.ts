@@ -2,6 +2,7 @@ export * from './estimateTotals.js';
 export * from './validateEstimate.js';
 export * from './confidencePolicy.js';
 export * from './bom/buildBom.js';
+export * from './bom/buildBomFromProject.js';
 export * from './bom/quantityTakeoff.js';
 export * from './bom/bomTypes.js';
 export * from './lifecycle/lifecycleCost.js';
