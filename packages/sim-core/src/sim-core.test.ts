@@ -43,12 +43,18 @@ describe('sim-core foundation', () => {
       [
         { id: 'flow', value: 2, meaning: { targetField: 'pumpFlowLpm' } },
         { id: 'sponsor', value: true, meaning: { targetField: 'sponsoredBoost' } },
+        {
+          id: 'replacement',
+          value: 1,
+          meaning: { affects: ['cost'], targetField: 'replacementIntervalYears' },
+        },
       ],
       {},
     );
 
     expect(result.target.pumpFlowLpm).toBe(2);
     expect(result.target.sponsoredBoost).toBeUndefined();
+    expect(result.target.replacementIntervalYears).toBeUndefined();
     expect(result.warnings).toEqual([
       expect.objectContaining({ code: 'unknown-product-spec-target' }),
     ]);

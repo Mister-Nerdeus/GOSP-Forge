@@ -16,6 +16,7 @@ type ProductBindingLike = {
     value: string | number | boolean;
     unit?: string;
     meaning?: {
+      affects?: string[];
       targetField?: string;
     };
   }>;

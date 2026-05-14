@@ -21,6 +21,20 @@
         "targetField": "filterCapacityL"
       },
       "simulationUse": "Foundation screening model input."
+    },
+    {
+      "id": "replacement-interval",
+      "name": "Replacement interval",
+      "value": 1,
+      "unit": "year",
+      "meaning": {
+        "affects": [
+          "cost"
+        ],
+        "explanation": "Conceptual classroom replacement interval for lifecycle estimates.",
+        "targetField": "replacementIntervalYears"
+      },
+      "simulationUse": "Lifecycle cost assumption; not a product reliability claim."
     }
   ],
   "provenance": {

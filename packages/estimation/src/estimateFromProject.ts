@@ -3,7 +3,7 @@ import { buildBomFromProject } from './bom/buildBomFromProject.js';
 import type { BomBuildResult } from './bom/bomTypes.js';
 import { combineConfidence } from './confidencePolicy.js';
 import { estimateTotals } from './estimateTotals.js';
-import { lifecycleCost } from './lifecycle/lifecycleCost.js';
+import { lifecycleFromProducts } from './lifecycle/lifecycleFromProducts.js';
 import { defaultClassroomPricePack } from './price/defaultClassroomPricePack.js';
 
 type RefDocument = Parameters<typeof buildBomFromProject>[0]['refs'][number];
@@ -25,6 +25,19 @@ function costLineKindForBom(kind: BomBuildResult['lines'][number]['kind']): Cost
   return 'bom';
 }
 
+function isProductBinding(value: unknown): value is {
+  id: string;
+  kind: 'ProductBinding';
+  specs: Array<{
+    id: string;
+    value: string | number | boolean;
+    unit?: string;
+    meaning?: { targetField?: string };
+  }>;
+} {
+  return typeof value === 'object' && value !== null && 'kind' in value && value.kind === 'ProductBinding';
+}
+
 export function estimateFromProject(input: {
   projectId: string;
   refs: RefDocument[];
@@ -34,6 +47,7 @@ export function estimateFromProject(input: {
   const pricePack = input.pricePack ?? defaultClassroomPricePack;
   const prices = new Map(pricePack.entries.map((entry) => [entry.id, entry]));
   const warnings = [...bom.warnings];
+  const products = input.refs.map((ref) => ref.value).filter(isProductBinding);
 
   const lines = bom.lines.map((line) => {
     const price = prices.get(line.id);
@@ -60,31 +74,17 @@ export function estimateFromProject(input: {
   });
 
   const totals = estimateTotals(lines);
-  const lifecycle = lifecycleCost({
+  const lifecycleResult = lifecycleFromProducts({
+    products,
+    priceEntries: pricePack.entries,
     horizonYears: 3,
-    annualMaintenance: 12,
-    replacementCost: 8,
-    replacementIntervalYears: 1,
   });
+  warnings.push(...lifecycleResult.warnings);
   const estimate = CostEstimateSchema.parse({
     id: `${input.projectId}-classroom-cost-estimate`,
     projectId: input.projectId,
     lines,
-    lifecycle: {
-      horizonYears: lifecycle.horizonYears,
-      operatingCost: 0,
-      maintenanceCost: lifecycle.maintenanceCost,
-      replacementReserve: lifecycle.replacementReserve,
-      total: lifecycle.total,
-      confidence: {
-        level: 'low',
-        rationale: 'Lifecycle assumptions are foundation classroom placeholders.',
-      },
-      assumptions: [
-        'Three-year classroom horizon.',
-        'Maintenance and replacement costs are conceptual placeholders.',
-      ],
-    },
+    lifecycle: lifecycleResult.lifecycle,
     contingency: totals.contingency,
     total: totals.total,
     confidence: {

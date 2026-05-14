@@ -7,6 +7,7 @@ export * from './bom/buildBomFromProject.js';
 export * from './bom/quantityTakeoff.js';
 export * from './bom/bomTypes.js';
 export * from './lifecycle/lifecycleCost.js';
+export * from './lifecycle/lifecycleFromProducts.js';
 export * from './lifecycle/replacementSchedule.js';
 export * from './lifecycle/maintenanceEstimate.js';
 export * from './price/defaultClassroomPricePack.js';

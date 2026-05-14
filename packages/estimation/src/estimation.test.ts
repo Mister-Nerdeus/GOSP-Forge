@@ -4,6 +4,7 @@ import {
   buildBomFromProject,
   estimateFromProject,
   estimateTotals,
+  lifecycleFromProducts,
   lifecycleCost,
 } from './index.js';
 describe('estimation foundation', () => {
@@ -145,5 +146,41 @@ describe('estimation foundation', () => {
     expect(result.estimate.total).toBe(0);
     expect(result.estimate.confidence.level).toBe('low');
     expect(result.warnings).toContain('Missing unit cost for unknown-product; defaulted to 0 USD.');
+  });
+
+  it('builds lifecycle estimates from product replacement specs', () => {
+    const result = lifecycleFromProducts({
+      horizonYears: 3,
+      priceEntries: [{ id: 'filter-media-cartridge', unitCost: 8 }],
+      products: [
+        {
+          id: 'filter-media-cartridge',
+          specs: [
+            {
+              id: 'replacement-interval',
+              value: 1,
+              meaning: { targetField: 'replacementIntervalYears' },
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(result.lifecycle.horizonYears).toBe(3);
+    expect(result.lifecycle.replacementReserve).toBe(24);
+    expect(result.lifecycle.assumptions.join(' ')).toContain('3-year lifecycle horizon');
+  });
+
+  it('warns when product replacement interval is missing', () => {
+    const result = lifecycleFromProducts({
+      horizonYears: 3,
+      priceEntries: [{ id: 'sensor', unitCost: 12 }],
+      products: [{ id: 'sensor', specs: [] }],
+    });
+
+    expect(result.lifecycle.confidence.level).toBe('low');
+    expect(result.warnings).toEqual([
+      'sensor: Missing replacement interval lowers confidence.',
+    ]);
   });
 });

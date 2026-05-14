@@ -9,12 +9,17 @@ type ProductSpecEffectWarning = {
 const allowedTargets = new Set<string>(ProductSpecTargetFields);
 
 export function applyProductSpecEffects(
-  specs: Array<{ id: string; value: unknown; meaning?: { targetField?: string } }>,
+  specs: Array<{
+    id: string;
+    value: unknown;
+    meaning?: { affects?: string[]; targetField?: string };
+  }>,
   target: Record<string, unknown>,
 ): { target: Record<string, unknown>; warnings: ProductSpecEffectWarning[] } {
   const next = { ...target };
   const warnings: ProductSpecEffectWarning[] = [];
   for (const spec of specs) {
+    if (spec.meaning?.affects && !spec.meaning.affects.includes('simulation')) continue;
     if (!spec.meaning?.targetField) continue;
     if (!allowedTargets.has(spec.meaning.targetField)) {
       warnings.push({
