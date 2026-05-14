@@ -64,4 +64,46 @@ describe('resolveProjectRefs', () => {
       }),
     ]);
   });
+
+  it('validates import refs with import schemas', () => {
+    const result = resolveProjectRefs({
+      refs: [
+        {
+          id: 'open-know-how-reference-import',
+          kind: 'import',
+          path: 'examples/imports/open-know-how.example.json',
+          required: true,
+        },
+      ],
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.resolved).toEqual([
+      expect.objectContaining({
+        id: 'open-know-how-reference-import',
+        kind: 'import',
+      }),
+    ]);
+  });
+
+  it('rejects invalid public import records', () => {
+    const result = resolveProjectRefs({
+      refs: [
+        {
+          id: 'unlicensed-public-import-invalid',
+          kind: 'import',
+          path: 'examples/imports/unlicensed.invalid.json',
+          required: true,
+        },
+      ],
+    });
+
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'wrong-ref-kind',
+        refId: 'unlicensed-public-import-invalid',
+        refKind: 'import',
+      }),
+    ]);
+  });
 });

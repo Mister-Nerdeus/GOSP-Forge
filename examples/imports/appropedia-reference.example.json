@@ -1,0 +1,14 @@
+{
+  "kind": "ExternalSourceRecord",
+  "id": "appropedia-reference-only",
+  "name": "Appropedia reference-only citation",
+  "url": "https://www.appropedia.org/",
+  "license": {
+    "licenseId": "CC-BY-SA-4.0",
+    "attributionRequired": true,
+    "shareAlike": true,
+    "dataBoundary": false,
+    "publicImportAllowed": false
+  },
+  "attributionText": "Reference-only citation for educational comparison; no bulk import or republication permission is implied."
+}

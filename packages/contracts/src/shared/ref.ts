@@ -12,6 +12,7 @@ export const RefSchema = z.object({
     'scorecard',
     'baseline',
     'education',
+    'import',
   ]),
   path: z.string().min(1).optional(),
   required: z.boolean().default(true),

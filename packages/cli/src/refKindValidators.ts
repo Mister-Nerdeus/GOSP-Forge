@@ -2,6 +2,8 @@ import {
   BaselineSolutionSchema,
   ControlFlowGraphSchema,
   CostEstimateSchema,
+  ExternalSourceRecordSchema,
+  ImportRecordSchema,
   ModulePackageSchema,
   ModuleScorecardSchema,
   PowerFlowGraphSchema,
@@ -40,6 +42,7 @@ const RefKindSchemas: Record<string, z.ZodTypeAny[]> = {
   simulation: [SimulationRunEnvelopeSchema],
   scorecard: [ModuleScorecardSchema, SystemScorecardSchema],
   baseline: [BaselineSolutionSchema],
+  import: [ExternalSourceRecordSchema, ImportRecordSchema],
 };
 
 function educationGuideKind(ref: ProjectRef) {

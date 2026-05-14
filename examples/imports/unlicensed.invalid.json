@@ -1,0 +1,22 @@
+{
+  "kind": "ImportRecord",
+  "id": "unlicensed-public-import-invalid",
+  "source": {
+    "kind": "ExternalSourceRecord",
+    "id": "unlicensed-source-invalid",
+    "name": "Unlicensed public import example",
+    "url": "https://example.invalid/unlicensed-source",
+    "license": {
+      "licenseId": "Unlicensed",
+      "attributionRequired": false,
+      "shareAlike": false,
+      "dataBoundary": false,
+      "publicImportAllowed": false
+    },
+    "attributionText": "Invalid example: unlicensed content cannot become a public module import."
+  },
+  "targetModuleId": "pump",
+  "obligations": [
+    "Blocked: do not import as a public module."
+  ]
+}

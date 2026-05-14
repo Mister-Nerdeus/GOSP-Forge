@@ -1,0 +1,24 @@
+{
+  "kind": "ImportRecord",
+  "id": "open-know-how-reference-import",
+  "source": {
+    "kind": "ExternalSourceRecord",
+    "id": "open-know-how-reference",
+    "name": "Open Know-How reference pattern",
+    "url": "https://www.internetofproduction.org/openknowhow",
+    "license": {
+      "licenseId": "CC-BY-SA-4.0",
+      "attributionRequired": true,
+      "shareAlike": true,
+      "dataBoundary": false,
+      "publicImportAllowed": true
+    },
+    "attributionText": "Reference metadata attributed to the Open Know-How pattern; example only."
+  },
+  "targetModuleId": "filter-housing",
+  "obligations": [
+    "Preserve attribution in downstream records.",
+    "Preserve share-alike obligations for public derivatives.",
+    "This example does not imply bulk-import permission."
+  ]
+}

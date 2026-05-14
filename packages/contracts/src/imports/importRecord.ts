@@ -3,6 +3,7 @@ import { IdSchema } from '../shared/primitives.js';
 import { ExternalSourceRecordSchema } from './externalSourceRecord.js';
 export const ImportRecordSchema = z
   .object({
+    kind: z.literal('ImportRecord').default('ImportRecord'),
     id: IdSchema,
     source: ExternalSourceRecordSchema,
     targetModuleId: IdSchema,
