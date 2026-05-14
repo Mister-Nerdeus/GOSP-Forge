@@ -1,5 +1,6 @@
 export * from './estimateTotals.js';
 export * from './estimateFromProject.js';
+export * from './createCostEstimateEnvelope.js';
 export * from './validateEstimate.js';
 export * from './confidencePolicy.js';
 export * from './bom/buildBom.js';

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   CostEstimateSchema,
+  CostEstimateEnvelopeSchema,
   ImpactReportSchema,
   ResourceFlowGraphSchema,
   FabricationProfileSchema,
@@ -210,8 +211,7 @@ describe('foundation contracts', () => {
   });
 
   it('validates cost estimates and rejects missing confidence', () => {
-    expect(
-      CostEstimateSchema.safeParse({
+    const estimate = {
         id: 'e',
         projectId: 'p',
         lines: [
@@ -230,6 +230,19 @@ describe('foundation contracts', () => {
         total: 1,
         confidence,
         assumptions: ['Foundation classroom example.'],
+      };
+
+    expect(CostEstimateSchema.safeParse(estimate).success).toBe(true);
+    expect(
+      CostEstimateEnvelopeSchema.safeParse({
+        kind: 'CostEstimateEnvelope',
+        estimateClass: 'educational-concept',
+        estimate,
+        confidence,
+        assumptions: estimate.assumptions,
+        sourceRefs: [],
+        warnings: [],
+        limitations: [{ id: 'not-professional-estimate', description: 'Educational only.' }],
       }).success,
     ).toBe(true);
 

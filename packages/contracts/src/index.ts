@@ -39,6 +39,7 @@ export * from './scoring/scoringProfile.js';
 export * from './scoring/scoringComponent.js';
 export * from './pricing/pricePack.js';
 export * from './pricing/costEstimate.js';
+export * from './pricing/costEstimateEnvelope.js';
 export * from './pricing/costLine.js';
 export * from './pricing/quantityTakeoff.js';
 export * from './pricing/lifecycleCost.js';

@@ -20,6 +20,7 @@ export function estimateCommand(file: string) {
     totals: result.totals,
     lifecycle: result.lifecycle,
     estimate: result.estimate,
+    envelope: result.envelope,
     warnings: result.warnings,
   };
 }

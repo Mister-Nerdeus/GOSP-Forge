@@ -6,6 +6,7 @@ import {
   estimateTotals,
   lifecycleFromProducts,
   lifecycleCost,
+  createCostEstimateEnvelope,
 } from './index.js';
 describe('estimation foundation', () => {
   it('rolls duplicate BOM lines deterministically and warns on unknown quantities', () => {
@@ -124,6 +125,10 @@ describe('estimation foundation', () => {
       currency: 'USD',
     });
     expect(result.estimate.assumptions.join(' ').toLowerCase()).toContain('not a quote');
+    expect(result.envelope.kind).toBe('CostEstimateEnvelope');
+    expect(result.envelope.limitations.map((item) => item.id)).toContain(
+      'not-professional-estimate',
+    );
   });
 
   it('lowers confidence when a BOM line has no price entry', () => {
@@ -146,6 +151,35 @@ describe('estimation foundation', () => {
     expect(result.estimate.total).toBe(0);
     expect(result.estimate.confidence.level).toBe('low');
     expect(result.warnings).toContain('Missing unit cost for unknown-product; defaulted to 0 USD.');
+  });
+
+  it('wraps cost estimates with warnings and limitations', () => {
+    const estimate = estimateFromProject({
+      projectId: 'project',
+      refs: [
+        {
+          id: 'unknown-product',
+          kind: 'product',
+          value: {
+            kind: 'ProductBinding',
+            id: 'unknown-product',
+            name: 'Unknown Product',
+            moduleIds: ['unknown'],
+          },
+        },
+      ],
+    }).estimate;
+
+    const envelope = createCostEstimateEnvelope({
+      estimate,
+      warnings: ['Missing unit cost for unknown-product; defaulted to 0 USD.'],
+    });
+
+    expect(envelope.warnings[0]).toMatchObject({
+      severity: 'warning',
+      message: 'Missing unit cost for unknown-product; defaulted to 0 USD.',
+    });
+    expect(envelope.limitations.length).toBeGreaterThan(0);
   });
 
   it('builds lifecycle estimates from product replacement specs', () => {

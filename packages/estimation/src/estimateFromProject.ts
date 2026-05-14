@@ -2,6 +2,7 @@ import { CostEstimateSchema } from '@gosp/contracts';
 import { buildBomFromProject } from './bom/buildBomFromProject.js';
 import type { BomBuildResult } from './bom/bomTypes.js';
 import { combineConfidence } from './confidencePolicy.js';
+import { createCostEstimateEnvelope } from './createCostEstimateEnvelope.js';
 import { estimateTotals } from './estimateTotals.js';
 import { lifecycleFromProducts } from './lifecycle/lifecycleFromProducts.js';
 import { defaultClassroomPricePack } from './price/defaultClassroomPricePack.js';
@@ -101,5 +102,6 @@ export function estimateFromProject(input: {
     sourceRefs: [...new Set(lines.flatMap((line) => line.sourceRefs))],
   });
 
-  return { bom, totals, lifecycle: estimate.lifecycle, estimate, warnings };
+  const envelope = createCostEstimateEnvelope({ estimate, warnings });
+  return { bom, totals, lifecycle: estimate.lifecycle, estimate, envelope, warnings };
 }
