@@ -1,25 +1,37 @@
 {
+  "kind": "ResourceFlowGraph",
   "id": "automated-water-filter-resource-flow",
   "projectId": "automated-water-filter",
-  "kind": "resource-flow",
+  "resourceType": "water",
   "nodes": [
-    "raw-water-tank",
-    "pump",
-    "filter-housing",
-    "clean-water-tank"
+    {
+      "id": "raw-water-tank"
+    },
+    {
+      "id": "pump"
+    },
+    {
+      "id": "filter-housing"
+    },
+    {
+      "id": "clean-water-tank"
+    }
   ],
   "edges": [
-    [
-      "raw-water-tank",
-      "pump"
-    ],
-    [
-      "pump",
-      "filter-housing"
-    ],
-    [
-      "filter-housing",
-      "clean-water-tank"
-    ]
+    {
+      "id": "raw-water-to-pump",
+      "from": "raw-water-tank",
+      "to": "pump"
+    },
+    {
+      "id": "pump-to-filter-housing",
+      "from": "pump",
+      "to": "filter-housing"
+    },
+    {
+      "id": "filter-housing-to-clean-water",
+      "from": "filter-housing",
+      "to": "clean-water-tank"
+    }
   ]
 }

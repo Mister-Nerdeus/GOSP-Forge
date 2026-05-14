@@ -1,25 +1,37 @@
 {
+  "kind": "ControlFlowGraph",
   "id": "automated-water-filter-control-flow",
   "projectId": "automated-water-filter",
-  "kind": "control-flow",
+  "controlType": "sensor-feedback",
   "nodes": [
-    "raw-water-tank",
-    "pump",
-    "filter-housing",
-    "clean-water-tank"
+    {
+      "id": "water-quality-sensor"
+    },
+    {
+      "id": "controller-logic"
+    },
+    {
+      "id": "pump"
+    },
+    {
+      "id": "status-dashboard"
+    }
   ],
   "edges": [
-    [
-      "raw-water-tank",
-      "pump"
-    ],
-    [
-      "pump",
-      "filter-housing"
-    ],
-    [
-      "filter-housing",
-      "clean-water-tank"
-    ]
+    {
+      "id": "sensor-to-controller",
+      "from": "water-quality-sensor",
+      "to": "controller-logic"
+    },
+    {
+      "id": "controller-to-pump-command",
+      "from": "controller-logic",
+      "to": "pump"
+    },
+    {
+      "id": "controller-to-dashboard",
+      "from": "controller-logic",
+      "to": "status-dashboard"
+    }
   ]
 }

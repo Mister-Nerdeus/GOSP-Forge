@@ -29,6 +29,18 @@
       "kind": "graph",
       "path": "examples/graphs/automated-water-filter.resource-flow.json",
       "required": true
+    },
+    {
+      "id": "automated-water-filter-power-flow",
+      "kind": "graph",
+      "path": "examples/graphs/automated-water-filter.power-flow.json",
+      "required": true
+    },
+    {
+      "id": "automated-water-filter-control-flow",
+      "kind": "graph",
+      "path": "examples/graphs/automated-water-filter.control-flow.json",
+      "required": true
     }
   ],
   "refGroups": {
@@ -58,6 +70,18 @@
         "id": "automated-water-filter-resource-flow",
         "kind": "graph",
         "path": "examples/graphs/automated-water-filter.resource-flow.json",
+        "required": true
+      },
+      {
+        "id": "automated-water-filter-power-flow",
+        "kind": "graph",
+        "path": "examples/graphs/automated-water-filter.power-flow.json",
+        "required": true
+      },
+      {
+        "id": "automated-water-filter-control-flow",
+        "kind": "graph",
+        "path": "examples/graphs/automated-water-filter.control-flow.json",
         "required": true
       }
     ],

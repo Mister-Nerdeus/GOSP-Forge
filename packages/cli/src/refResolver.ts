@@ -1,48 +1,5 @@
-import {
-  BaselineSolutionSchema,
-  CostEstimateSchema,
-  ModulePackageSchema,
-  ModuleScorecardSchema,
-  ProblemDefinitionSchema,
-  ProductBindingSchema,
-  SimulationRunEnvelopeSchema,
-  SystemScorecardSchema,
-} from '@gosp/contracts';
-import { z } from 'zod';
 import { listExampleJson, readJsonFile, resolveRepoPath } from './exampleRegistry.js';
-
-type ProjectRef = {
-  id: string;
-  kind: string;
-  path?: string;
-  required?: boolean;
-};
-
-type RefDiagnostic = {
-  code: string;
-  message: string;
-  refId?: string;
-  refKind?: string;
-  path?: string;
-};
-
-const GraphLikeSchema = z.object({
-  id: z.string().min(1),
-  kind: z.string().includes('flow'),
-  nodes: z.array(z.unknown()).min(1),
-  edges: z.array(z.unknown()).default([]),
-});
-
-const RefKindSchemas: Record<string, z.ZodTypeAny[]> = {
-  problem: [ProblemDefinitionSchema],
-  module: [ModulePackageSchema],
-  product: [ProductBindingSchema],
-  graph: [GraphLikeSchema],
-  estimate: [CostEstimateSchema],
-  simulation: [SimulationRunEnvelopeSchema],
-  scorecard: [ModuleScorecardSchema, SystemScorecardSchema],
-  baseline: [BaselineSolutionSchema],
-};
+import { type ProjectRef, type RefDiagnostic, validateRefKind } from './refKindValidators.js';
 
 export function resolveExampleRefs() {
   const seen = new Set<string>();
@@ -59,38 +16,39 @@ export function resolveExampleRefs() {
 function collectProjectRefs(project: {
   problemRef?: ProjectRef;
   refs?: ProjectRef[];
-}): ProjectRef[] {
-  return [project.problemRef, ...(project.refs ?? [])].filter((ref): ref is ProjectRef =>
-    Boolean(ref),
-  );
-}
-
-function validateRefKind(ref: ProjectRef, value: unknown): RefDiagnostic | undefined {
-  const schemas = RefKindSchemas[ref.kind];
-  if (!schemas) {
-    return {
-      code: 'unknown-ref-kind',
-      message: `Ref kind "${ref.kind}" is not supported by validation.`,
-      refId: ref.id,
-      refKind: ref.kind,
-      path: ref.path,
-    };
-  }
-
-  if (schemas.some((schema) => schema.safeParse(value).success)) return undefined;
-
-  const actualKind =
-    typeof value === 'object' && value && 'kind' in value ? String(value.kind) : 'unknown';
-  return {
-    code: 'wrong-ref-kind',
-    message: `Ref "${ref.id}" declares kind "${ref.kind}" but referenced file has schema kind "${actualKind}".`,
-    refId: ref.id,
-    refKind: ref.kind,
-    path: ref.path,
+  refGroups?: {
+    problem?: ProjectRef;
+    modules?: ProjectRef[];
+    products?: ProjectRef[];
+    graphs?: ProjectRef[];
+    estimates?: ProjectRef[];
+    scorecards?: ProjectRef[];
+    education?: ProjectRef[];
+    safety?: ProjectRef[];
   };
+}): ProjectRef[] {
+  const refs = [
+    project.problemRef,
+    ...(project.refs ?? []),
+    project.refGroups?.problem,
+    ...(project.refGroups?.modules ?? []),
+    ...(project.refGroups?.products ?? []),
+    ...(project.refGroups?.graphs ?? []),
+    ...(project.refGroups?.estimates ?? []),
+    ...(project.refGroups?.scorecards ?? []),
+    ...(project.refGroups?.education ?? []),
+    ...(project.refGroups?.safety ?? []),
+  ].filter((ref): ref is ProjectRef => Boolean(ref));
+  const seen = new Set<string>();
+  return refs.filter((ref) => {
+    const key = [ref.id, ref.kind, ref.path ?? ''].join('\0');
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
-export function resolveProjectRefs(project: { problemRef?: ProjectRef; refs?: ProjectRef[] }) {
+export function resolveProjectRefs(project: Parameters<typeof collectProjectRefs>[0]) {
   const errors: RefDiagnostic[] = [];
   const warnings: RefDiagnostic[] = [];
   const resolved: Array<{ id: string; kind: string; path: string }> = [];
