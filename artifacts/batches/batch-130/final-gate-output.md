@@ -18,3 +18,9 @@ Last pre-commit gate run: 2026-05-15 (America/New_York).
 | node scripts/controls/verify-local-validation-current.mjs | PASS before commit; rerun after commit before push |
 
 Notes: remaining estimate zero-cost/defaulted quantity is visible for filter-housing fabrication and is bounded by education-mode warnings. Production API validation remains schema-only by default.
+
+Corrective review rerun: 2026-05-14 evening / 2026-05-15 UTC.
+
+- `pnpm --filter @gosp/api test`: PASS, 20 tests.
+- `pnpm --filter @gosp/sim-core test`: PASS, 11 tests.
+- Full rerun of lint, recursive build/typecheck/test, validate examples, simulate clean-water, estimate clean-water, audit, release-evidence, and local validation writer: PASS.

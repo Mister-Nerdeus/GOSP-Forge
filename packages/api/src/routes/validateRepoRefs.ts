@@ -1,12 +1,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {
+  BaselineSolutionSchema,
   ControlFlowGraphSchema,
+  CostEstimateSchema,
+  ExternalSourceRecordSchema,
+  ImportRecordSchema,
   ModulePackageSchema,
+  ModuleScorecardSchema,
   PowerFlowGraphSchema,
   ProblemDefinitionSchema,
   ProductBindingSchema,
   ResourceFlowGraphSchema,
+  SimulationRunEnvelopeSchema,
+  SystemScorecardSchema,
   type ValidationDiagnostic,
 } from '@gosp/contracts';
 
@@ -99,7 +106,17 @@ function validateLoadedRef(ref: ProjectRef, value: unknown): ValidationDiagnosti
           ? [ProductBindingSchema]
           : ref.kind === 'graph'
             ? [ResourceFlowGraphSchema, PowerFlowGraphSchema, ControlFlowGraphSchema]
-            : [];
+            : ref.kind === 'estimate'
+              ? [CostEstimateSchema]
+              : ref.kind === 'simulation'
+                ? [SimulationRunEnvelopeSchema]
+                : ref.kind === 'scorecard'
+                  ? [ModuleScorecardSchema, SystemScorecardSchema]
+                  : ref.kind === 'baseline'
+                    ? [BaselineSolutionSchema]
+                    : ref.kind === 'import'
+                      ? [ExternalSourceRecordSchema, ImportRecordSchema]
+                      : [];
 
   if (schemas.length === 0) {
     return [
@@ -107,7 +124,7 @@ function validateLoadedRef(ref: ProjectRef, value: unknown): ValidationDiagnosti
         code: 'unknown-ref-kind',
         message: `Ref kind "${ref.kind}" is not supported by API repo-ref validation.`,
         severity: 'blocker',
-        source: 'refs',
+        source: 'refs' as const,
         refId: ref.id,
         refKind: ref.kind,
         path: ref.path,
@@ -132,18 +149,22 @@ function validateLoadedRef(ref: ProjectRef, value: unknown): ValidationDiagnosti
 
 export function validateRepoRefs(project: ProjectWithRefs) {
   const errors: ValidationDiagnostic[] = [];
+  const warnings: ValidationDiagnostic[] = [];
   const resolved: Array<{ id: string; kind: string; path: string }> = [];
 
   for (const ref of collectRefs(project)) {
     if (!ref.path) {
-      if (ref.required === false) continue;
-      errors.push({
+      const diagnostic = {
         code: 'required-ref-missing-path',
         message: `Ref "${ref.id}" does not declare a path.`,
-        severity: 'blocker',
-        source: 'refs',
+        severity: ref.required === false ? ('warning' as const) : ('blocker' as const),
+        source: 'refs' as const,
         refId: ref.id,
         refKind: ref.kind,
+      };
+      (ref.required === false ? warnings : errors).push({
+        ...diagnostic,
+        code: ref.required === false ? 'optional-ref-missing-path' : diagnostic.code,
       });
       continue;
     }
@@ -152,13 +173,14 @@ export function validateRepoRefs(project: ProjectWithRefs) {
       const resolvedPath = resolveAllowedPath(ref.path);
       const raw = fs.readFileSync(resolvedPath, 'utf8');
       const value = ref.kind === 'education' ? raw : JSON.parse(raw);
+      const refErrors: ValidationDiagnostic[] = [];
       if (
         typeof value === 'object' &&
         value &&
         'id' in value &&
         String(value.id) !== ref.id
       ) {
-        errors.push({
+        refErrors.push({
           code: 'ref-id-mismatch',
           message: `Ref "${ref.id}" points to file with id "${String(value.id)}".`,
           severity: 'blocker',
@@ -168,22 +190,26 @@ export function validateRepoRefs(project: ProjectWithRefs) {
           path: ref.path,
         });
       }
-      errors.push(...validateLoadedRef(ref, value));
-      resolved.push({ id: ref.id, kind: ref.kind, path: resolvedPath });
+      refErrors.push(...validateLoadedRef(ref, value));
+      errors.push(...refErrors);
+      if (refErrors.length === 0) {
+        resolved.push({ id: ref.id, kind: ref.kind, path: resolvedPath });
+      }
     } catch (error) {
-      errors.push({
+      const diagnostic = {
         code: ref.required === false ? 'optional-ref-missing' : 'required-ref-missing',
         message: `Ref "${ref.id}" could not be loaded: ${
           error instanceof Error ? error.message : String(error)
         }`,
-        severity: 'blocker',
-        source: 'filesystem',
+        severity: ref.required === false ? ('warning' as const) : ('blocker' as const),
+        source: 'filesystem' as const,
         refId: ref.id,
         refKind: ref.kind,
         path: ref.path,
-      });
+      };
+      (ref.required === false ? warnings : errors).push(diagnostic);
     }
   }
 
-  return { resolved, errors, warnings: [] as ValidationDiagnostic[] };
+  return { resolved, errors, warnings };
 }

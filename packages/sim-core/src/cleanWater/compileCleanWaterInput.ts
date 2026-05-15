@@ -66,6 +66,9 @@ export function compileCleanWaterInput(
     typeof effects.target.pumpCurrentA === 'number' ? effects.target.pumpCurrentA : undefined;
   const sourceLiters = project.scenarioSettings?.cleanWater?.sourceLiters;
   const runMinutes = project.scenarioSettings?.cleanWater?.runMinutes;
+  const hasValidFilterEfficiency =
+    filterEfficiency !== undefined && filterEfficiency > 0 && filterEfficiency <= 1;
+  const hasValidPumpCurrent = pumpCurrentA !== undefined && pumpCurrentA > 0;
 
   if (pumpFlowLpm === undefined) {
     warnings.push({
@@ -85,7 +88,7 @@ export function compileCleanWaterInput(
     defaultedInputs.push('power.source.voltageV');
   }
 
-  if (filterEfficiency === undefined || filterEfficiency <= 0 || filterEfficiency > 1) {
+  if (!hasValidFilterEfficiency) {
     warnings.push({
       code: 'missing-filter-efficiency-spec',
       message: 'Missing or invalid filter efficiency spec; defaulting to 0.8.',
@@ -94,7 +97,7 @@ export function compileCleanWaterInput(
     defaultedInputs.push('water.filterEfficiency');
   }
 
-  if (pumpCurrentA === undefined || pumpCurrentA <= 0) {
+  if (!hasValidPumpCurrent) {
     warnings.push({
       code: 'missing-pump-current-spec',
       message: 'Missing or invalid pump current spec; defaulting to 1 A.',
@@ -123,10 +126,7 @@ export function compileCleanWaterInput(
 
   const water: WaterFlowInput = {
     pumpFlowLpm: pumpFlowLpm ?? 1,
-    filterEfficiency:
-      filterEfficiency !== undefined && filterEfficiency > 0 && filterEfficiency <= 1
-        ? filterEfficiency
-        : 0.8,
+    filterEfficiency: hasValidFilterEfficiency ? filterEfficiency : 0.8,
     sourceLiters: sourceLiters ?? 20,
     minutes: runMinutes ?? 5,
   };
@@ -142,8 +142,8 @@ export function compileCleanWaterInput(
     knownInputs: [
       ...(pumpFlowLpm === undefined ? [] : ['water.pumpFlowLpm']),
       ...(voltageV === undefined ? [] : ['power.source.voltageV']),
-      ...(filterEfficiency === undefined ? [] : ['water.filterEfficiency']),
-      ...(pumpCurrentA === undefined ? [] : ['power.loads.pump.currentA']),
+      ...(hasValidFilterEfficiency ? ['water.filterEfficiency'] : []),
+      ...(hasValidPumpCurrent ? ['power.loads.pump.currentA'] : []),
       ...(sourceLiters === undefined ? [] : ['water.sourceLiters']),
       ...(runMinutes === undefined ? [] : ['water.minutes']),
     ],

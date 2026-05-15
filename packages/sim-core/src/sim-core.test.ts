@@ -102,6 +102,37 @@ describe('sim-core foundation', () => {
     expect(input.powerLoads[0]?.currentA).toBe(0.8);
     expect(input.defaultedInputs).toEqual(expect.not.arrayContaining(['water.sourceLiters', 'water.minutes']));
   });
+
+  it('does not count invalid defaulted product specs as known inputs', () => {
+    const input = compileCleanWaterInput(
+      {
+        id: 'clean-water',
+        scenarioSettings: { cleanWater: { sourceLiters: 30, runMinutes: 4 } },
+      },
+      [
+        {
+          id: 'invalid-media-product',
+          kind: 'product',
+          value: {
+            kind: 'ProductBinding',
+            id: 'invalid-media-product',
+            moduleIds: ['filter-media'],
+            specs: [
+              { id: 'efficiency', value: 1.4, meaning: { affects: ['simulation'], targetField: 'filterEfficiency' } },
+              { id: 'current', value: 0, meaning: { affects: ['simulation'], targetField: 'pumpCurrentA' } },
+            ],
+          },
+        },
+      ],
+    );
+
+    expect(input.defaultedInputs).toEqual(
+      expect.arrayContaining(['water.filterEfficiency', 'power.loads.pump.currentA']),
+    );
+    expect(input.knownInputs).toEqual(
+      expect.not.arrayContaining(['water.filterEfficiency', 'power.loads.pump.currentA']),
+    );
+  });
   it('compares clean water baselines as anchors without superiority claims', () => {
     const comparison = compareCleanWaterBaselines({
       mode: 'education',

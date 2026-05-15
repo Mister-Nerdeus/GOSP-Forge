@@ -103,6 +103,63 @@ describe('validate route', () => {
     ]);
   });
 
+  it('keeps optional missing repo refs as warnings', () => {
+    const result = validateProjectBody(
+      {
+        ...validProject,
+        refGroups: {
+          modules: [
+            {
+              id: 'optional-missing',
+              kind: 'module',
+              path: 'examples/modules/water/not-present.module.json',
+              required: false,
+            },
+          ],
+        },
+      },
+      { mode: 'repo' },
+    );
+
+    expect(result).toMatchObject({
+      status: 200,
+      body: {
+        ok: true,
+        refs: { resolved: 0 },
+        errors: [],
+        warnings: [expect.objectContaining({ code: 'optional-ref-missing' })],
+      },
+    });
+  });
+
+  it('does not count wrong-kind repo refs as resolved', () => {
+    const result = validateProjectBody(
+      {
+        ...validProject,
+        refGroups: {
+          products: [
+            {
+              id: 'pump',
+              kind: 'product',
+              path: 'examples/modules/water/pump.module.json',
+              required: true,
+            },
+          ],
+        },
+      },
+      { mode: 'repo' },
+    );
+
+    expect(result).toMatchObject({
+      status: 422,
+      body: {
+        ok: false,
+        refs: { resolved: 0 },
+        errors: [expect.objectContaining({ code: 'wrong-ref-kind' })],
+      },
+    });
+  });
+
   it('returns 422 for invalid project manifests', () => {
     const result = validateProjectBody({ ...validProject, id: '' });
 
