@@ -49,6 +49,21 @@
         "targetField": "annualMaintenanceCost"
       },
       "simulationUse": "Lifecycle cost assumption; not a service or repair claim."
+    },
+    {
+      "id": "current",
+      "name": "Operating current",
+      "value": 0.8,
+      "unit": "A",
+      "meaning": {
+        "affects": [
+          "simulation",
+          "compatibility"
+        ],
+        "explanation": "Educational current draw assumption for the foundation power model.",
+        "targetField": "pumpCurrentA"
+      },
+      "simulationUse": "Foundation screening model input; not an electrical certification."
     }
   ],
   "provenance": {
@@ -59,5 +74,7 @@
   "confidence": {
     "level": "medium",
     "rationale": "Foundation example; not professional validation."
-  }
+  },
+  "quantity": 1,
+  "unit": "each"
 }

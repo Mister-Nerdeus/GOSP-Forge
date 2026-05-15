@@ -19,3 +19,7 @@ CI intentionally does not run `node scripts/controls/write-local-validation.mjs`
 ## Current Implementation Limits
 
 This document describes foundation policy and contract intent. The current repository provides foundation packages, example fixtures, validation gates, and CI proof commands only. It does not claim production readiness, professional approval, potable-water certification, or production manufacturing approval.
+
+## CI Artifacts
+
+CI uploads sanitized local-validation and batch artifact markdown outputs as non-secret evidence. Local full validation remains separate from sanitized PR/release evidence.

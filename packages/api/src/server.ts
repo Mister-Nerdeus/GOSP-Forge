@@ -14,9 +14,11 @@ export function createGospServer() {
         return sendJson(res, 200, healthResponse());
       if (req.method === 'GET' && req.url === '/version')
         return sendJson(res, 200, versionResponse());
-      if (req.method === 'POST' && req.url === '/validate') {
+      const requestUrl = new URL(req.url ?? '/', 'http://localhost');
+      if (req.method === 'POST' && requestUrl.pathname === '/validate') {
         const body = await readJsonBody(req);
-        const result = validateProjectBody(body);
+        const mode = requestUrl.searchParams.get('mode') === 'repo' ? 'repo' : 'schema-only';
+        const result = validateProjectBody(body, { mode });
         return sendJson(res, result.status, result.body);
       }
       return sendJson(res, 404, { error: 'not_found' });

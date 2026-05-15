@@ -1,5 +1,7 @@
 export * from './estimateTotals.js';
 export * from './estimateFromProject.js';
+export * from './estimateQualityReport.js';
+export * from './estimateModeGate.js';
 export * from './createCostEstimateEnvelope.js';
 export * from './validateEstimate.js';
 export * from './confidencePolicy.js';

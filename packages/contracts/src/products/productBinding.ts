@@ -10,6 +10,8 @@ export const ProductBindingSchema = z
     version: VersionSchema,
     name: z.string().min(1),
     moduleIds: z.array(IdSchema).min(1),
+    quantity: z.number().positive().optional(),
+    unit: z.string().min(1).optional(),
     specs: z.array(ProductSpecSchema).min(1),
     provenance: ProductProvenanceSchema,
     sponsored: z.boolean().default(false),

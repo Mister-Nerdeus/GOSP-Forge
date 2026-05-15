@@ -5,116 +5,6 @@
   "version": "0.1.0",
   "title": "Automated Water Filter System",
   "mode": "education",
-  "problemRef": {
-    "id": "clean-water-problem",
-    "kind": "problem",
-    "path": "examples/problems/clean-water.problem.json",
-    "required": true
-  },
-  "refs": [
-    {
-      "id": "raw-water-tank",
-      "kind": "module",
-      "path": "examples/modules/water/raw-water-tank.module.json",
-      "required": true
-    },
-    {
-      "id": "pump",
-      "kind": "module",
-      "path": "examples/modules/water/pump.module.json",
-      "required": true
-    },
-    {
-      "id": "filter-housing",
-      "kind": "module",
-      "path": "examples/modules/water/filter-housing.module.json",
-      "required": true
-    },
-    {
-      "id": "clean-water-tank",
-      "kind": "module",
-      "path": "examples/modules/water/clean-water-tank.module.json",
-      "required": true
-    },
-    {
-      "id": "filter-media",
-      "kind": "module",
-      "path": "examples/modules/water/filter-media.module.json",
-      "required": true
-    },
-    {
-      "id": "water-quality-sensor",
-      "kind": "module",
-      "path": "examples/modules/water/water-quality-sensor.module.json",
-      "required": true
-    },
-    {
-      "id": "controller-logic",
-      "kind": "module",
-      "path": "examples/modules/control/controller-logic.module.json",
-      "required": true
-    },
-    {
-      "id": "status-dashboard-module",
-      "kind": "module",
-      "path": "examples/modules/digital/status-dashboard.module.json",
-      "required": true
-    },
-    {
-      "id": "classroom-battery",
-      "kind": "module",
-      "path": "examples/modules/power/classroom-battery.module.json",
-      "required": true
-    },
-    {
-      "id": "assembly-test-process",
-      "kind": "module",
-      "path": "examples/modules/process/assembly-test-process.module.json",
-      "required": true
-    },
-    {
-      "id": "classroom-diaphragm-pump",
-      "kind": "product",
-      "path": "examples/products/classroom-diaphragm-pump.product.json",
-      "required": true
-    },
-    {
-      "id": "basic-water-quality-sensor",
-      "kind": "product",
-      "path": "examples/products/basic-water-quality-sensor.product.json",
-      "required": true
-    },
-    {
-      "id": "classroom-battery-pack",
-      "kind": "product",
-      "path": "examples/products/classroom-battery-pack.product.json",
-      "required": true
-    },
-    {
-      "id": "filter-media-cartridge",
-      "kind": "product",
-      "path": "examples/products/filter-media-cartridge.product.json",
-      "required": true
-    },
-    {
-      "id": "automated-water-filter-resource-flow",
-      "kind": "graph",
-      "path": "examples/graphs/automated-water-filter.resource-flow.json",
-      "required": true
-    },
-    {
-      "id": "automated-water-filter-power-flow",
-      "kind": "graph",
-      "path": "examples/graphs/automated-water-filter.power-flow.json",
-      "required": true
-    },
-    {
-      "id": "automated-water-filter-control-flow",
-      "kind": "graph",
-      "path": "examples/graphs/automated-water-filter.control-flow.json",
-      "required": true
-    }
-  ],
   "refGroups": {
     "problem": {
       "id": "clean-water-problem",
@@ -254,5 +144,11 @@
     "notes": [
       "Problem-first, refs-only manifest."
     ]
+  },
+  "scenarioSettings": {
+    "cleanWater": {
+      "sourceLiters": 20,
+      "runMinutes": 5
+    }
   }
 }

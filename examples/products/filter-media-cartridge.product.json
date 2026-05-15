@@ -35,6 +35,20 @@
         "targetField": "replacementIntervalYears"
       },
       "simulationUse": "Lifecycle cost assumption; not a product reliability claim."
+    },
+    {
+      "id": "filter-efficiency",
+      "name": "Filter efficiency",
+      "value": 0.8,
+      "unit": "ratio",
+      "meaning": {
+        "affects": [
+          "simulation"
+        ],
+        "explanation": "Educational removal-efficiency assumption for the foundation screening model.",
+        "targetField": "filterEfficiency"
+      },
+      "simulationUse": "Foundation screening model input; no potable-water or certification claim."
     }
   ],
   "provenance": {
@@ -45,5 +59,7 @@
   "confidence": {
     "level": "medium",
     "rationale": "Foundation example; not professional validation."
-  }
+  },
+  "quantity": 1,
+  "unit": "each"
 }

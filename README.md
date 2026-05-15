@@ -42,3 +42,7 @@ node scripts/controls/verify-local-validation-current.mjs
 ## Claim vs Implementation
 
 The repository claims only a foundation implementation. All examples are educational fixtures with explicit confidence, assumptions, attribution, and safety limits. See the [claim implementation map](docs/program/CLAIM_IMPLEMENTATION_MAP.md) before expanding README or product claims.
+
+## Foundation Validation Scope
+
+API validation is schema-only by default. CLI validation resolves repository refs. Local/dev API repo-ref mode is bounded to known repo paths.

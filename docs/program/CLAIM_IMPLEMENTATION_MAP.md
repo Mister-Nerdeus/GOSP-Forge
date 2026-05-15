@@ -34,3 +34,7 @@ This map ties repository claims to committed implementation evidence. Claims not
 - No production deployment readiness.
 
 These non-claims must remain visible in README, audits, UI docs, API docs, release docs, and gate docs until future implementation and review support a narrower claim.
+
+## Hardening Batch Evidence
+
+Evidence now covers API validation parity, refGroups canonical refs, simulation confidence summaries, estimate quality reporting, CI artifacts, release evidence, and UI smoke/non-claim checks.

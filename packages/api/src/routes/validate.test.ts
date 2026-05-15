@@ -22,9 +22,85 @@ describe('validate route', () => {
       body: {
         ok: true,
         schema: 'ProjectManifestV2',
-        projectId: 'api-validated-project',
+        validationMode: 'schema-only',
+        warnings: ['API validation does not resolve repository refs in this foundation build.'],
       },
     });
+  });
+
+  it('does not describe unresolved refs as fully validated in schema-only mode', () => {
+    const result = validateProjectBody({
+      ...validProject,
+      refGroups: {
+        modules: [
+          {
+            id: 'missing-module',
+            kind: 'module',
+            path: 'examples/modules/water/not-present.module.json',
+            required: true,
+          },
+        ],
+      },
+    });
+
+    expect(result.status).toBe(200);
+    expect(result.body).toMatchObject({
+      ok: true,
+      validationMode: 'schema-only',
+      warnings: ['API validation does not resolve repository refs in this foundation build.'],
+    });
+  });
+
+  it('validates known repo refs only in local repo mode', () => {
+    const result = validateProjectBody(
+      {
+        ...validProject,
+        refGroups: {
+          modules: [
+            {
+              id: 'pump',
+              kind: 'module',
+              path: 'examples/modules/water/pump.module.json',
+              required: true,
+            },
+          ],
+        },
+      },
+      { mode: 'repo' },
+    );
+
+    expect(result).toMatchObject({
+      status: 200,
+      body: {
+        ok: true,
+        validationMode: 'repo-refs',
+        refs: { resolved: 1 },
+      },
+    });
+  });
+
+  it('blocks path traversal attempts in repo mode', () => {
+    const result = validateProjectBody(
+      {
+        ...validProject,
+        refGroups: {
+          modules: [
+            {
+              id: 'secret',
+              kind: 'module',
+              path: '../package.json',
+              required: true,
+            },
+          ],
+        },
+      },
+      { mode: 'repo' },
+    );
+
+    expect(result.status).toBe(422);
+    expect(result.body.errors).toEqual([
+      expect.objectContaining({ code: 'required-ref-missing', refId: 'secret' }),
+    ]);
   });
 
   it('returns 422 for invalid project manifests', () => {

@@ -1,5 +1,5 @@
 import { ProjectManifestV2Schema } from '@gosp/contracts';
-import { estimateFromProject } from '@gosp/estimation';
+import { estimateFromProject, evaluateEstimateModeGate } from '@gosp/estimation';
 import { readJsonFile } from '../exampleRegistry.js';
 import { resolveProjectRefs } from '../refResolver.js';
 
@@ -11,14 +11,20 @@ export function estimateCommand(file: string) {
   }
 
   const result = estimateFromProject({ projectId: project.id, refs: resolvedRefs.documents });
+  const modeGate = evaluateEstimateModeGate({
+    mode: project.mode,
+    qualityReport: result.qualityReport,
+  });
   return {
-    ok: true,
+    ok: modeGate.ok,
     bom: result.bom,
     refs: {
       warnings: resolvedRefs.warnings,
     },
     totals: result.totals,
     lifecycle: result.lifecycle,
+    qualityReport: result.qualityReport,
+    modeGate,
     estimate: result.estimate,
     envelope: result.envelope,
     warnings: result.warnings,

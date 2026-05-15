@@ -22,3 +22,7 @@ Scoring manifests require a problem ref through either `refGroups.problem` or th
 ## Current Implementation Limits
 
 This document describes foundation policy and contract intent. The current repository provides foundation packages, example fixtures, and validation gates only. It does not claim production readiness, professional approval, potable-water certification, or production manufacturing approval.
+
+## Canonical Refs
+
+refGroups is canonical for ProjectManifestV2. refs and problemRef are legacy migration fields only. Exact duplicates are warnings; mismatches between legacy refs and refGroups are blockers.

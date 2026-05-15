@@ -22,6 +22,16 @@ export const SimulationRunEnvelopeSchema = z.object({
   sourceRefs: z.array(IdSchema).default([]),
   unknownInputs: z.array(z.string()).default([]),
   defaultedInputs: z.array(z.string()).default([]),
+  confidenceSummary: z
+    .object({
+      knownInputs: z.number().int().nonnegative(),
+      defaultedInputs: z.number().int().nonnegative(),
+      unknownInputs: z.number().int().nonnegative(),
+      warningCount: z.number().int().nonnegative(),
+      level: z.enum(['low', 'medium', 'high', 'reviewed']),
+      rationale: z.string().min(1),
+    })
+    .optional(),
   confidence: ConfidenceSchema,
   warnings: z.array(WarningSchema).default([]),
   limitations: z.array(LimitationSchema).min(1),

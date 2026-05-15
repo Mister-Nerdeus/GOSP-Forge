@@ -9,6 +9,8 @@ import {
   ProblemDefinitionSchema,
   ProductBindingSchema,
   ProjectManifestV2Schema,
+  ValidationResultSchema,
+  detectLegacyRefDuplicates,
   ScoringProfileSchema,
   SimulationRunEnvelopeSchema,
   validateModeRequirements,
@@ -104,6 +106,61 @@ describe('foundation contracts', () => {
         version: '1',
         title: 'Score',
         mode: 'scoring',
+        design: { title: 'D', status: 'draft' },
+      }).success,
+    ).toBe(false);
+  });
+
+  it('validates shared validation results and scenario settings', () => {
+    expect(
+      ValidationResultSchema.safeParse({
+        ok: true,
+        schema: 'ProjectManifestV2',
+        validationMode: 'schema-only',
+        warnings: ['API validation does not resolve repository refs in this foundation build.'],
+      }).success,
+    ).toBe(true);
+
+    expect(
+      ProjectManifestV2Schema.safeParse({
+        kind: 'ProjectManifestV2',
+        manifestVersion: '2',
+        id: 'proj',
+        version: '1',
+        title: 'Scenario',
+        mode: 'education',
+        scenarioSettings: { cleanWater: { sourceLiters: 20, runMinutes: 5 } },
+        design: { title: 'D', status: 'draft' },
+      }).success,
+    ).toBe(true);
+  });
+
+  it('warns on exact legacy ref duplicates and blocks mismatches', () => {
+    const exactRef = {
+      id: 'pump',
+      kind: 'module',
+      path: 'examples/modules/water/pump.module.json',
+      required: true,
+    };
+    expect(
+      detectLegacyRefDuplicates({
+        refs: [exactRef],
+        refGroups: { modules: [exactRef] },
+      }).warnings,
+    ).toEqual([expect.objectContaining({ code: 'legacy-ref-duplicate' })]);
+
+    expect(
+      ProjectManifestV2Schema.safeParse({
+        kind: 'ProjectManifestV2',
+        manifestVersion: '2',
+        id: 'proj',
+        version: '1',
+        title: 'Mismatch',
+        mode: 'education',
+        refs: [exactRef],
+        refGroups: {
+          modules: [{ ...exactRef, path: 'examples/modules/water/raw-water-tank.module.json' }],
+        },
         design: { title: 'D', status: 'draft' },
       }).success,
     ).toBe(false);

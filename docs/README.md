@@ -58,3 +58,7 @@ This index points to the current foundation documentation. The repository remain
 - [Pay-to-win prohibition](governance/PAY_TO_WIN_PROHIBITION.md)
 - [License-aware import policy](governance/LICENSE_AWARE_IMPORT_POLICY.md)
 - [Storage and secret policy](security/STORAGE_AND_SECRET_POLICY.md)
+
+## Hardening Evidence
+
+Batch 101-130 documentation records validation parity, manifest ref canonicalization, simulation and estimate confidence visibility, evidence artifacts, and UI claim gates.

@@ -11,3 +11,7 @@ Expected non-secret proof fields:
 - command names and pass/fail results
 - aggregate result
 - timestamp
+
+## Sanitized Artifact
+
+Run node scripts/controls/sanitize-local-validation.mjs after write-local-validation to produce latest.sanitized.json. The sanitized file keeps commit SHA and gate results while redacting local paths.

@@ -3,6 +3,8 @@ import {
   buildBom,
   buildBomFromProject,
   estimateFromProject,
+  createEstimateQualityReport,
+  evaluateEstimateModeGate,
   estimateTotals,
   lifecycleFromProducts,
   lifecycleCost,
@@ -129,6 +131,7 @@ describe('estimation foundation', () => {
     expect(result.envelope.limitations.map((item) => item.id)).toContain(
       'not-professional-estimate',
     );
+    expect(result.qualityReport.defaultedQuantityCount).toBe(1);
   });
 
   it('lowers confidence when a BOM line has no price entry', () => {
@@ -150,7 +153,20 @@ describe('estimation foundation', () => {
 
     expect(result.estimate.total).toBe(0);
     expect(result.estimate.confidence.level).toBe('low');
+    expect(result.qualityReport.zeroCostLineCount).toBe(1);
     expect(result.warnings).toContain('Missing unit cost for unknown-product; defaulted to 0 USD.');
+  });
+
+  it('reports estimate quality and blocks placeholder costs in scoring mode', () => {
+    const qualityReport = createEstimateQualityReport({
+      lines: [{ unitCost: 0 }],
+      warnings: ['Missing unit cost for unknown; defaulted to 0 USD.'],
+    });
+
+    expect(qualityReport).toMatchObject({ zeroCostLineCount: 1, defaultCostLineCount: 1 });
+    expect(evaluateEstimateModeGate({ mode: 'education', qualityReport }).ok).toBe(true);
+    expect(evaluateEstimateModeGate({ mode: 'scoring', qualityReport }).ok).toBe(false);
+    expect(evaluateEstimateModeGate({ mode: 'professional', qualityReport }).ok).toBe(false);
   });
 
   it('wraps cost estimates with warnings and limitations', () => {

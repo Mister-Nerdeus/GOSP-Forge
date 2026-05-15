@@ -69,6 +69,7 @@ export function simulateCommand(file: string) {
       warnings,
       unknownInputs: input.unknownInputs,
       defaultedInputs: input.defaultedInputs,
+      knownInputs: input.knownInputs,
       confidence: input.confidence,
     }),
   };

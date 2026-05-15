@@ -10,6 +10,14 @@ export const CostEstimateSchema = z.object({
   contingency: z.number().nonnegative(),
   total: z.number().nonnegative(),
   confidence: ConfidenceSchema,
+  qualityReport: z
+    .object({
+      zeroCostLineCount: z.number().int().nonnegative(),
+      defaultCostLineCount: z.number().int().nonnegative(),
+      defaultedQuantityCount: z.number().int().nonnegative(),
+      confidenceImpact: z.string().min(1),
+    })
+    .optional(),
   assumptions: z.array(z.string()).min(1),
   sourceRefs: z.array(IdSchema).default([]),
 });

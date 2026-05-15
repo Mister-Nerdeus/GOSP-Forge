@@ -1,5 +1,6 @@
 import { SimulationRunEnvelopeSchema } from '@gosp/contracts';
 import { createCleanWaterImpactReport } from '../cleanWater/impactReport.js';
+import { createSimulationConfidenceSummary } from './confidenceSummary.js';
 import { stableStringify } from '../hash/stableStringify.js';
 import { sha256 } from '../hash/sha256.js';
 export function createSimulationRunEnvelope(input: {
@@ -12,6 +13,7 @@ export function createSimulationRunEnvelope(input: {
   warnings?: Array<{ code: string; message: string; severity: 'info' | 'warning' | 'blocker' }>;
   unknownInputs?: string[];
   defaultedInputs?: string[];
+  knownInputs?: string[];
   confidence?: { level: 'low' | 'medium' | 'high' | 'reviewed'; rationale: string };
   limitations?: Array<{ id: string; description: string }>;
   impacts?: ReturnType<typeof createCleanWaterImpactReport>;
@@ -41,6 +43,12 @@ export function createSimulationRunEnvelope(input: {
     sourceRefs: [],
     unknownInputs: input.unknownInputs ?? [],
     defaultedInputs: input.defaultedInputs ?? [],
+    confidenceSummary: createSimulationConfidenceSummary({
+      knownInputs: input.knownInputs,
+      defaultedInputs: input.defaultedInputs,
+      unknownInputs: input.unknownInputs,
+      warningCount: input.warnings?.length ?? 0,
+    }),
     confidence: input.confidence ?? {
       level: 'medium' as const,
       rationale: 'Foundation deterministic screening model.',

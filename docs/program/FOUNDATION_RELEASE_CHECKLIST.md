@@ -41,3 +41,7 @@ node scripts/controls/verify-local-validation-current.mjs
 ## Non-Claims
 
 Foundation promotion does not certify potable water, provide professional approval, approve production manufacturing, verify manufacturer data, operate production storage, or declare product readiness.
+
+## Evidence Bundle
+
+Before promotion, run the release evidence command and attach sanitized validation evidence. Human review remains required.

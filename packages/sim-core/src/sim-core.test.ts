@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   createSimulationRunEnvelope,
+  compileCleanWaterInput,
   applyProductSpecEffects,
   compareCleanWaterBaselines,
   createCleanWaterImpactReport,
@@ -61,6 +62,45 @@ describe('sim-core foundation', () => {
     expect(result.warnings).toEqual([
       expect.objectContaining({ code: 'unknown-product-spec-target' }),
     ]);
+  });
+  it('derives clean-water scenario and product specs before defaulting', () => {
+    const input = compileCleanWaterInput(
+      {
+        id: 'clean-water',
+        scenarioSettings: { cleanWater: { sourceLiters: 30, runMinutes: 4 } },
+      },
+      [
+        {
+          id: 'pump-product',
+          kind: 'product',
+          value: {
+            kind: 'ProductBinding',
+            id: 'pump-product',
+            moduleIds: ['pump'],
+            specs: [
+              { id: 'flow', value: 2, meaning: { affects: ['simulation'], targetField: 'pumpFlowLpm' } },
+              { id: 'current', value: 0.8, meaning: { affects: ['simulation'], targetField: 'pumpCurrentA' } },
+            ],
+          },
+        },
+        {
+          id: 'media-product',
+          kind: 'product',
+          value: {
+            kind: 'ProductBinding',
+            id: 'media-product',
+            moduleIds: ['filter-media'],
+            specs: [
+              { id: 'efficiency', value: 0.75, meaning: { affects: ['simulation'], targetField: 'filterEfficiency' } },
+            ],
+          },
+        },
+      ],
+    );
+
+    expect(input.water).toMatchObject({ sourceLiters: 30, minutes: 4, filterEfficiency: 0.75 });
+    expect(input.powerLoads[0]?.currentA).toBe(0.8);
+    expect(input.defaultedInputs).toEqual(expect.not.arrayContaining(['water.sourceLiters', 'water.minutes']));
   });
   it('compares clean water baselines as anchors without superiority claims', () => {
     const comparison = compareCleanWaterBaselines({

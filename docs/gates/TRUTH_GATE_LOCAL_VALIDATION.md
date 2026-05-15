@@ -20,3 +20,7 @@ node scripts/controls/verify-local-validation-current.mjs
 ## Current Implementation Limits
 
 This document describes foundation policy and contract intent. The current repository provides foundation packages, example fixtures, validation gates, and local validation currentness checks only. It does not claim production readiness, professional approval, potable-water certification, or production manufacturing approval.
+
+## Sanitized Evidence
+
+Sanitized validation evidence is for PR and release attachment. Currentness verification still uses the full local artifact at artifacts/controls/local-validation/latest.json.

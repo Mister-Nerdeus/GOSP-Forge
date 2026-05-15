@@ -3,6 +3,7 @@ import { buildBomFromProject } from './bom/buildBomFromProject.js';
 import type { BomBuildResult } from './bom/bomTypes.js';
 import { combineConfidence } from './confidencePolicy.js';
 import { createCostEstimateEnvelope } from './createCostEstimateEnvelope.js';
+import { createEstimateQualityReport } from './estimateQualityReport.js';
 import { estimateTotals } from './estimateTotals.js';
 import { lifecycleFromProducts } from './lifecycle/lifecycleFromProducts.js';
 import { defaultClassroomPricePack } from './price/defaultClassroomPricePack.js';
@@ -75,6 +76,8 @@ export function estimateFromProject(input: {
   });
 
   const totals = estimateTotals(lines);
+  const preLifecycleWarnings = [...warnings];
+  const qualityReport = createEstimateQualityReport({ lines, warnings: preLifecycleWarnings });
   const lifecycleResult = lifecycleFromProducts({
     products,
     priceEntries: pricePack.entries,
@@ -94,6 +97,7 @@ export function estimateFromProject(input: {
         ? 'Some quantities or costs are defaulted or missing.'
         : 'All BOM lines matched default classroom price entries.',
     },
+    qualityReport,
     assumptions: [
       'Educational/conceptual classroom estimate only.',
       'Not a quote, procurement instruction, permit-ready estimate, or professional review.',
@@ -103,5 +107,5 @@ export function estimateFromProject(input: {
   });
 
   const envelope = createCostEstimateEnvelope({ estimate, warnings });
-  return { bom, totals, lifecycle: estimate.lifecycle, estimate, envelope, warnings };
+  return { bom, totals, lifecycle: estimate.lifecycle, estimate, envelope, warnings, qualityReport };
 }

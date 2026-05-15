@@ -13,3 +13,7 @@ The foundation API is a local development and validation surface only.
 ## Current API Boundary
 
 The API exposes health, version, and foundation validation routes. Request-size, content-type, invalid JSON, and rate-limit controls are tested, but those controls are not a production security certification.
+
+## Validation Non-Claims
+
+The /validate route defaults to schema-only ProjectManifestV2 parsing. It does not claim CLI-equivalent repository validation unless local/dev repo-ref mode is explicitly requested and succeeds.

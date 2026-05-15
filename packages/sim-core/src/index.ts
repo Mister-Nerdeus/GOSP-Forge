@@ -1,6 +1,7 @@
 export * from './hash/stableStringify.js';
 export * from './hash/sha256.js';
 export * from './run/createSimulationRunEnvelope.js';
+export * from './run/confidenceSummary.js';
 export * from './assumptions/assumptionRegistry.js';
 export * from './assumptions/defaultAssumptions.js';
 export * from './cleanWater/waterFlowEngine.js';

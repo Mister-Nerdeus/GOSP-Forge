@@ -35,7 +35,13 @@ function isProductBinding(value: unknown): value is ProductBindingLike {
   );
 }
 
-export function compileCleanWaterInput(project: { id: string }, refs: RefValue[]) {
+export function compileCleanWaterInput(
+  project: {
+    id: string;
+    scenarioSettings?: { cleanWater?: { sourceLiters?: number; runMinutes?: number } };
+  },
+  refs: RefValue[],
+) {
   const warnings: Warning[] = [];
   const defaultedInputs: string[] = [];
   const products = refs.map((ref) => ref.value).filter(isProductBinding);
@@ -52,6 +58,14 @@ export function compileCleanWaterInput(project: { id: string }, refs: RefValue[]
   const pumpFlowLpm =
     typeof effects.target.pumpFlowLpm === 'number' ? effects.target.pumpFlowLpm : undefined;
   const voltageV = typeof effects.target.voltageV === 'number' ? effects.target.voltageV : undefined;
+  const filterEfficiency =
+    typeof effects.target.filterEfficiency === 'number'
+      ? effects.target.filterEfficiency
+      : undefined;
+  const pumpCurrentA =
+    typeof effects.target.pumpCurrentA === 'number' ? effects.target.pumpCurrentA : undefined;
+  const sourceLiters = project.scenarioSettings?.cleanWater?.sourceLiters;
+  const runMinutes = project.scenarioSettings?.cleanWater?.runMinutes;
 
   if (pumpFlowLpm === undefined) {
     warnings.push({
@@ -71,13 +85,50 @@ export function compileCleanWaterInput(project: { id: string }, refs: RefValue[]
     defaultedInputs.push('power.source.voltageV');
   }
 
-  defaultedInputs.push('water.sourceLiters', 'water.minutes', 'water.filterEfficiency');
+  if (filterEfficiency === undefined || filterEfficiency <= 0 || filterEfficiency > 1) {
+    warnings.push({
+      code: 'missing-filter-efficiency-spec',
+      message: 'Missing or invalid filter efficiency spec; defaulting to 0.8.',
+      severity: 'warning',
+    });
+    defaultedInputs.push('water.filterEfficiency');
+  }
+
+  if (pumpCurrentA === undefined || pumpCurrentA <= 0) {
+    warnings.push({
+      code: 'missing-pump-current-spec',
+      message: 'Missing or invalid pump current spec; defaulting to 1 A.',
+      severity: 'warning',
+    });
+    defaultedInputs.push('power.loads.pump.currentA');
+  }
+
+  if (sourceLiters === undefined) {
+    warnings.push({
+      code: 'missing-source-liters-setting',
+      message: 'Missing clean-water source liters scenario setting; defaulting to 20 L.',
+      severity: 'warning',
+    });
+    defaultedInputs.push('water.sourceLiters');
+  }
+
+  if (runMinutes === undefined) {
+    warnings.push({
+      code: 'missing-run-minutes-setting',
+      message: 'Missing clean-water run minutes scenario setting; defaulting to 5 minutes.',
+      severity: 'warning',
+    });
+    defaultedInputs.push('water.minutes');
+  }
 
   const water: WaterFlowInput = {
     pumpFlowLpm: pumpFlowLpm ?? 1,
-    filterEfficiency: 0.8,
-    sourceLiters: 20,
-    minutes: 5,
+    filterEfficiency:
+      filterEfficiency !== undefined && filterEfficiency > 0 && filterEfficiency <= 1
+        ? filterEfficiency
+        : 0.8,
+    sourceLiters: sourceLiters ?? 20,
+    minutes: runMinutes ?? 5,
   };
 
   return {
@@ -85,9 +136,17 @@ export function compileCleanWaterInput(project: { id: string }, refs: RefValue[]
     moduleIds,
     water,
     powerSource: { id: 'classroom-battery', voltageV: voltageV ?? 12 },
-    powerLoads: [{ id: 'pump', voltageV: voltageV ?? 12, currentA: 1 }],
+    powerLoads: [{ id: 'pump', voltageV: voltageV ?? 12, currentA: pumpCurrentA ?? 1 }],
     warnings,
     defaultedInputs,
+    knownInputs: [
+      ...(pumpFlowLpm === undefined ? [] : ['water.pumpFlowLpm']),
+      ...(voltageV === undefined ? [] : ['power.source.voltageV']),
+      ...(filterEfficiency === undefined ? [] : ['water.filterEfficiency']),
+      ...(pumpCurrentA === undefined ? [] : ['power.loads.pump.currentA']),
+      ...(sourceLiters === undefined ? [] : ['water.sourceLiters']),
+      ...(runMinutes === undefined ? [] : ['water.minutes']),
+    ],
     unknownInputs: [],
     confidence: {
       level: warnings.length ? ('low' as const) : ('medium' as const),

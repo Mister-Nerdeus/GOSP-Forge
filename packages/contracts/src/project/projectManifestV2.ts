@@ -3,6 +3,14 @@ import { IdSchema, VersionSchema } from '../shared/primitives.js';
 import { DesignModeSchema } from '../modes/designMode.js';
 import { RefSchema } from '../shared/ref.js';
 import { DesignDocumentSchema } from './designDocument.js';
+import { ProjectScenarioSettingsSchema } from './projectScenarioSettings.js';
+
+type ProjectRef = {
+  id: string;
+  kind: string;
+  path?: string;
+  required?: boolean;
+};
 
 const TypedProjectRefsSchema = z
   .object({
@@ -17,6 +25,66 @@ const TypedProjectRefsSchema = z
   })
   .default({});
 
+function sameRef(a: ProjectRef, b: ProjectRef) {
+  return (
+    a.id === b.id &&
+    a.kind === b.kind &&
+    (a.path ?? '') === (b.path ?? '') &&
+    (a.required ?? true) === (b.required ?? true)
+  );
+}
+
+function collectGroupedRefs(project: {
+  refGroups: Partial<z.infer<typeof TypedProjectRefsSchema>>;
+}): ProjectRef[] {
+  const refs = [
+    project.refGroups.problem,
+    ...(project.refGroups.modules ?? []),
+    ...(project.refGroups.products ?? []),
+    ...(project.refGroups.graphs ?? []),
+    ...(project.refGroups.estimates ?? []),
+    ...(project.refGroups.scorecards ?? []),
+    ...(project.refGroups.education ?? []),
+    ...(project.refGroups.safety ?? []),
+  ];
+  return refs.filter(Boolean).map((ref) => ref as ProjectRef);
+}
+
+export function detectLegacyRefDuplicates(project: {
+  problemRef?: ProjectRef;
+  refs?: ProjectRef[];
+  refGroups: Partial<z.infer<typeof TypedProjectRefsSchema>>;
+}) {
+  const legacyRefs = [project.problemRef, ...(project.refs ?? [])].filter(
+    (ref): ref is ProjectRef => Boolean(ref),
+  );
+  const groupedRefs = collectGroupedRefs(project);
+  const warnings: Array<{ code: string; message: string; refId: string; refKind: string }> = [];
+  const errors: Array<{ code: string; message: string; refId: string; refKind: string }> = [];
+
+  for (const legacy of legacyRefs) {
+    const grouped = groupedRefs.find((ref) => ref.id === legacy.id);
+    if (!grouped) continue;
+    if (sameRef(legacy, grouped)) {
+      warnings.push({
+        code: 'legacy-ref-duplicate',
+        message: `Ref "${legacy.id}" appears in legacy refs and canonical refGroups.`,
+        refId: legacy.id,
+        refKind: legacy.kind,
+      });
+    } else {
+      errors.push({
+        code: 'legacy-ref-mismatch',
+        message: `Ref "${legacy.id}" differs between legacy refs and canonical refGroups.`,
+        refId: legacy.id,
+        refKind: legacy.kind,
+      });
+    }
+  }
+
+  return { warnings, errors };
+}
+
 export const ProjectManifestV2Schema = z
   .object({
     kind: z.literal('ProjectManifestV2'),
@@ -28,6 +96,7 @@ export const ProjectManifestV2Schema = z
     problemRef: RefSchema.optional(),
     refs: z.array(RefSchema).default([]),
     refGroups: TypedProjectRefsSchema,
+    scenarioSettings: ProjectScenarioSettingsSchema.optional(),
     design: DesignDocumentSchema,
   })
   .superRefine((v, c) => {
@@ -36,6 +105,12 @@ export const ProjectManifestV2Schema = z
       c.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Scoring projects require a problem ref',
+      });
+    if (v.mode === 'scoring' && !v.scenarioSettings?.cleanWater)
+      c.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Scoring projects require explicit clean-water scenario settings',
+        path: ['scenarioSettings', 'cleanWater'],
       });
 
     const groupKinds: Array<[string, string, Array<{ kind: string; id: string }>]> = [
@@ -64,6 +139,14 @@ export const ProjectManifestV2Schema = z
             path: ['refGroups', group, index],
           });
         }
+      });
+    }
+
+    for (const error of detectLegacyRefDuplicates(v).errors) {
+      c.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: error.message,
+        path: ['refs'],
       });
     }
   });

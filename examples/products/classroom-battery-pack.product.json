@@ -21,6 +21,34 @@
         "targetField": "voltageV"
       },
       "simulationUse": "Foundation screening model input."
+    },
+    {
+      "id": "replacement-interval",
+      "name": "Replacement interval",
+      "value": 2,
+      "unit": "year",
+      "meaning": {
+        "affects": [
+          "cost"
+        ],
+        "explanation": "Conceptual classroom replacement interval for lifecycle estimates.",
+        "targetField": "replacementIntervalYears"
+      },
+      "simulationUse": "Lifecycle cost assumption; not a product reliability claim."
+    },
+    {
+      "id": "annual-maintenance-cost",
+      "name": "Annual maintenance cost",
+      "value": 2,
+      "unit": "USD/year",
+      "meaning": {
+        "affects": [
+          "cost"
+        ],
+        "explanation": "Conceptual classroom maintenance allowance for lifecycle estimates.",
+        "targetField": "annualMaintenanceCost"
+      },
+      "simulationUse": "Lifecycle cost assumption; not a service or repair claim."
     }
   ],
   "provenance": {
@@ -31,5 +59,7 @@
   "confidence": {
     "level": "medium",
     "rationale": "Foundation example; not professional validation."
-  }
+  },
+  "quantity": 1,
+  "unit": "each"
 }
