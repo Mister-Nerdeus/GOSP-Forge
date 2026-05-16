@@ -133,6 +133,63 @@ describe('sim-core foundation', () => {
       expect.not.arrayContaining(['water.filterEfficiency', 'power.loads.pump.currentA']),
     );
   });
+
+  it('reports missing required clean-water graph nodes without executing graphs', () => {
+    const educationInput = compileCleanWaterInput({ id: 'clean-water', mode: 'education' }, []);
+    expect(educationInput.graphConsistency.missingNodeIds).toEqual(
+      expect.arrayContaining(['raw-water-tank', 'pump', 'status-dashboard-module']),
+    );
+    expect(educationInput.warnings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: 'missing-required-clean-water-graph-node',
+          severity: 'warning',
+        }),
+      ]),
+    );
+
+    const scoringInput = compileCleanWaterInput({ id: 'clean-water', mode: 'scoring' }, []);
+    expect(scoringInput.warnings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: 'missing-required-clean-water-graph-node',
+          severity: 'blocker',
+        }),
+      ]),
+    );
+  });
+
+  it('accepts complete clean-water graph node coverage', () => {
+    const graphNodes = [
+      'raw-water-tank',
+      'pump',
+      'filter-housing',
+      'clean-water-tank',
+      'classroom-battery',
+      'controller-logic',
+      'status-dashboard-module',
+    ];
+    const input = compileCleanWaterInput(
+      { id: 'clean-water', mode: 'education' },
+      [
+        {
+          id: 'test-graph',
+          kind: 'graph',
+          value: {
+            kind: 'ResourceFlowGraph',
+            nodes: graphNodes.map((id) => ({ id })),
+          },
+        },
+      ],
+    );
+
+    expect(input.graphConsistency.missingNodeIds).toEqual([]);
+    expect(input.warnings).toEqual(
+      expect.not.arrayContaining([
+        expect.objectContaining({ code: 'missing-required-clean-water-graph-node' }),
+      ]),
+    );
+  });
   it('compares clean water baselines as anchors without superiority claims', () => {
     const comparison = compareCleanWaterBaselines({
       mode: 'education',

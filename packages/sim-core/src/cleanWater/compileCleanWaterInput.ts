@@ -1,5 +1,6 @@
 import type { WaterFlowInput } from './waterFlowTypes.js';
 import { applyProductSpecEffects } from '../specMeaning/applyProductSpecEffects.js';
+import { validateCleanWaterGraphConsistency } from './graphConsistency.js';
 
 type RefValue = {
   id: string;
@@ -38,6 +39,7 @@ function isProductBinding(value: unknown): value is ProductBindingLike {
 export function compileCleanWaterInput(
   project: {
     id: string;
+    mode?: string;
     scenarioSettings?: { cleanWater?: { sourceLiters?: number; runMinutes?: number } };
   },
   refs: RefValue[],
@@ -49,6 +51,7 @@ export function compileCleanWaterInput(
     .filter((ref) => ref.kind === 'module')
     .map((ref) => ref.id)
     .sort();
+  const graphConsistency = validateCleanWaterGraphConsistency({ refs, mode: project.mode });
 
   const effects = applyProductSpecEffects(
     products.flatMap((product) => product.specs),
@@ -124,6 +127,8 @@ export function compileCleanWaterInput(
     defaultedInputs.push('water.minutes');
   }
 
+  warnings.push(...graphConsistency.warnings);
+
   const water: WaterFlowInput = {
     pumpFlowLpm: pumpFlowLpm ?? 1,
     filterEfficiency: hasValidFilterEfficiency ? filterEfficiency : 0.8,
@@ -137,6 +142,7 @@ export function compileCleanWaterInput(
     water,
     powerSource: { id: 'classroom-battery', voltageV: voltageV ?? 12 },
     powerLoads: [{ id: 'pump', voltageV: voltageV ?? 12, currentA: pumpCurrentA ?? 1 }],
+    graphConsistency,
     warnings,
     defaultedInputs,
     knownInputs: [

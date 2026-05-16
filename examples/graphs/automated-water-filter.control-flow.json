@@ -14,7 +14,7 @@
       "id": "pump"
     },
     {
-      "id": "status-dashboard"
+      "id": "status-dashboard-module"
     }
   ],
   "edges": [
@@ -31,7 +31,7 @@
     {
       "id": "controller-to-dashboard",
       "from": "controller-logic",
-      "to": "status-dashboard"
+      "to": "status-dashboard-module"
     }
   ]
 }

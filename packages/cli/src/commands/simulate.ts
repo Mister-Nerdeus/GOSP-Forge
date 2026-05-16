@@ -30,6 +30,13 @@ export function simulateCommand(file: string) {
   }
 
   const input = compileCleanWaterInput(project, resolvedRefs.documents);
+  const graphBlockers = input.warnings.filter(
+    (warning) => warning.code === 'missing-required-clean-water-graph-node' && warning.severity === 'blocker',
+  );
+  if (graphBlockers.length > 0) {
+    return { ok: false, errors: graphBlockers, warnings: input.warnings, input };
+  }
+
   const flow = simulateWaterFlow(input.water);
   const power = simulatePowerFlow(input.powerSource, input.powerLoads);
   const warnings = [...input.warnings, ...flow.warnings];
