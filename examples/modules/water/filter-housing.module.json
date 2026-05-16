@@ -3,6 +3,7 @@
   "id": "filter-housing",
   "version": "0.1.0",
   "name": "Filter Housing",
+  "quantity": 1,
   "type": "physical",
   "attribution": {
     "creators": [

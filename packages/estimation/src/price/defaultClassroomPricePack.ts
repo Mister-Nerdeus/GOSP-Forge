@@ -37,7 +37,8 @@ export const defaultClassroomPricePack = {
       unitCost: 0,
       currency: 'USD' as const,
       source: 'foundation-classroom-assumption',
-      assumption: 'Fabricated housing container line; material, machine, and labor priced separately.',
+      assumption:
+        'Intentional zero-cost fabricated housing parent line; material, machine, and labor are priced separately to avoid double counting.',
     },
     {
       id: 'filter-housing:pla',
