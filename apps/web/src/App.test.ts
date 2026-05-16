@@ -40,6 +40,7 @@ describe('renderApp', () => {
     expect(text).toContain('Automated Water Filter System');
     expect(text).toContain('No potable-water');
     expect(text).toContain('Foundation inspection only');
+    expect(text).toContain('no CAD editing');
     expect(text).toContain('Modules');
     expect(text).toContain('Products');
     expect(text).toContain('Education');

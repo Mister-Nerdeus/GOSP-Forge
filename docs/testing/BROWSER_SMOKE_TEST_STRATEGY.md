@@ -12,6 +12,8 @@ Use a minimal committed Vitest DOM smoke for the read-only inspection shell. Ful
 - `pnpm --filter @gosp/web build`
 - `pnpm --filter @gosp/web typecheck`
 
+The web package test script is `vitest run` without `--passWithNoTests`; missing or undiscovered smoke tests must fail the gate.
+
 A local Vite HTTP smoke may still be run when UI files change:
 
 ```bash
@@ -30,7 +32,7 @@ Then request `http://127.0.0.1:5173` and record HTTP 200 evidence in the issue c
 
 - App loads the Clean Water manifest summary.
 - Project, module, product, safety, education, and output panels render without blank states.
-- Safety and no-potable-water boundaries are visible.
+- Safety, no-potable-water, read-only inspection, and no-CAD-editing boundaries are visible.
 - No persistence, CAD, or editor workflow claim is introduced.
 
 ## Future Gate Trigger
