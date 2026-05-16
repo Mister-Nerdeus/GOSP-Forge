@@ -26,12 +26,11 @@ jobs:
       - run: pnpm estimate:clean-water
       - run: pnpm audit
       - run: pnpm run audit
-      - run: node scripts/controls/write-local-validation.mjs
-      - run: node scripts/controls/sanitize-local-validation.mjs
+      - run: node scripts/controls/write-ci-evidence.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: gosp-foundation-validation-${{ github.sha }}
+          name: gosp-foundation-ci-evidence-${{ github.sha }}
           path: |
-            artifacts/controls/local-validation/latest.sanitized.json
+            artifacts/ci/
             artifacts/batches/**/*.md
