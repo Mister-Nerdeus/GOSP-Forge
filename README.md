@@ -4,7 +4,7 @@ GOSP Forge is a problem-first foundation for classroom-scale STEM systems work. 
 
 ## Current State
 
-Implemented now: a pnpm monorepo skeleton, TypeScript/Zod contract package, deterministic simulation helpers, educational estimation and fabrication outputs, CLI commands, API health/version and validation route behavior, local validation artifacts, CI config, Docker local validation, a read-only UI inspection shell, and Clean Water foundation examples.
+Implemented now: a pnpm monorepo skeleton, TypeScript/Zod contract package, deterministic simulation helpers, educational estimation and fabrication outputs, CLI commands, API health/version and validation route behavior, local and sanitized validation artifacts, CI evidence config, Docker local validation, a read-only UI inspection shell, and Clean Water foundation examples.
 
 Not implemented yet: full editor UI, full CAD, professional-grade simulation, manufacturer verification workflows, public leaderboards, production storage, production deployment readiness, or imported legacy code.
 
@@ -20,6 +20,8 @@ Not implemented yet: full editor UI, full CAD, professional-grade simulation, ma
 - [Runtime policy](docs/setup/RUNTIME_POLICY.md)
 - [Issue contract standard](docs/program/ISSUE_CONTRACT_STANDARD.md)
 - [Foundation release checklist](docs/program/FOUNDATION_RELEASE_CHECKLIST.md)
+- [Release evidence command](docs/cli/RELEASE_EVIDENCE.md)
+- [Branch protection recommendations](docs/program/BRANCH_PROTECTION_RECOMMENDATIONS.md)
 - [Browser smoke strategy](docs/testing/BROWSER_SMOKE_TEST_STRATEGY.md)
 
 ## Local Gates
