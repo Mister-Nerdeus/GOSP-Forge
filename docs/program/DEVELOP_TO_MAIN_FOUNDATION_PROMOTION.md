@@ -9,6 +9,7 @@ This policy governs promotion of the foundation slice from `develop` to `main`.
 - `node scripts/controls/verify-local-validation-current.mjs` passes.
 - The latest foundation audit gives a GO decision for foundation continuation.
 - Release checklist items in `docs/program/FOUNDATION_RELEASE_CHECKLIST.md` are complete.
+- Branch protection recommendations in `docs/program/BRANCH_PROTECTION_RECOMMENDATIONS.md` have been reviewed, and any claim that protections are configured has been manually verified in GitHub.
 - Rollback owner and rollback criteria are named before promotion.
 
 ## Promotion Steps
@@ -18,8 +19,9 @@ This policy governs promotion of the foundation slice from `develop` to `main`.
 3. Run all required gates from the foundation release checklist.
 4. Write or update the final audit and handoff documents.
 5. Attach or reference local validation evidence for the promotion commit.
-6. Merge or fast-forward `develop` into `main` only after GO evidence is present.
-7. Tag or note the promoted commit in the handoff record.
+6. Confirm promotion uses a pull request and required checks when branch protection is configured.
+7. Merge or fast-forward `develop` into `main` only after GO evidence is present.
+8. Tag or note the promoted commit in the handoff record.
 
 ## Rollback Criteria
 
