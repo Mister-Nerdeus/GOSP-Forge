@@ -15,6 +15,9 @@ export const CostEstimateSchema = z.object({
       zeroCostLineCount: z.number().int().nonnegative(),
       defaultCostLineCount: z.number().int().nonnegative(),
       defaultedQuantityCount: z.number().int().nonnegative(),
+      zeroCostLineIds: z.array(IdSchema).default([]),
+      defaultCostLineIds: z.array(IdSchema).default([]),
+      defaultedQuantityIds: z.array(IdSchema).default([]),
       confidenceImpact: z.string().min(1),
     })
     .optional(),

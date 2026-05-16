@@ -1,21 +1,26 @@
 export function createEstimateQualityReport(input: {
-  lines: Array<{ unitCost: number; confidence?: { rationale?: string } }>;
+  lines: Array<{ id: string; unitCost: number; confidence?: { rationale?: string } }>;
   warnings: string[];
 }) {
-  const zeroCostLineCount = input.lines.filter((line) => line.unitCost === 0).length;
-  const defaultCostLineCount = input.warnings.filter((warning) =>
-    warning.toLowerCase().includes('defaulted to 0'),
-  ).length;
-  const defaultedQuantityCount = input.warnings.filter((warning) =>
-    warning.toLowerCase().includes('missing quantity'),
-  ).length;
+  const zeroCostLineIds = input.lines
+    .filter((line) => line.unitCost === 0)
+    .map((line) => line.id);
+  const defaultCostLineIds = input.warnings
+    .map((warning) => warning.match(/^Missing unit cost for (.+); defaulted to 0/i)?.[1])
+    .filter((id): id is string => Boolean(id));
+  const defaultedQuantityIds = input.warnings
+    .map((warning) => warning.match(/^Missing quantity for (?:product|fabricated module) (.+);/i)?.[1])
+    .filter((id): id is string => Boolean(id));
 
   return {
-    zeroCostLineCount,
-    defaultCostLineCount,
-    defaultedQuantityCount,
+    zeroCostLineCount: zeroCostLineIds.length,
+    defaultCostLineCount: defaultCostLineIds.length,
+    defaultedQuantityCount: defaultedQuantityIds.length,
+    zeroCostLineIds,
+    defaultCostLineIds,
+    defaultedQuantityIds,
     confidenceImpact:
-      zeroCostLineCount > 0 || defaultCostLineCount > 0 || defaultedQuantityCount > 0
+      zeroCostLineIds.length > 0 || defaultCostLineIds.length > 0 || defaultedQuantityIds.length > 0
         ? 'lowers-confidence'
         : 'no-placeholder-costs-detected',
   };

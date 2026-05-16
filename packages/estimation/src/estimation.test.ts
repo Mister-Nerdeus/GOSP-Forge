@@ -154,16 +154,28 @@ describe('estimation foundation', () => {
     expect(result.estimate.total).toBe(0);
     expect(result.estimate.confidence.level).toBe('low');
     expect(result.qualityReport.zeroCostLineCount).toBe(1);
+    expect(result.qualityReport.zeroCostLineIds).toEqual(['unknown-product']);
+    expect(result.qualityReport.defaultCostLineIds).toEqual(['unknown-product']);
     expect(result.warnings).toContain('Missing unit cost for unknown-product; defaulted to 0 USD.');
   });
 
   it('reports estimate quality and blocks placeholder costs in scoring mode', () => {
     const qualityReport = createEstimateQualityReport({
-      lines: [{ unitCost: 0 }],
-      warnings: ['Missing unit cost for unknown; defaulted to 0 USD.'],
+      lines: [{ id: 'unknown', unitCost: 0 }],
+      warnings: [
+        'Missing unit cost for unknown; defaulted to 0 USD.',
+        'Missing quantity for fabricated module housing; defaulted to 1 each.',
+      ],
     });
 
-    expect(qualityReport).toMatchObject({ zeroCostLineCount: 1, defaultCostLineCount: 1 });
+    expect(qualityReport).toMatchObject({
+      zeroCostLineCount: 1,
+      defaultCostLineCount: 1,
+      defaultedQuantityCount: 1,
+      zeroCostLineIds: ['unknown'],
+      defaultCostLineIds: ['unknown'],
+      defaultedQuantityIds: ['housing'],
+    });
     expect(evaluateEstimateModeGate({ mode: 'education', qualityReport }).ok).toBe(true);
     expect(evaluateEstimateModeGate({ mode: 'scoring', qualityReport }).ok).toBe(false);
     expect(evaluateEstimateModeGate({ mode: 'professional', qualityReport }).ok).toBe(false);
