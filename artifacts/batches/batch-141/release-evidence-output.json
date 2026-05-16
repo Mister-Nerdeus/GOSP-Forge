@@ -1,0 +1,101 @@
+{
+  "ok": true,
+  "kind": "FoundationReleaseEvidence",
+  "target": "foundation",
+  "gitSha": "bc980528e4e2105db4e556a2ef22d753ae98c769",
+  "branch": "develop",
+  "generatedAt": "2026-05-16T00:43:49.004Z",
+  "runtime": {
+    "node": "v22.16.0",
+    "pnpm": "9.15.5"
+  },
+  "evidence": {
+    "validation": {
+      "ok": true,
+      "validationMode": "repo-refs",
+      "projectId": "automated-water-filter",
+      "refs": {
+        "declared": 20,
+        "resolved": 20
+      },
+      "errors": 0,
+      "warnings": 10
+    },
+    "simulation": {
+      "ok": true,
+      "projectId": "automated-water-filter",
+      "defaultedInputs": 0,
+      "unknownInputs": 0,
+      "confidence": "medium",
+      "confidenceSummary": {
+        "knownInputs": 6,
+        "defaultedInputs": 0,
+        "unknownInputs": 0,
+        "graphWarningCount": 0,
+        "warningCount": 0,
+        "level": "medium",
+        "rationale": "Simulation inputs are explicit for the foundation screening model."
+      },
+      "graphConsistency": {
+        "requiredNodeIds": [
+          "raw-water-tank",
+          "pump",
+          "filter-housing",
+          "clean-water-tank",
+          "classroom-battery",
+          "controller-logic",
+          "status-dashboard-module"
+        ],
+        "presentNodeIds": [
+          "classroom-battery",
+          "clean-water-tank",
+          "controller-logic",
+          "filter-housing",
+          "pump",
+          "raw-water-tank",
+          "status-dashboard-module",
+          "water-quality-sensor"
+        ],
+        "missingNodeIds": [],
+        "warnings": []
+      }
+    },
+    "estimate": {
+      "ok": true,
+      "qualityReport": {
+        "zeroCostLineCount": 1,
+        "defaultCostLineCount": 0,
+        "defaultedQuantityCount": 0,
+        "zeroCostLineIds": [
+          "filter-housing"
+        ],
+        "defaultCostLineIds": [],
+        "defaultedQuantityIds": [],
+        "confidenceImpact": "lowers-confidence"
+      },
+      "modeGate": {
+        "ok": true,
+        "severity": "warning",
+        "message": "Education estimate mode reports placeholders as confidence warnings."
+      }
+    },
+    "audit": {
+      "ok": true,
+      "decision": "GO",
+      "counts": {
+        "pass": 23,
+        "warn": 0,
+        "fail": 0
+      },
+      "claimScan": {
+        "ok": true,
+        "findings": [],
+        "scannedFiles": 158
+      }
+    }
+  },
+  "limitations": [
+    "Evidence bundle gathers existing foundation outputs only.",
+    "No professional, procurement, potable-water, manufacturing, or release-approval claim."
+  ]
+}
