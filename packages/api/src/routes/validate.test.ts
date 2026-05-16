@@ -79,6 +79,98 @@ describe('validate route', () => {
     });
   });
 
+  it('blocks repo-ref validation in production by default', () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    const previousOverride = process.env.GOSP_API_ENABLE_REPO_VALIDATION;
+    process.env.NODE_ENV = 'production';
+    delete process.env.GOSP_API_ENABLE_REPO_VALIDATION;
+
+    try {
+      const result = validateProjectBody(
+        {
+          ...validProject,
+          refGroups: {
+            modules: [
+              {
+                id: 'pump',
+                kind: 'module',
+                path: 'examples/modules/water/pump.module.json',
+                required: true,
+              },
+            ],
+          },
+        },
+        { mode: 'repo' },
+      );
+
+      expect(result).toMatchObject({
+        status: 403,
+        body: {
+          ok: false,
+          validationMode: 'repo-refs',
+          errors: [expect.objectContaining({ code: 'repo-validation-disabled' })],
+        },
+      });
+    } finally {
+      if (previousNodeEnv === undefined) {
+        delete process.env.NODE_ENV;
+      } else {
+        process.env.NODE_ENV = previousNodeEnv;
+      }
+      if (previousOverride === undefined) {
+        delete process.env.GOSP_API_ENABLE_REPO_VALIDATION;
+      } else {
+        process.env.GOSP_API_ENABLE_REPO_VALIDATION = previousOverride;
+      }
+    }
+  });
+
+  it('allows repo-ref validation in production only with explicit internal override', () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    const previousOverride = process.env.GOSP_API_ENABLE_REPO_VALIDATION;
+    process.env.NODE_ENV = 'production';
+    process.env.GOSP_API_ENABLE_REPO_VALIDATION = '1';
+
+    try {
+      const result = validateProjectBody(
+        {
+          ...validProject,
+          refGroups: {
+            modules: [
+              {
+                id: 'pump',
+                kind: 'module',
+                path: 'examples/modules/water/pump.module.json',
+                required: true,
+              },
+            ],
+          },
+        },
+        { mode: 'repo' },
+      );
+
+      expect(result).toMatchObject({
+        status: 200,
+        body: {
+          ok: true,
+          validationMode: 'repo-refs',
+          refs: { resolved: 1 },
+        },
+      });
+    } finally {
+      if (previousNodeEnv === undefined) {
+        delete process.env.NODE_ENV;
+      } else {
+        process.env.NODE_ENV = previousNodeEnv;
+      }
+      if (previousOverride === undefined) {
+        delete process.env.GOSP_API_ENABLE_REPO_VALIDATION;
+      } else {
+        process.env.GOSP_API_ENABLE_REPO_VALIDATION = previousOverride;
+      }
+    }
+  });
+
   it('blocks path traversal attempts in repo mode', () => {
     const result = validateProjectBody(
       {

@@ -60,7 +60,8 @@ export function validateProjectBody(body: unknown, options: { mode?: 'schema-onl
           errors: [
             {
               code: 'repo-validation-disabled',
-              message: 'API repo-ref validation is available only in local/dev mode.',
+              message:
+                'API repo-ref validation is available in local/dev mode or with an explicit internal production operator override.',
               severity: 'blocker',
               source: 'mode',
             },

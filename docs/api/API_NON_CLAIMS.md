@@ -16,4 +16,4 @@ The API exposes health, version, and foundation validation routes. Request-size,
 
 ## Validation Non-Claims
 
-The /validate route defaults to schema-only ProjectManifestV2 parsing. It does not claim CLI-equivalent repository validation unless local/dev repo-ref mode is explicitly requested and succeeds.
+The /validate route defaults to schema-only ProjectManifestV2 parsing. It does not claim CLI-equivalent public production repository validation. Repo-ref mode is available for local/dev validation and can be enabled in production only through an explicit internal operator override for controlled environments.

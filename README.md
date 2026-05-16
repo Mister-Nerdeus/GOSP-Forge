@@ -45,4 +45,4 @@ The repository claims only a foundation implementation. All examples are educati
 
 ## Foundation Validation Scope
 
-API validation is schema-only by default. CLI validation resolves repository refs. Local/dev API repo-ref mode is bounded to known repo paths.
+API validation is schema-only by default. CLI validation resolves repository refs. Local/dev API repo-ref mode is bounded to known repo paths; any production repo-ref mode requires an explicit internal operator override and is not public production API behavior.
