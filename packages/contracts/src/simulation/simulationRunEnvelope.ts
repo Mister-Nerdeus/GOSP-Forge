@@ -27,6 +27,7 @@ export const SimulationRunEnvelopeSchema = z.object({
       knownInputs: z.number().int().nonnegative(),
       defaultedInputs: z.number().int().nonnegative(),
       unknownInputs: z.number().int().nonnegative(),
+      graphWarningCount: z.number().int().nonnegative().default(0),
       warningCount: z.number().int().nonnegative(),
       level: z.enum(['low', 'medium', 'high', 'reviewed']),
       rationale: z.string().min(1),

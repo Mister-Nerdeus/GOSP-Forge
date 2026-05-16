@@ -42,6 +42,31 @@ describe('sim-core foundation', () => {
       }),
     ).toBeTruthy();
   });
+
+  it('counts graph consistency warnings in confidence summary', () => {
+    const envelope = createSimulationRunEnvelope({
+      runId: 'run',
+      projectId: 'proj',
+      moduleIds: ['m'],
+      modelVersion: '0.1.0',
+      assumptions: [{ id: 'a', description: 'A' }],
+      output: { ok: true },
+      warnings: [
+        {
+          code: 'missing-required-clean-water-graph-node',
+          message: 'Clean Water graph consistency is missing required pump node "pump".',
+          severity: 'warning',
+        },
+      ],
+    });
+
+    expect(envelope.confidenceSummary).toMatchObject({
+      graphWarningCount: 1,
+      warningCount: 1,
+      level: 'low',
+    });
+    expect(envelope.confidenceSummary?.rationale).toContain('graph consistency warnings');
+  });
   it('maps known product spec targets and warns on unknown targets', () => {
     const result = applyProductSpecEffects(
       [

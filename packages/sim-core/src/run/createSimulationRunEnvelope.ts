@@ -48,6 +48,9 @@ export function createSimulationRunEnvelope(input: {
       defaultedInputs: input.defaultedInputs,
       unknownInputs: input.unknownInputs,
       warningCount: input.warnings?.length ?? 0,
+      graphWarningCount:
+        input.warnings?.filter((warning) => warning.code === 'missing-required-clean-water-graph-node')
+          .length ?? 0,
     }),
     confidence: input.confidence ?? {
       level: 'medium' as const,

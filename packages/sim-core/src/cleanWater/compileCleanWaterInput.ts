@@ -156,9 +156,11 @@ export function compileCleanWaterInput(
     unknownInputs: [],
     confidence: {
       level: warnings.length ? ('low' as const) : ('medium' as const),
-      rationale: warnings.length
-        ? 'Manifest refs compiled with missing specs defaulted.'
-        : 'Manifest refs compiled with product specs.',
+      rationale: graphConsistency.warnings.length
+        ? 'Manifest refs compiled with graph consistency warnings.'
+        : warnings.length
+          ? 'Manifest refs compiled with missing specs defaulted.'
+          : 'Manifest refs compiled with product specs.',
     },
   };
 }
