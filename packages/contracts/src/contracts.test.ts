@@ -117,9 +117,25 @@ describe('foundation contracts', () => {
         ok: true,
         schema: 'ProjectManifestV2',
         validationMode: 'schema-only',
-        warnings: ['API validation does not resolve repository refs in this foundation build.'],
+        warnings: [
+          {
+            code: 'api-schema-only-no-repo-refs',
+            message: 'API validation does not resolve repository refs in this foundation build.',
+            severity: 'warning',
+            source: 'mode',
+          },
+        ],
       }).success,
     ).toBe(true);
+
+    expect(
+      ValidationResultSchema.safeParse({
+        ok: true,
+        schema: 'ProjectManifestV2',
+        validationMode: 'schema-only',
+        warnings: ['API validation does not resolve repository refs in this foundation build.'],
+      }).success,
+    ).toBe(false);
 
     expect(
       ProjectManifestV2Schema.safeParse({

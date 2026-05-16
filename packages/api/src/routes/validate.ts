@@ -1,8 +1,12 @@
 import { ProjectManifestV2Schema, ValidationResultSchema } from '@gosp/contracts';
 import { validateRepoRefs } from './validateRepoRefs.js';
 
-const schemaOnlyWarning =
-  'API validation does not resolve repository refs in this foundation build.';
+const schemaOnlyWarning = {
+  code: 'api-schema-only-no-repo-refs',
+  message: 'API validation does not resolve repository refs in this foundation build.',
+  severity: 'warning' as const,
+  source: 'mode' as const,
+};
 
 function schemaErrors(error: { issues: Array<{ path: Array<string | number>; message: string }> }) {
   return error.issues.map((issue) => ({
@@ -92,7 +96,7 @@ export function validateProjectBody(body: unknown, options: { mode?: 'schema-onl
 
   const result = {
     status: 200,
-    body: {
+    body: ValidationResultSchema.parse({
       ok: true,
       schema: 'ProjectManifestV2',
       validationMode: 'schema-only',
@@ -103,7 +107,7 @@ export function validateProjectBody(body: unknown, options: { mode?: 'schema-onl
       },
       errors: [],
       warnings: [schemaOnlyWarning],
-    },
+    }),
   };
   return result;
 }

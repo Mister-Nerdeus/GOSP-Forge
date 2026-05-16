@@ -26,7 +26,7 @@ export const ValidationResultSchema = z.object({
     })
     .optional(),
   errors: z.array(ValidationDiagnosticSchema).default([]),
-  warnings: z.array(z.union([z.string(), ValidationDiagnosticSchema])).default([]),
+  warnings: z.array(ValidationDiagnosticSchema).default([]),
 });
 
 export type ValidationMode = z.infer<typeof ValidationModeSchema>;

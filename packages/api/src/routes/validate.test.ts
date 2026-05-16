@@ -23,7 +23,14 @@ describe('validate route', () => {
         ok: true,
         schema: 'ProjectManifestV2',
         validationMode: 'schema-only',
-        warnings: ['API validation does not resolve repository refs in this foundation build.'],
+        warnings: [
+          expect.objectContaining({
+            code: 'api-schema-only-no-repo-refs',
+            message: 'API validation does not resolve repository refs in this foundation build.',
+            severity: 'warning',
+            source: 'mode',
+          }),
+        ],
       },
     });
   });
@@ -47,7 +54,7 @@ describe('validate route', () => {
     expect(result.body).toMatchObject({
       ok: true,
       validationMode: 'schema-only',
-      warnings: ['API validation does not resolve repository refs in this foundation build.'],
+      warnings: [expect.objectContaining({ code: 'api-schema-only-no-repo-refs' })],
     });
   });
 
