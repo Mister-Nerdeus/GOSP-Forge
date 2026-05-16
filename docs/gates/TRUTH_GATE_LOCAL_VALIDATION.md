@@ -17,10 +17,22 @@ node scripts/controls/write-local-validation.mjs
 node scripts/controls/verify-local-validation-current.mjs
 ```
 
+## Sanitized Evidence Workflow
+
+For PR or release review, generate the full local artifact and then create the sanitized artifact:
+
+```powershell
+node scripts/controls/write-local-validation.mjs
+node scripts/controls/sanitize-local-validation.mjs
+node scripts/controls/verify-local-validation-current.mjs
+```
+
+The sanitized artifact includes commit SHA, branch, runtime versions, command names, command PASS/FAIL state, output summaries, aggregate PASS/FAIL, and timestamp. It redacts repository-local absolute paths, home/user paths, Windows absolute paths, Unix home paths, and secret-like environment assignments. The full local artifact remains uncommitted.
+
 ## Current Implementation Limits
 
 This document describes foundation policy and contract intent. The current repository provides foundation packages, example fixtures, validation gates, and local validation currentness checks only. It does not claim production readiness, professional approval, potable-water certification, or production manufacturing approval.
 
 ## Sanitized Evidence
 
-Sanitized validation evidence is for PR and release attachment. Currentness verification still uses the full local artifact at artifacts/controls/local-validation/latest.json.
+Sanitized validation evidence is for PR and release attachment. Currentness verification still uses the full local artifact at `artifacts/controls/local-validation/latest.json`. A sanitized sample may be committed under an issue-specific `artifacts/batches/batch-*/` path when a static audit needs proof that the sanitizer output shape is safe to inspect.

@@ -14,4 +14,11 @@ Expected non-secret proof fields:
 
 ## Sanitized Artifact
 
-Run node scripts/controls/sanitize-local-validation.mjs after write-local-validation to produce latest.sanitized.json. The sanitized file keeps commit SHA and gate results while redacting local paths.
+Run the writer and sanitizer together:
+
+```powershell
+node scripts/controls/write-local-validation.mjs
+node scripts/controls/sanitize-local-validation.mjs
+```
+
+The sanitized file keeps commit SHA, branch, runtime, command results, aggregate PASS/FAIL, and timestamp while redacting local paths and secret-like environment assignments. `latest.sanitized.json` is still ignored by git; attach it to PRs/releases or copy a reviewed sample into an issue-specific artifact path when static audit evidence is required.

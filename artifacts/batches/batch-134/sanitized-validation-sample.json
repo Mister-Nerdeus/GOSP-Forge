@@ -1,0 +1,57 @@
+{
+  "gitSha": "8fbb6d8ec0433479755d27d4a7e483223b3e8a6f",
+  "branch": "develop",
+  "timestamp": "2026-05-16T00:20:18.025Z",
+  "runtime": {
+    "node": "v22.16.0",
+    "pnpm": "9.15.5"
+  },
+  "result": "PASS",
+  "commands": [
+    {
+      "command": "node scripts/controls/verify-runtime-version.mjs",
+      "ok": true,
+      "outputSummary": "{\n  \"ok\": true,\n  \"node\": \"v22.16.0\",\n  \"actualMajor\": 22,\n  \"preferredNodeMajor\": 24,\n  \"temporarySupportedNodeMajors\": [\n    22\n  ],\n  \"supportedNodeMajors\": [\n    22,\n    24\n  ],\n  \"declarations\": {\n    \"packageEnginesNode\": \">=22 <25\",\n    \"nvmrcNodeMajor\": 24,\n    \"toolVersionsNodeMajor\": 24\n  },\n  \"errors\": []\n}"
+    },
+    {
+      "command": "pnpm lint",
+      "ok": true,
+      "outputSummary": "> gosp-forge@0.1.0 lint <repo>\n> eslint ."
+    },
+    {
+      "command": "pnpm -r build",
+      "ok": true,
+      "outputSummary": "apps/web build: computing gzip size...\napps/web build: \u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m 0.40 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip: 0.27 kB\u001b[22m\napps/web build: \u001b[2mdist/\u001b[22m\u001b[35massets/index-N_0w-cmg.css  \u001b[39m\u001b[1m\u001b[2m 1.30 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip: 0.62 kB\u001b[22m\napps/web build: \u001b[2mdist/\u001b[22m\u001b[36massets/index-CtwzcqLa.js   \u001b[39m\u001b[1m\u001b[2m20.46 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip: 4.83 kB\u001b[22m\napps/web build: \u001b[32m✓ built in 276ms\u001b[39m\napps/web build: Done\npackages/ai-proposals build: Done\npackages/contracts build: Done\npackages/api build$ tsc -p tsconfig.json\npackages/fabrication build$ tsc -p tsconfig.json\npackages/module-registry build$ tsc -p tsconfig.json\npackages/sim-core build$ tsc -p tsconfig.json\npackages/fabrication build: Done\npackages/module-registry build: Done\npackages/sim-core build: Done\npackages/api build: Done\npackages/estimation build$ tsc -p tsconfig.json\npackages/estimation build: Done\npackages/cli build$ tsc -p tsconfig.json\npackages/cli build: Done"
+    },
+    {
+      "command": "pnpm -r typecheck",
+      "ok": true,
+      "outputSummary": "Scope: 9 of 10 workspace projects\npackages/ai-proposals typecheck$ tsc -p tsconfig.json --noEmit\napps/web typecheck$ tsc -p tsconfig.json --noEmit\npackages/contracts typecheck$ tsc -p tsconfig.json --noEmit\npackages/ai-proposals typecheck: Done\napps/web typecheck: Done\npackages/contracts typecheck: Done\npackages/api typecheck$ tsc -p tsconfig.json --noEmit\npackages/fabrication typecheck$ tsc -p tsconfig.json --noEmit\npackages/module-registry typecheck$ tsc -p tsconfig.json --noEmit\npackages/sim-core typecheck$ tsc -p tsconfig.json --noEmit\npackages/fabrication typecheck: Done\npackages/module-registry typecheck: Done\npackages/sim-core typecheck: Done\npackages/api typecheck: Done\npackages/estimation typecheck$ tsc -p tsconfig.json --noEmit\npackages/estimation typecheck: Done\npackages/cli typecheck$ tsc -p tsconfig.json --noEmit\npackages/cli typecheck: Done"
+    },
+    {
+      "command": "pnpm -r test",
+      "ok": true,
+      "outputSummary": "packages/api test: Done\npackages/sim-core test:  Test Files  1 passed (1)\npackages/sim-core test:       Tests  11 passed (11)\npackages/sim-core test:    Start at  20:20:41\npackages/sim-core test:    Duration  1.50s (transform 862ms, setup 0ms, import 1.09s, tests 25ms, environment 0ms)\npackages/sim-core test: Done\npackages/estimation test$ vitest run --passWithNoTests\npackages/estimation test:  RUN  v4.1.5 <repo>/packages/estimation\npackages/estimation test:  Test Files  1 passed (1)\npackages/estimation test:       Tests  10 passed (10)\npackages/estimation test:    Start at  20:20:43\npackages/estimation test:    Duration  985ms (transform 573ms, setup 0ms, import 734ms, tests 26ms, environment 0ms)\npackages/estimation test: Done\npackages/cli test$ vitest run --passWithNoTests\npackages/cli test:  RUN  v4.1.5 <repo>/packages/cli\npackages/cli test:  Test Files  5 passed (5)\npackages/cli test:       Tests  15 passed (15)\npackages/cli test:    Start at  20:20:45\npackages/cli test:    Duration  1.40s (transform 1.81s, setup 0ms, import 2.54s, tests 167ms, environment 1ms)\npackages/cli test: Done"
+    },
+    {
+      "command": "pnpm validate:examples",
+      "ok": true,
+      "outputSummary": "    {\n      \"code\": \"education-mode-not-approval\",\n      \"message\": \"Education profile is instructional context, not safety approval.\",\n      \"severity\": \"warning\",\n      \"source\": \"schema\",\n      \"path\": \"educationProfile\",\n      \"refId\": \"classroom-battery\",\n      \"refKind\": \"module\"\n    },\n    {\n      \"code\": \"education-mode-not-approval\",\n      \"message\": \"Education profile is instructional context, not safety approval.\",\n      \"severity\": \"warning\",\n      \"source\": \"schema\",\n      \"path\": \"educationProfile\",\n      \"refId\": \"assembly-test-process\",\n      \"refKind\": \"module\"\n    }\n  ]\n}"
+    },
+    {
+      "command": "pnpm simulate:clean-water",
+      "ok": true,
+      "outputSummary": "        {\n          \"id\": \"downstream-cost-confidence\",\n          \"affectedArea\": \"cost-confidence\",\n          \"interpretation\": \"Changes to pump flow, runtime, and replacement assumptions may affect downstream cost confidence.\"\n        }\n      ],\n      \"warnings\": [\n        {\n          \"code\": \"downstream-effects-educational-only\",\n          \"message\": \"Downstream effects are level-1 educational estimates and are not professional validation.\",\n          \"severity\": \"info\"\n        }\n      ],\n      \"limitations\": [\n        \"Educational impact report only.\",\n        \"No potable-water certification or professional engineering claim.\"\n      ]\n    }\n  }\n}"
+    },
+    {
+      "command": "pnpm estimate:clean-water",
+      "ok": true,
+      "outputSummary": "        \"code\": \"missing-quantity-for-fabricated-module-filter-ho\",\n        \"message\": \"Missing quantity for fabricated module filter-housing; defaulted to 1 each.\",\n        \"severity\": \"warning\"\n      }\n    ],\n    \"limitations\": [\n      {\n        \"id\": \"not-professional-estimate\",\n        \"description\": \"This estimate is educational and conceptual, not professional review.\"\n      },\n      {\n        \"id\": \"not-procurement-or-permit-ready\",\n        \"description\": \"This estimate is not a quote, procurement instruction, or permit-ready output.\"\n      }\n    ]\n  },\n  \"warnings\": [\n    \"Missing quantity for fabricated module filter-housing; defaulted to 1 each.\"\n  ]\n}"
+    },
+    {
+      "command": "pnpm run audit",
+      "ok": true,
+      "outputSummary": "      \"required\": true,\n      \"exists\": true,\n      \"status\": \"pass\",\n      \"note\": \"API validation is foundation-local behavior only and must not be treated as production hosting, identity, or storage.\"\n    },\n    {\n      \"file\": \"apps/web/package.json\",\n      \"required\": false,\n      \"exists\": true,\n      \"status\": \"pass\",\n      \"note\": \"Builder UI is a read-only foundation shell only; no CAD editor, persistence, potable-water, professional, or production-manufacturing claim.\"\n    }\n  ],\n  \"generatedAt\": \"2026-05-16T00:20:53.260Z\",\n  \"claimScan\": {\n    \"ok\": true,\n    \"findings\": [],\n    \"scannedFiles\": 158\n  }\n}"
+    }
+  ]
+}
