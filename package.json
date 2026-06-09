@@ -1,0 +1,20 @@
+{
+  "name": "gosp-forge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-assisted contract-first simulation workspace for HouseSim Challenge.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "node scripts/checks/typecheck.mjs",
+    "lint": "node scripts/checks/lint.mjs",
+    "test": "node scripts/checks/test.mjs",
+    "validate:fixtures": "node scripts/simulation/validate-fixtures.mjs",
+    "simulate:baseline": "node scripts/simulation/simulate-baseline.mjs",
+    "report:comparison": "node scripts/simulation/report-comparison.mjs",
+    "guardrails:wording": "node scripts/guardrails/wording-check.mjs",
+    "build": "node scripts/checks/build.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
