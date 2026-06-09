@@ -1,0 +1,75 @@
+{
+  "scenarioId": "house-bad-nonmodular-example",
+  "metadata": {
+    "name": "Bad Nonmodular Example",
+    "fixtureKind": "negative",
+    "modelLevel": "L1 deterministic starter"
+  },
+  "location": {
+    "state": "MI",
+    "climateNote": "Negative fixture"
+  },
+  "geometry": {
+    "footprintWidthFt": 29,
+    "footprintLengthFt": 47,
+    "stories": 1,
+    "wallHeightFt": 9,
+    "roofAreaMultiplier": 1.25,
+    "roofComplexity": "complex",
+    "cornerCount": 8
+  },
+  "foundation": {
+    "type": "partial-basement",
+    "basementWidthFt": 24,
+    "basementLengthFt": 28,
+    "basementBedroom": true,
+    "egressStrategy": "missing",
+    "radonStrategy": "unknown"
+  },
+  "panelSystem": {
+    "strategy": "panelized-wall-cartridges",
+    "structuralClaim": "engineered-sip",
+    "engineerStamped": false,
+    "uniquePanelRatio": 0.75
+  },
+  "cnc": {
+    "sheetOptions": [
+      { "widthFt": 5, "lengthFt": 9 }
+    ],
+    "kerfIn": 0.25
+  },
+  "envelope": {
+    "wallEffectiveR": -1,
+    "roofR": 40,
+    "basementWallR": 0,
+    "airLeakageAch50": 0
+  },
+  "openings": {
+    "windowAreaSqFt": 420,
+    "doorAreaSqFt": 60
+  },
+  "mechanical": {
+    "heatingCooling": "cold-climate-heat-pump",
+    "erv": false,
+    "waterHeating": "heat-pump-water-heater"
+  },
+  "solarBattery": {
+    "solarReady": true,
+    "batteryReady": false,
+    "evReady": true,
+    "usableRoofPlaneRatio": 0.25
+  },
+  "smartHome": {
+    "wiredFirst": false,
+    "networkCloset": false,
+    "sensorReady": false
+  },
+  "costAssumptions": {
+    "currency": "USD",
+    "costBandLevel": "negative-fixture"
+  },
+  "optimizationGoals": {
+    "primary": "prove validator catches bad assumptions",
+    "avoid": ["nonmodular layout", "invalid sheet size", "bad envelope values"]
+  }
+}
