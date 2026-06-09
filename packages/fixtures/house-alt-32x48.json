@@ -1,0 +1,76 @@
+{
+  "scenarioId": "house-alt-32x48",
+  "metadata": {
+    "name": "Larger Michigan Panel Home",
+    "fixtureKind": "valid",
+    "modelLevel": "L1 deterministic starter"
+  },
+  "location": {
+    "state": "MI",
+    "climateNote": "Michigan-ready larger assumptions"
+  },
+  "geometry": {
+    "footprintWidthFt": 32,
+    "footprintLengthFt": 48,
+    "stories": 1,
+    "wallHeightFt": 9,
+    "roofAreaMultiplier": 1.12,
+    "roofComplexity": "simple",
+    "cornerCount": 4
+  },
+  "foundation": {
+    "type": "partial-basement",
+    "basementWidthFt": 28,
+    "basementLengthFt": 28,
+    "basementBedroom": false,
+    "egressStrategy": "not-applicable",
+    "radonStrategy": "planned"
+  },
+  "panelSystem": {
+    "strategy": "panelized-wall-cartridges",
+    "structuralClaim": "none",
+    "engineerStamped": false,
+    "uniquePanelRatio": 0.32
+  },
+  "cnc": {
+    "sheetOptions": [
+      { "widthFt": 4, "lengthFt": 8 },
+      { "widthFt": 4, "lengthFt": 12 }
+    ],
+    "kerfIn": 0.25
+  },
+  "envelope": {
+    "wallEffectiveR": 32,
+    "roofR": 58,
+    "basementWallR": 20,
+    "airLeakageAch50": 2
+  },
+  "openings": {
+    "windowAreaSqFt": 250,
+    "doorAreaSqFt": 42
+  },
+  "mechanical": {
+    "heatingCooling": "cold-climate-heat-pump",
+    "erv": true,
+    "waterHeating": "heat-pump-water-heater"
+  },
+  "solarBattery": {
+    "solarReady": true,
+    "batteryReady": true,
+    "evReady": true,
+    "usableRoofPlaneRatio": 0.5
+  },
+  "smartHome": {
+    "wiredFirst": true,
+    "networkCloset": true,
+    "sensorReady": true
+  },
+  "costAssumptions": {
+    "currency": "USD",
+    "costBandLevel": "starter-range"
+  },
+  "optimizationGoals": {
+    "primary": "more livable area while preserving simple shell logic",
+    "avoid": ["roof complexity", "high unique panel count"]
+  }
+}
