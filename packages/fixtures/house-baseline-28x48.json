@@ -1,0 +1,76 @@
+{
+  "scenarioId": "house-baseline-28x48",
+  "metadata": {
+    "name": "Modern Michigan Panel Home V1",
+    "fixtureKind": "valid",
+    "modelLevel": "L1 deterministic starter"
+  },
+  "location": {
+    "state": "MI",
+    "climateNote": "Michigan-ready starter assumptions"
+  },
+  "geometry": {
+    "footprintWidthFt": 28,
+    "footprintLengthFt": 48,
+    "stories": 1,
+    "wallHeightFt": 9,
+    "roofAreaMultiplier": 1.12,
+    "roofComplexity": "simple",
+    "cornerCount": 4
+  },
+  "foundation": {
+    "type": "partial-basement",
+    "basementWidthFt": 24,
+    "basementLengthFt": 28,
+    "basementBedroom": false,
+    "egressStrategy": "not-applicable",
+    "radonStrategy": "planned"
+  },
+  "panelSystem": {
+    "strategy": "panelized-wall-cartridges",
+    "structuralClaim": "none",
+    "engineerStamped": false,
+    "uniquePanelRatio": 0.28
+  },
+  "cnc": {
+    "sheetOptions": [
+      { "widthFt": 4, "lengthFt": 8 },
+      { "widthFt": 4, "lengthFt": 12 }
+    ],
+    "kerfIn": 0.25
+  },
+  "envelope": {
+    "wallEffectiveR": 30,
+    "roofR": 55,
+    "basementWallR": 18,
+    "airLeakageAch50": 2.2
+  },
+  "openings": {
+    "windowAreaSqFt": 210,
+    "doorAreaSqFt": 42
+  },
+  "mechanical": {
+    "heatingCooling": "cold-climate-heat-pump",
+    "erv": true,
+    "waterHeating": "heat-pump-water-heater"
+  },
+  "solarBattery": {
+    "solarReady": true,
+    "batteryReady": true,
+    "evReady": true,
+    "usableRoofPlaneRatio": 0.48
+  },
+  "smartHome": {
+    "wiredFirst": true,
+    "networkCloset": true,
+    "sensorReady": true
+  },
+  "costAssumptions": {
+    "currency": "USD",
+    "costBandLevel": "starter-range"
+  },
+  "optimizationGoals": {
+    "primary": "best balanced 25-year value",
+    "avoid": ["overbuilding", "unsupported claims", "complex rooflines"]
+  }
+}
