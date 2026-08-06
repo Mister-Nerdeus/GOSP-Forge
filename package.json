@@ -1,20 +1,33 @@
 {
   "name": "gosp-forge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "AI-assisted contract-first simulation workspace for HouseSim Challenge.",
+  "description": "Phase 0 baseline for a collaborative engineering challenge, reproducibility, evidence, and component-reuse platform.",
   "type": "module",
   "scripts": {
-    "typecheck": "node scripts/checks/typecheck.mjs",
-    "lint": "node scripts/checks/lint.mjs",
-    "test": "node scripts/checks/test.mjs",
-    "validate:fixtures": "node scripts/simulation/validate-fixtures.mjs",
-    "simulate:baseline": "node scripts/simulation/simulate-baseline.mjs",
-    "report:comparison": "node scripts/simulation/report-comparison.mjs",
-    "guardrails:wording": "node scripts/guardrails/wording-check.mjs",
-    "build": "node scripts/checks/build.mjs"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test",
+    "validate:contracts": "node scripts/validation/validate-contracts.mjs",
+    "benchmark:sandbox": "node packages/runner/src/cli.mjs benchmarks/sandbox-001/challenge.json benchmarks/sandbox-001/baseline-submission.json",
+    "evidence:ci": "node scripts/evidence/write-ci-evidence.mjs",
+    "build": "tsc -p tsconfig.build.json",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm validate:contracts && pnpm benchmark:sandbox && pnpm build",
+    "housesim:validate": "node scripts/simulation/validate-fixtures.mjs",
+    "housesim:baseline": "node scripts/simulation/simulate-baseline.mjs",
+    "housesim:comparison": "node scripts/simulation/report-comparison.mjs"
   },
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^16.0.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.0.0"
   }
 }

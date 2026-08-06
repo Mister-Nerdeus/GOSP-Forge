@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.pnpm-store/
+.DS_Store
+*.log
+
+# Generated execution evidence is uploaded by CI rather than committed.
+evidence/ci/*
+!evidence/ci/.gitkeep
+
+# Legacy HouseSim generated reports.
+evidence/*.json
+reports/
