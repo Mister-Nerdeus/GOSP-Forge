@@ -1,0 +1,7 @@
+{
+  "name": "@gosp/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Domain-neutral Phase 0 contracts for GOSP Forge."
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:gosp-forge:schema:rep:0.1",
+  "title": "GOSP Forge Reproducible Evaluation Package Manifest v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["repVersion", "challengeId", "entrypoint", "network", "inputSchemaRef", "outputSchemaRef", "determinism", "provenance"],
+  "properties": {
+    "repVersion": { "const": "0.1" },
+    "challengeId": { "type": "string", "minLength": 1 },
+    "entrypoint": { "type": "string", "minLength": 1 },
+    "network": { "enum": ["disabled", "required"] },
+    "inputSchemaRef": { "type": "string", "minLength": 1 },
+    "outputSchemaRef": { "type": "string", "minLength": 1 },
+    "determinism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "seed"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "seed": { "type": "integer" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordInputHashes", "recordOutputHash", "recordRuntime", "recordPlatform"],
+      "properties": {
+        "recordInputHashes": { "type": "boolean" },
+        "recordOutputHash": { "type": "boolean" },
+        "recordRuntime": { "type": "boolean" },
+        "recordPlatform": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "repVersion": "0.1",
+  "challengeId": "challenge:sandbox-001:v1",
+  "entrypoint": "packages/runner/src/cli.mjs",
+  "network": "disabled",
+  "inputSchemaRef": "urn:gosp-forge:schema:core:0.1#/$defs/Submission",
+  "outputSchemaRef": "urn:gosp-forge:schema:core:0.1#/$defs/EvaluationRecord",
+  "determinism": {
+    "required": true,
+    "seed": 1001
+  },
+  "provenance": {
+    "recordInputHashes": true,
+    "recordOutputHash": true,
+    "recordRuntime": true,
+    "recordPlatform": true
+  }
+}

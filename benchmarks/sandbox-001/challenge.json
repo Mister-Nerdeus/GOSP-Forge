@@ -1,0 +1,62 @@
+{
+  "id": "challenge:sandbox-001:v1",
+  "revision": "1.0.0",
+  "title": "Synthetic assembly-sequence optimization",
+  "domain": "domain-neutral-synthetic",
+  "hazardTier": 0,
+  "requirements": [
+    {
+      "id": "requirement:sandbox-001:complete-once",
+      "revision": "1.0.0",
+      "text": "Use every required abstract component exactly once.",
+      "measurable": true
+    },
+    {
+      "id": "requirement:sandbox-001:precedence",
+      "revision": "1.0.0",
+      "text": "Satisfy all published precedence relationships.",
+      "measurable": true
+    }
+  ],
+  "constraints": [
+    {
+      "id": "constraint:sandbox-001:component-set",
+      "revision": "1.0.0",
+      "kind": "hard",
+      "description": "Missing, duplicate, or unexpected components invalidate the submission."
+    },
+    {
+      "id": "constraint:sandbox-001:precedence",
+      "revision": "1.0.0",
+      "kind": "hard",
+      "description": "Every precedence pair must be satisfied."
+    }
+  ],
+  "objectives": [
+    {
+      "metric": "elapsedTime",
+      "direction": "minimize"
+    },
+    {
+      "metric": "toolSwitches",
+      "direction": "minimize"
+    }
+  ],
+  "evaluation": {
+    "kind": "assembly-sequence-v0.1",
+    "parameters": {
+      "components": ["A", "B", "C", "D", "E", "F"],
+      "precedence": [["A", "C"], ["B", "C"], ["C", "E"], ["D", "F"]],
+      "toolAssignments": {
+        "A": "drill",
+        "B": "clamp",
+        "C": "drill",
+        "D": "wrench",
+        "E": "drill",
+        "F": "wrench"
+      },
+      "baseStepTime": 10,
+      "toolSwitchPenalty": 3
+    }
+  }
+}

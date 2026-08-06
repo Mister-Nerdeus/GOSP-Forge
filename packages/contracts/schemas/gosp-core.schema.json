@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:gosp-forge:schema:core:0.1",
+  "title": "GOSP Forge Core Contracts v0.1",
+  "$defs": {
+    "Revision": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "Requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision", "text"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "#/$defs/Revision" },
+        "text": { "type": "string", "minLength": 1 },
+        "source": { "type": "string" },
+        "measurable": { "type": "boolean" }
+      }
+    },
+    "Constraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision", "kind", "description"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "#/$defs/Revision" },
+        "kind": { "enum": ["hard", "soft"] },
+        "description": { "type": "string", "minLength": 1 },
+        "applicability": { "type": "string" }
+      }
+    },
+    "Objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric", "direction"],
+      "properties": {
+        "metric": { "type": "string", "minLength": 1 },
+        "direction": { "enum": ["minimize", "maximize", "report"] }
+      }
+    },
+    "EvaluationDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "parameters"],
+      "properties": {
+        "kind": { "type": "string", "minLength": 1 },
+        "parameters": { "type": "object" }
+      }
+    },
+    "Challenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision", "title", "domain", "hazardTier", "requirements", "constraints", "objectives", "evaluation"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "#/$defs/Revision" },
+        "title": { "type": "string", "minLength": 1 },
+        "domain": { "type": "string", "minLength": 1 },
+        "hazardTier": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "requirements": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Requirement" }
+        },
+        "constraints": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Constraint" }
+        },
+        "objectives": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/Objective" }
+        },
+        "evaluation": { "$ref": "#/$defs/EvaluationDefinition" }
+      }
+    },
+    "Submission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision", "challengeId", "payload"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "#/$defs/Revision" },
+        "challengeId": { "type": "string", "minLength": 1 },
+        "payload": { "type": "object" }
+      }
+    },
+    "EvaluationRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evaluationId", "challengeId", "submissionId", "evaluator", "inputHashes", "deterministicResult", "limitations"],
+      "properties": {
+        "evaluationId": { "type": "string", "minLength": 1 },
+        "challengeId": { "type": "string", "minLength": 1 },
+        "submissionId": { "type": "string", "minLength": 1 },
+        "evaluator": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "version"],
+          "properties": {
+            "kind": { "type": "string", "minLength": 1 },
+            "version": { "type": "string", "minLength": 1 }
+          }
+        },
+        "inputHashes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["challengeSha256", "submissionSha256"],
+          "properties": {
+            "challengeSha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+            "submissionSha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+          }
+        },
+        "deterministicResult": {},
+        "limitations": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "Claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision", "subjectId", "property", "value", "status", "evidenceIds", "limitations"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "#/$defs/Revision" },
+        "subjectId": { "type": "string", "minLength": 1 },
+        "property": { "type": "string", "minLength": 1 },
+        "value": {},
+        "unit": { "type": "string" },
+        "status": {
+          "enum": ["proposed", "computationally-evaluated", "independently-reproduced", "physically-tested", "professionally-reviewed", "externally-certified", "contradicted", "withdrawn", "expired"]
+        },
+        "applicability": { "type": "object" },
+        "evidenceIds": { "type": "array", "items": { "type": "string" } },
+        "limitations": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "Evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision", "evidenceType", "supportsClaimIds", "artifactDigests", "scope", "limitations"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "#/$defs/Revision" },
+        "evidenceType": {
+          "enum": ["source-record", "analytical-calculation", "numerical-simulation", "independent-reproduction", "expert-review", "bench-test", "accredited-laboratory-test", "field-demonstration", "professional-approval", "product-certification", "operational-history"]
+        },
+        "supportsClaimIds": { "type": "array", "items": { "type": "string" } },
+        "contradictsClaimIds": { "type": "array", "items": { "type": "string" } },
+        "artifactDigests": { "type": "array", "items": { "type": "string" } },
+        "scope": { "type": "string", "minLength": 1 },
+        "limitations": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ComponentRelease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision", "name", "intendedUse", "prohibitedUses", "interfaceIds", "claimIds", "evidenceIds", "knownIssues", "license"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "revision": { "$ref": "#/$defs/Revision" },
+        "name": { "type": "string", "minLength": 1 },
+        "intendedUse": { "type": "string", "minLength": 1 },
+        "prohibitedUses": { "type": "array", "items": { "type": "string" } },
+        "interfaceIds": { "type": "array", "items": { "type": "string" } },
+        "claimIds": { "type": "array", "items": { "type": "string" } },
+        "evidenceIds": { "type": "array", "items": { "type": "string" } },
+        "knownIssues": { "type": "array", "items": { "type": "string" } },
+        "license": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "@gosp/reference-runner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Small deterministic Phase 0 reference evaluator for GOSP Forge."
+}
