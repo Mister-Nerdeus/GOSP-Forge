@@ -1,0 +1,8 @@
+# Phase 0 uses a single repository owner while governance is still forming.
+* @Mister-Nerdeus
+
+# Sensitive contract/evidence boundaries require explicit owner review.
+/packages/contracts/ @Mister-Nerdeus
+/docs/verification/ @Mister-Nerdeus
+/docs/licensing/ @Mister-Nerdeus
+/.github/workflows/ @Mister-Nerdeus

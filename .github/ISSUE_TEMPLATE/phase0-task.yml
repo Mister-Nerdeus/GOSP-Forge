@@ -1,0 +1,47 @@
+name: Phase 0 task
+description: Propose a scoped Phase 0 implementation or verification task.
+title: "[Phase 0] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What concrete Phase 0 gap does this address?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Contracts
+        - REP / runner
+        - Evidence / provenance
+        - Benchmark
+        - CI / verification
+        - HouseSim migration
+        - Documentation / ADR
+        - Licensing / dependency review
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance evidence
+      description: What executed test, fixture, artifact, hash, or report will show this is complete?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Boundary checks
+      options:
+        - label: This task does not make GOSP core depend on a domain vertical.
+          required: true
+        - label: This task does not claim unperformed testing, review, approval, or certification.
+          required: true
+        - label: Any new third-party material will include source/license review.
+          required: true
