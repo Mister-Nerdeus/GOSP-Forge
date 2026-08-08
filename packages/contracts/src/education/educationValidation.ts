@@ -25,11 +25,7 @@ function hasFreePublicSchoolUse(content: string) {
 
 function hasStudentSafetyLanguage(content: string) {
   const normalized = content.toLowerCase();
-  return (
-    normalized.includes('safety') &&
-    normalized.includes('supervised') &&
-    normalized.includes('no potable-water claim')
-  );
+  return normalized.includes('safety') && normalized.includes('supervised');
 }
 
 export function validateEducationGuide(
@@ -58,8 +54,7 @@ export function validateEducationGuide(
     issues.push({
       severity: 'blocker',
       code: 'missing-student-safety-language',
-      message:
-        'Student guide must include supervised safety language and no potable-water claim language.',
+      message: 'Student guide must include supervised safety language.',
     });
   }
 

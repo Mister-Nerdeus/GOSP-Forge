@@ -1,0 +1,24 @@
+{
+  "kind": "RepEnvironmentReport",
+  "reportVersion": "0.1.0",
+  "environmentId": "linux-node24",
+  "recordPath": "examples/rep/sandbox-001.replay.json",
+  "expectedMaterialInputHash": "bebe2c8fe4dcbc0fdb327d44c5fffeee7864161f49c278a2c32ab5ca25d3af2e",
+  "expectedMaterialResultHash": "3cfd0c28a321535667e55ee92a74788d68c1083cd76748348f54fb758fe05b95",
+  "materialInputHash": "bebe2c8fe4dcbc0fdb327d44c5fffeee7864161f49c278a2c32ab5ca25d3af2e",
+  "materialResultHash": "3cfd0c28a321535667e55ee92a74788d68c1083cd76748348f54fb758fe05b95",
+  "inputHashMatches": true,
+  "resultHashMatches": true,
+  "startedAt": "2026-08-08T00:36:24.158Z",
+  "completedAt": "2026-08-08T00:36:24.172Z",
+  "environment": {
+    "os": "linux 6.6.87.2-microsoft-standard-WSL2",
+    "architecture": "x64",
+    "runtime": "v24.19.0",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "processId": 1,
+    "workingDirectory": "/workspace"
+  },
+  "exitStatus": 0
+}

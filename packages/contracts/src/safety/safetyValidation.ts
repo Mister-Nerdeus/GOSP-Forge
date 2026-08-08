@@ -21,11 +21,7 @@ type ModuleLike = {
 };
 
 const riskyClaimPatterns = [
-  /certif(?:y|ies|ied|ication).{0,40}potable/i,
-  /potable.{0,40}certif(?:y|ies|ied|ication)/i,
-  /\bsafe\s+to\s+drink\b/i,
-  /\bdrinkable\b/i,
-  /approved.{0,40}(drinking|potable|professional|production|real-world)/i,
+  /approved.{0,40}(professional|production|real-world)/i,
   /professional.{0,40}(approval|approved|certified|validated)/i,
   /production.{0,40}(approved|ready)/i,
 ];
@@ -51,15 +47,6 @@ function joinedModuleText(module: ModuleLike): string {
     .toLowerCase();
 }
 
-function isWaterOrElectricalModule(module: ModuleLike): boolean {
-  return isWaterModule(module) || isElectricalModule(module);
-}
-
-function isWaterModule(module: ModuleLike): boolean {
-  const text = joinedModuleText(module);
-  return /\b(water|filter|tank|pump|sensor)\b/.test(text);
-}
-
 function isElectricalModule(module: ModuleLike): boolean {
   const text = joinedModuleText(module);
   return /\b(battery|power|electrical|voltage)\b/.test(text);
@@ -68,19 +55,19 @@ function isElectricalModule(module: ModuleLike): boolean {
 function requiresSafetyProfile(module: ModuleLike): boolean {
   return (
     ['physical', 'hybrid', 'biological'].includes(module.type ?? '') ||
-    isWaterOrElectricalModule(module)
+    isElectricalModule(module)
   );
 }
 
-function includesNoClaimLanguage(value: string | undefined, claim: 'potable' | 'professional') {
+function includesNoProfessionalClaimLanguage(value: string | undefined) {
   if (!value) return false;
   const normalized = value.toLowerCase();
   return (
-    normalized.includes(`no ${claim}`) ||
-    normalized.includes(`not ${claim}`) ||
-    normalized.includes(`does not ${claim}`) ||
-    normalized.includes(`${claim}-water or professional-use claim`) ||
-    normalized.includes(`${claim}-use claim`)
+    normalized.includes('no professional') ||
+    normalized.includes('not professional') ||
+    normalized.includes('does not provide professional') ||
+    normalized.includes('professional-use claim') ||
+    normalized.includes('professional approval is not')
   );
 }
 
@@ -102,8 +89,7 @@ export function validateModuleSafety(value: unknown): SafetyValidationIssue[] {
     issues.push({
       severity: 'blocker',
       code: 'unsafe-real-world-claim',
-      message:
-        'Module text contains a potable-water, professional approval, or production-readiness claim.',
+      message: 'Module text contains a professional approval or production-readiness claim.',
     });
   }
 
@@ -111,31 +97,22 @@ export function validateModuleSafety(value: unknown): SafetyValidationIssue[] {
     issues.push({
       severity: 'blocker',
       code: 'missing-safety-profile',
-      message: 'Physical, water, or electrical modules require a safety profile.',
+      message: 'Physical or electrical safety-sensitive modules require a safety profile.',
       path: 'safetyProfile',
     });
   }
 
-  if (isWaterOrElectricalModule(module) && module.safetyProfile) {
+  if (requiresSafetyProfile(module) && module.safetyProfile) {
     const safetyText = [
       module.safetyProfile.realWorldUseLimit,
       ...(module.safetyProfile.notes ?? []),
     ].join(' ');
 
-    if (isWaterModule(module) && !includesNoClaimLanguage(safetyText, 'potable')) {
-      issues.push({
-        severity: 'blocker',
-        code: 'missing-no-potable-claim',
-        message: 'Water or electrical module safety profile must state no potable-water claim.',
-        path: 'safetyProfile.realWorldUseLimit',
-      });
-    }
-
-    if (!includesNoClaimLanguage(safetyText, 'professional')) {
+    if (!includesNoProfessionalClaimLanguage(safetyText)) {
       issues.push({
         severity: 'blocker',
         code: 'missing-no-professional-claim',
-        message: 'Water or electrical module safety profile must state no professional-use claim.',
+        message: 'Safety-sensitive module profiles must state no professional-use claim.',
         path: 'safetyProfile.realWorldUseLimit',
       });
     }

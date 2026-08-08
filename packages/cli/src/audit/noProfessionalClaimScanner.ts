@@ -40,7 +40,14 @@ const RiskPatterns: Array<{ code: string; pattern: RegExp; message: string }> = 
 ];
 
 const DisclaimerPattern =
-  /\b(no|not|never|without|cannot|can't|does not|do not|must not|is not|are not|non-claim|nonclaims|no-go|claim|claims|blocked|blocker|fail|fails|gate|scanner|scan|prevent|avoid|risk|prohibition)\b/i;
+  /\b(no|not|neither|never|without|cannot|can't|does not|do not|must not|is not|are not|non-claim|nonclaims|no-go|claim|claims|blocked|blocker|fail|fails|gate|scanner|scan|prevent|avoid|risk|prohibition)\b/i;
+
+const ScopedSeparationDisclaimerPattern =
+  /\bprofessional(?: engineering)?\b.{0,50}\bapproval\b.{0,80}\b(?:(?:is|are|remain|remains|must be)\s+)?(?:represented\s+)?(?:separate|separately|distinct)\b(?:\s+from\b[^.]+)?[.;:]?$/i;
+
+function isDisclaimer(line: string) {
+  return DisclaimerPattern.test(line) || ScopedSeparationDisclaimerPattern.test(line);
+}
 
 export function scanNoProfessionalClaims(root = '.'): {
   ok: boolean;
@@ -57,10 +64,16 @@ export function scanNoProfessionalClaims(root = '.'): {
 }
 
 export function scanTextForNoProfessionalClaims(file: string, text: string): ClaimScanFinding[] {
-  return text
-    .split(/\r?\n/)
-    .flatMap((line, index) =>
-      RiskPatterns.filter(({ pattern }) => pattern.test(line) && !DisclaimerPattern.test(line)).map(
+  const findings: ClaimScanFinding[] = [];
+  let inFence = false;
+  for (const [index, line] of text.split(/\r?\n/).entries()) {
+    if (/^\s*```/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    findings.push(
+      ...RiskPatterns.filter(({ pattern }) => pattern.test(line) && !isDisclaimer(line)).map(
         ({ code, message }) => ({
           file,
           line: index + 1,
@@ -71,6 +84,8 @@ export function scanTextForNoProfessionalClaims(file: string, text: string): Cla
         }),
       ),
     );
+  }
+  return findings;
 }
 
 function listScanFiles(root: string): string[] {

@@ -1,8 +1,9 @@
 name: ci
+# Automatic GitHub Actions execution is disabled by the current local-only
+# verification policy (ADR 0004). Do not restore automatic triggers without
+# explicit user authorization and a policy review.
 on:
-  pull_request:
-  push:
-    branches: [develop, staging, main]
+  workflow_dispatch:
 jobs:
   verify:
     runs-on: ubuntu-latest

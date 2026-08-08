@@ -1,4 +1,13 @@
-import { ProductSpecTargetFields } from '@gosp/contracts';
+export const CleanWaterProductSpecTargetFields = [
+  'pumpFlowLpm',
+  'pumpCurrentA',
+  'voltageV',
+  'filterCapacityL',
+  'filterEfficiency',
+  'turbidityRange',
+  'replacementIntervalYears',
+  'annualMaintenanceCost',
+] as const;
 
 type ProductSpecEffectWarning = {
   code: string;
@@ -6,7 +15,7 @@ type ProductSpecEffectWarning = {
   severity: 'info' | 'warning' | 'blocker';
 };
 
-const allowedTargets = new Set<string>(ProductSpecTargetFields);
+const allowedTargets = new Set<string>(CleanWaterProductSpecTargetFields);
 
 export function applyProductSpecEffects(
   specs: Array<{

@@ -8,13 +8,14 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "start": "tsx src/main.ts"
   },
   "dependencies": {
     "@gosp/contracts": "workspace:*",
     "@gosp/estimation": "workspace:*",
     "@gosp/fabrication": "workspace:*",
-    "@gosp/sim-core": "workspace:*"
+    "@gosp/sim-core": "workspace:*",
+    "@gosp/vertical-clean-water": "workspace:*"
   }
 }

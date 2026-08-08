@@ -1,0 +1,142 @@
+{
+  "kind": "RepReplayRecord",
+  "repVersion": "0.1.0",
+  "materialInput": {
+    "repVersion": "0.1.0",
+    "challenge": {
+      "kind": "Challenge",
+      "id": "sandbox-001",
+      "revision": "1.0.0",
+      "provenance": { "sources": [], "method": "authored", "notes": [] },
+      "relationships": [],
+      "supersedes": [],
+      "title": "Sandbox 001 deterministic weighted sum",
+      "problemStatement": "Evaluate a finite weighted sum under a controlled scalar scenario.",
+      "requirementRefs": [],
+      "constraintRefs": [],
+      "hazardRefs": [],
+      "permittedScenarioRefs": [
+        { "kind": "Scenario", "id": "scenario.sandbox-001.reference", "revision": "1.0.0" }
+      ],
+      "evaluationModelRef": { "kind": "Model", "id": "model.sandbox-001", "revision": "1.0.0" },
+      "workflowRef": { "kind": "Workflow", "id": "workflow.sandbox-001", "revision": "1.0.0" },
+      "status": "open"
+    },
+    "submission": {
+      "kind": "Submission",
+      "id": "submission.sandbox-001.reference",
+      "revision": "1.0.0",
+      "provenance": { "sources": [], "method": "authored", "notes": [] },
+      "relationships": [],
+      "supersedes": [],
+      "challengeRef": { "kind": "Challenge", "id": "sandbox-001", "revision": "1.0.0" },
+      "scenarioRef": { "kind": "Scenario", "id": "scenario.sandbox-001.reference", "revision": "1.0.0" },
+      "materialPayload": { "values": [1, 2, 3], "weights": [2, 3, 5], "offset": 7 },
+      "componentData": [],
+      "status": "submitted"
+    },
+    "compiledScenario": {
+      "kind": "Scenario",
+      "id": "scenario.sandbox-001.reference",
+      "revision": "1.0.0",
+      "provenance": { "sources": [], "method": "authored", "notes": [] },
+      "relationships": [],
+      "supersedes": [],
+      "name": "Sandbox 001 reference scenario",
+      "systemElementRefs": [],
+      "environment": {},
+      "componentData": [],
+      "schedules": {},
+      "operatingConditions": {},
+      "assumptions": [],
+      "parameters": { "scale": 2 },
+      "datasets": [],
+      "modelRef": { "kind": "Model", "id": "model.sandbox-001", "revision": "1.0.0" },
+      "constraintRefs": [],
+      "status": "controlled"
+    },
+    "model": {
+      "kind": "Model",
+      "id": "model.sandbox-001",
+      "revision": "1.0.0",
+      "provenance": { "sources": [], "method": "authored", "notes": [] },
+      "relationships": [],
+      "supersedes": [],
+      "name": "Sandbox 001 analytical model",
+      "modelType": "analytical",
+      "fidelity": {
+        "level": "analytical",
+        "calibrationStatus": "not-applicable",
+        "limitations": ["Synthetic deterministic benchmark only."]
+      },
+      "solver": {
+        "kind": "solver",
+        "id": "solver.sandbox-001",
+        "revision": "1.0.0",
+          "contentHash": "0997b38d17fc9d33951d0b63d085894cc645ff2428922279f1b658a260466946"
+      },
+      "contractIdentities": [
+        {
+          "kind": "contract",
+          "id": "gosp.rep.sandbox-001",
+          "revision": "1.0.0",
+          "contentHash": "e61a08d5462293d1702359a628e70047e3ac73010088e7fc0dd11d076d9bc36e"
+        }
+      ],
+      "datasetIdentities": [],
+      "assumptions": [
+        {
+          "id": "assumption.binary64",
+          "statement": "Inputs are finite and evaluated with ECMAScript Number binary64 arithmetic.",
+          "sourceRefs": [],
+          "material": true
+        }
+      ],
+      "boundaryConditions": [],
+      "uncertainty": [],
+      "status": "active"
+    },
+    "workflow": {
+      "kind": "Workflow",
+      "id": "workflow.sandbox-001",
+      "revision": "1.0.0",
+      "provenance": { "sources": [], "method": "authored", "notes": [] },
+      "relationships": [],
+      "supersedes": [],
+      "name": "Sandbox 001 reference evaluation",
+      "steps": [
+        { "id": "validate", "name": "Validate material input", "action": "inspect", "inputRefs": [], "outputKinds": [] },
+        { "id": "evaluate", "name": "Evaluate weighted sum", "action": "execute", "inputRefs": [], "outputKinds": [] },
+        { "id": "record", "name": "Record material result", "action": "record", "inputRefs": [], "outputKinds": [] }
+      ],
+      "status": "active"
+    },
+    "runner": {
+      "kind": "runner",
+      "id": "gosp.rep.reference-runner",
+      "revision": "0.1.0",
+      "contentHash": "9b069e97fc2246b2be0ee21990b9200fb9536f3c9ce755143030319f18f1590d"
+    },
+    "contractIdentities": [
+      {
+        "kind": "contract",
+        "id": "gosp.rep.sandbox-001",
+        "revision": "1.0.0",
+        "contentHash": "e61a08d5462293d1702359a628e70047e3ac73010088e7fc0dd11d076d9bc36e"
+      }
+    ],
+    "datasetIdentities": [],
+    "componentData": [],
+    "materialAssumptions": [
+      {
+        "id": "assumption.binary64",
+        "statement": "Inputs are finite and evaluated with ECMAScript Number binary64 arithmetic.",
+        "sourceRefs": [],
+        "material": true
+      }
+    ],
+    "materialParameters": { "benchmark": "weighted-sum-v1" }
+  },
+  "expectedMaterialInputHash": "72886e655374bcc81162f72fb3a942bb6e596164aea85025453feac0ada8b383",
+  "expectedMaterialResultHash": "991b9464d74424297f88fe363a200d895147349a87b0377d5851945e0aa34c21"
+}

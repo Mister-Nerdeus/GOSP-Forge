@@ -1,8 +1,7 @@
 import { SimulationRunEnvelopeSchema } from '@gosp/contracts';
 import { createCleanWaterImpactReport } from '../cleanWater/impactReport.js';
 import { createSimulationConfidenceSummary } from './confidenceSummary.js';
-import { stableStringify } from '../hash/stableStringify.js';
-import { sha256 } from '../hash/sha256.js';
+import { stableStringify, sha256 } from '@gosp/sim-core';
 export function createSimulationRunEnvelope(input: {
   runId: string;
   projectId: string;

@@ -1,0 +1,48 @@
+{
+  "kind": "RepReproducibilityComparison",
+  "reportVersion": "0.1.0",
+  "comparedAt": "2026-08-08T01:27:40.370Z",
+  "environmentA": {
+    "id": "windows-node22-remediated",
+    "report": "artifacts/phase-0b/reproducibility/windows-node22-remediated.json",
+    "environment": {
+      "os": "win32 10.0.26200",
+      "architecture": "x64",
+      "runtime": "v22.16.0",
+      "locale": "en-US",
+      "timezone": "America/New_York",
+      "processId": 66132,
+      "workingDirectory": "C:\\Projects\\GOSP-Forge"
+    },
+    "materialInputHash": "72886e655374bcc81162f72fb3a942bb6e596164aea85025453feac0ada8b383",
+    "materialResultHash": "991b9464d74424297f88fe363a200d895147349a87b0377d5851945e0aa34c21"
+  },
+  "environmentB": {
+    "id": "linux-node24-remediated",
+    "report": "artifacts/phase-0b/reproducibility/linux-node24-remediated.json",
+    "environment": {
+      "os": "linux 6.6.87.2-microsoft-standard-WSL2",
+      "architecture": "x64",
+      "runtime": "v24.19.0",
+      "locale": "en-US",
+      "timezone": "UTC",
+      "processId": 1,
+      "workingDirectory": "/workspace"
+    },
+    "materialInputHash": "72886e655374bcc81162f72fb3a942bb6e596164aea85025453feac0ada8b383",
+    "materialResultHash": "991b9464d74424297f88fe363a200d895147349a87b0377d5851945e0aa34c21"
+  },
+  "checks": {
+    "distinctEnvironmentIds": true,
+    "distinctEnvironmentEvidence": true,
+    "recordPathMatches": true,
+    "expectedInputHashMatches": true,
+    "expectedResultHashMatches": true,
+    "materialInputHashMatches": true,
+    "materialResultHashMatches": true,
+    "environmentAReplayPassed": true,
+    "environmentBReplayPassed": true
+  },
+  "conclusion": "MATCH: the recorded material input and material result hashes are identical across both local environments.",
+  "reproducible": true
+}

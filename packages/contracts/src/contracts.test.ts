@@ -419,7 +419,7 @@ describe('foundation contracts', () => {
         ...module,
         safetyProfile: {
           ...safetyProfile,
-          realWorldUseLimit: 'Certified potable water output.',
+          realWorldUseLimit: 'Professional engineering approval validated for this module.',
         },
       }).some((issue) => issue.severity === 'blocker'),
     ).toBe(true);

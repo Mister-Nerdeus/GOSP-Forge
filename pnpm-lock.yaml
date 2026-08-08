@@ -40,6 +40,15 @@ importers:
         specifier: ^4.1.5
         version: 4.1.5(@types/node@25.6.2)(vite@7.3.3(@types/node@25.6.2)(tsx@4.21.0))
 
+  apps/web:
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vite:
+        specifier: ^7.2.0
+        version: 7.3.3(@types/node@25.6.2)(tsx@4.21.0)
+
   packages/ai-proposals: {}
 
   packages/api:
@@ -62,6 +71,9 @@ importers:
       '@gosp/sim-core':
         specifier: workspace:*
         version: link:../sim-core
+      '@gosp/vertical-clean-water':
+        specifier: workspace:*
+        version: link:../vertical-clean-water
 
   packages/contracts:
     dependencies:
@@ -74,9 +86,6 @@ importers:
       '@gosp/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@gosp/estimation':
-        specifier: workspace:*
-        version: 'link:'
       '@gosp/fabrication':
         specifier: workspace:*
         version: link:../fabrication
@@ -86,9 +95,6 @@ importers:
       '@gosp/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@gosp/fabrication':
-        specifier: workspace:*
-        version: 'link:'
 
   packages/module-registry:
     dependencies:
@@ -101,9 +107,15 @@ importers:
       '@gosp/contracts':
         specifier: workspace:*
         version: link:../contracts
+
+  packages/vertical-clean-water:
+    dependencies:
+      '@gosp/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       '@gosp/sim-core':
         specifier: workspace:*
-        version: 'link:'
+        version: link:../sim-core
 
 packages:
 

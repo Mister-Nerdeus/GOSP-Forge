@@ -19,12 +19,16 @@
   "scripts": {
     "build": "pnpm -r --if-present build",
     "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test",
+    "test": "node scripts/controls/verify-test-discovery.mjs && pnpm -r --if-present test",
     "lint": "eslint .",
     "validate:examples": "pnpm --filter @gosp/cli start validate examples/projects/automated-water-filter.project-v2.json",
     "simulate:clean-water": "pnpm --filter @gosp/cli start simulate examples/projects/automated-water-filter.project-v2.json",
     "estimate:clean-water": "pnpm --filter @gosp/cli start estimate examples/projects/automated-water-filter.project-v2.json",
-    "audit": "pnpm --filter @gosp/cli start audit foundation"
+    "audit": "pnpm --filter @gosp/cli start audit foundation",
+    "rep:sandbox": "pnpm --filter @gosp/cli start rep evaluate examples/rep/sandbox-001.replay.json",
+    "rep:replay": "pnpm --filter @gosp/cli start rep replay examples/rep/sandbox-001.replay.json",
+    "verify": "node scripts/controls/verify-runtime-version.mjs && pnpm lint && pnpm -r build && pnpm -r typecheck && pnpm test && pnpm validate:examples && pnpm rep:replay && pnpm simulate:clean-water && pnpm estimate:clean-water && pnpm run audit",
+    "evidence:local": "node scripts/phase-0b/write-local-evidence.mjs"
   },
   "dependencies": {
     "zod": "^3.25.76"

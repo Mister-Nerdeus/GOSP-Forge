@@ -1,4 +1,4 @@
-import { evaluateRules } from '../logic/ruleEngine.js';
+import { evaluateRules } from '@gosp/sim-core';
 export function runWaterWarningController(turbidityNtu: number) {
   return evaluateRules({ turbidityNtu, pumpEnabled: true, dashboardStatus: 'ok' }, [
     {

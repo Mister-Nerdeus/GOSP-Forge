@@ -1,4 +1,4 @@
-type ScoringProfile = {
+export type ScoringProfile = {
   id: string;
   version: string;
   sponsorNeutral: true;
@@ -8,7 +8,7 @@ type ScoringProfile = {
   }>;
 };
 
-type CleanWaterScoreInput = {
+export type CleanWaterScoreInput = {
   cleanWaterLiters: number;
   powerCompatible: boolean;
   confidenceLevel: 'low' | 'medium' | 'high' | 'reviewed';

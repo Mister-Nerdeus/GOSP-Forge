@@ -1,0 +1,8 @@
+.git
+.github
+node_modules
+**/node_modules
+**/dist
+artifacts/controls/local-validation/latest.json
+artifacts/controls/local-validation/latest.sanitized.json
+artifacts/phase-0b

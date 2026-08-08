@@ -1,15 +1,22 @@
 # GOSP Forge
 
-GOSP Forge is a problem-first foundation for classroom-scale STEM systems work. This repository currently contains contracts, examples, validation commands, Docker/local validation support, foundation services, and a read-only builder UI shell. It does not yet provide a complete product UI, CAD tool, marketplace, game, professional engineering workflow, potable-water validation, or production manufacturing approval.
+GOSP Forge is a problem-first, domain-neutral protocol foundation for reproducible STEM and engineering evaluation. This repository contains canonical contracts, REP v0.1, a deterministic synthetic benchmark, local evidence tooling, foundation services, a Clean Water vertical, and a read-only builder UI shell. It does not provide a complete product UI, CAD tool, marketplace, professional engineering workflow, potable-water validation, certification, or production manufacturing approval.
 
 ## Current State
 
-Implemented now: a pnpm monorepo skeleton, TypeScript/Zod contract package, deterministic simulation helpers, educational estimation and fabrication outputs, CLI commands, API health/version and validation route behavior, local and sanitized validation artifacts, CI evidence config, Docker local validation, a read-only UI inspection shell, and Clean Water foundation examples.
+Implemented locally in the current Phase-0B working tree: the 18 canonical Engineering Program Graph object contracts, typed claims/proof obligations/evidence, separate fidelity and readiness metadata, domain-neutral Scenario and controlled comparison structures, REP v0.1, normative canonical JSON, `sandbox-001`, recorded replay, material/execution-evidence separation, truthful local verification commands, and a Clean Water vertical adapter consuming generic core.
+
+The recorded `sandbox-001` material hash matches in native Windows/Node 22 and Docker Linux/Node 24. These changes remain uncommitted and unpushed.
 
 Not implemented yet: full editor UI, full CAD, professional-grade simulation, manufacturer verification workflows, public leaderboards, production storage, production deployment readiness, or imported legacy code.
 
 ## Canonical Docs
 
+- [Revision 2 source of truth](docs/source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R2.md)
+- [Observed repository reconciliation](docs/source-of-truth/REPOSITORY_STATUS_RECONCILIATION_2026-08-07.md)
+- [Current Phase-0B implementation status](docs/source-of-truth/PHASE_0B_IMPLEMENTATION_STATUS_2026-08-07.md)
+- [REP v0.1](docs/rep/REP_V0.1.md)
+- [Repository instructions](AGENTS.md)
 - [Thesis](docs/product/GOSP_STEM_SYSTEMS_FORGE_THESIS.md)
 - [Docs index](docs/README.md)
 - [Claim implementation map](docs/program/CLAIM_IMPLEMENTATION_MAP.md)
@@ -28,18 +35,11 @@ Not implemented yet: full editor UI, full CAD, professional-grade simulation, ma
 
 ```powershell
 pnpm install
-pnpm lint
-pnpm -r build
-pnpm -r typecheck
-pnpm -r test
-pnpm validate:examples
-pnpm simulate:clean-water
-pnpm estimate:clean-water
-pnpm audit
-pnpm run audit
-node scripts/controls/write-local-validation.mjs
-node scripts/controls/verify-local-validation-current.mjs
+pnpm verify
+pnpm evidence:local
 ```
+
+The current policy is local-only. The GitHub Actions workflow has no automatic push or pull-request trigger.
 
 ## Claim vs Implementation
 

@@ -15,6 +15,10 @@ import {
   SystemScorecardSchema,
   validateModuleSafety,
 } from '@gosp/contracts';
+import {
+  validateCleanWaterEducationGuide,
+  validateCleanWaterModuleSafety,
+} from '@gosp/vertical-clean-water';
 import type { z } from 'zod';
 
 export type RefDiagnostic = {
@@ -52,9 +56,20 @@ function educationGuideKind(ref: ProjectRef) {
   return 'unknown' as const;
 }
 
+function isCleanWaterEducationRef(ref: ProjectRef) {
+  return `${ref.id} ${ref.path ?? ''}`.toLowerCase().includes('clean-water');
+}
+
 export function validateRefKind(ref: ProjectRef, value: unknown) {
   if (ref.kind === 'education') {
-    const guideDiagnostics = validateEducationGuide(String(value), educationGuideKind(ref)).map(
+    const guideKind = educationGuideKind(ref);
+    const verticalIssues = isCleanWaterEducationRef(ref)
+      ? validateCleanWaterEducationGuide(String(value), guideKind)
+      : [];
+    const guideDiagnostics = [
+      ...validateEducationGuide(String(value), guideKind),
+      ...verticalIssues,
+    ].map(
       (issue) => ({
         code: issue.code,
         message: issue.message,
@@ -89,7 +104,7 @@ export function validateRefKind(ref: ProjectRef, value: unknown) {
   if (schemas.some((schema) => schema.safeParse(value).success)) {
     const safetyIssues =
       ref.kind === 'module'
-        ? validateModuleSafety(value).map((issue) => ({
+        ? [...validateModuleSafety(value), ...validateCleanWaterModuleSafety(value)].map((issue) => ({
             code: issue.code,
             message: issue.message,
             severity: issue.severity,

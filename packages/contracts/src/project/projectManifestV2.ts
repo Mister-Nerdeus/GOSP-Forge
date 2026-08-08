@@ -106,11 +106,11 @@ export const ProjectManifestV2Schema = z
         code: z.ZodIssueCode.custom,
         message: 'Scoring projects require a problem ref',
       });
-    if (v.mode === 'scoring' && !v.scenarioSettings?.cleanWater)
+    if (v.mode === 'scoring' && !v.scenarioSettings)
       c.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Scoring projects require explicit clean-water scenario settings',
-        path: ['scenarioSettings', 'cleanWater'],
+        message: 'Scoring projects require explicit scenario settings',
+        path: ['scenarioSettings'],
       });
 
     const groupKinds: Array<[string, string, Array<{ kind: string; id: string }>]> = [

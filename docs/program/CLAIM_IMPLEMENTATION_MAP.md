@@ -2,6 +2,12 @@
 
 Date: 2026-05-15
 
+## Uncommitted Phase-0B local extension — 2026-08-07
+
+Phase-0B work is present only in the local working tree and is not part of the baseline commit. Its implementation and executed evidence are summarized in `docs/source-of-truth/PHASE_0B_IMPLEMENTATION_STATUS_2026-08-07.md`. Do not describe it as committed, pushed, merged, or remotely verified.
+
+The local evidence supports canonical-contract coverage, REP v0.1 replay, the generic/vertical dependency boundary, and matching `sandbox-001` material hashes across native Windows/Node 22 and Docker Linux/Node 24. It does not support external reproduction, physical validation, professional approval, certification, deployment readiness, HouseSim migration, or Gate A.
+
 This map ties repository claims to committed implementation evidence. Claims not listed here remain non-claims unless a later issue adds implementation, tests, gates, and closeout evidence.
 
 | Claim | Implementation evidence | Gate or review evidence | Status |

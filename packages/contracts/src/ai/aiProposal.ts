@@ -30,7 +30,7 @@ export const AIProposalSchema = z
     if (AiApprovedTerms.test(searchableText)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'AI proposals cannot approve truth, safety, scoring, or potable-water status',
+        message: 'AI proposals cannot approve truth, safety, scoring, or professional status',
       });
     }
   });

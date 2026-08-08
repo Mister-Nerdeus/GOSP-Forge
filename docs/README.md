@@ -4,6 +4,11 @@ This index points to the current foundation documentation. The repository remain
 
 ## Start Here
 
+- [Revision 2 source of truth](source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R2.md)
+- [Repository status reconciliation](source-of-truth/REPOSITORY_STATUS_RECONCILIATION_2026-08-07.md)
+- [Phase-0B implementation status](source-of-truth/PHASE_0B_IMPLEMENTATION_STATUS_2026-08-07.md)
+- [REP v0.1](rep/REP_V0.1.md)
+- [Local Phase-0B verification](verification/LOCAL_PHASE_0B_VERIFICATION.md)
 - [Product thesis](product/GOSP_STEM_SYSTEMS_FORGE_THESIS.md)
 - [North star](product/GOSP_FORGE_NORTH_STAR.md)
 - [What GOSP Forge is not](product/WHAT_GOSP_FORGE_IS_NOT.md)
@@ -12,6 +17,8 @@ This index points to the current foundation documentation. The repository remain
 
 ## Contracts
 
+- Canonical Engineering Program Graph objects: `packages/contracts/src/canonical/`
+- REP records and execution evidence: `packages/contracts/src/rep/`
 - [Project manifest v2](contracts/PROJECT_MANIFEST_V2.md)
 - [Validation result](contracts/VALIDATION_RESULT.md)
 - [Reference resolution](contracts/REFERENCE_RESOLUTION.md)
@@ -25,6 +32,7 @@ This index points to the current foundation documentation. The repository remain
 
 ## Clean Water Foundation
 
+- [Vertical scenario compatibility settings](verticals/clean-water/SCENARIO_SETTINGS.md)
 - [Automated Water Filter demo](demos/AUTOMATED_WATER_FILTER_SYSTEM.md)
 - [Clean Water problem pack](demos/CLEAN_WATER_PROBLEM_PACK.md)
 - [Clean Water product bindings](demos/CLEAN_WATER_PRODUCT_BINDINGS.md)

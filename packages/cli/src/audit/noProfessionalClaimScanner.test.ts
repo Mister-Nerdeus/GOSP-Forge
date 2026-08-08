@@ -8,6 +8,8 @@ describe('scanTextForNoProfessionalClaims', () => {
       [
         'This does not certify potable water.',
         'No professional engineering approval is provided.',
+        'Neither professional approval nor truth is inferred from identity.',
+        'Professional approval and certification are represented separately.',
         'This is not permit-ready output.',
       ].join('\n'),
     );
@@ -27,6 +29,29 @@ describe('scanTextForNoProfessionalClaims', () => {
         line: 1,
       }),
     ]);
+  });
+
+  it('does not let separation words suppress affirmative approval claims', () => {
+    const findings = scanTextForNoProfessionalClaims(
+      'bad.md',
+      [
+        'Professional engineering approval is separate and approved for production use.',
+        'Professional engineering approval is distinct and validated for this design.',
+      ].join('\n'),
+    );
+    expect(findings).toHaveLength(2);
+    expect(findings.every((finding) => finding.code === 'professional-approval-claim')).toBe(true);
+  });
+
+  it('allows explicitly fenced adversarial examples in review records', () => {
+    expect(
+      scanTextForNoProfessionalClaims(
+        'review.md',
+        ['```text', 'Professional engineering approval is approved for production use.', '```'].join(
+          '\n',
+        ),
+      ),
+    ).toEqual([]);
   });
 
   it('blocks affirmative professional approval claims', () => {

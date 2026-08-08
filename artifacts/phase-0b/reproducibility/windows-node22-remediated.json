@@ -1,0 +1,120 @@
+{
+  "kind": "RepEnvironmentReport",
+  "reportVersion": "0.1.0",
+  "environmentId": "windows-node22-remediated",
+  "recordPath": "examples/rep/sandbox-001.replay.json",
+  "expectedMaterialInputHash": "72886e655374bcc81162f72fb3a942bb6e596164aea85025453feac0ada8b383",
+  "expectedMaterialResultHash": "991b9464d74424297f88fe363a200d895147349a87b0377d5851945e0aa34c21",
+  "materialInputHash": "72886e655374bcc81162f72fb3a942bb6e596164aea85025453feac0ada8b383",
+  "materialResultHash": "991b9464d74424297f88fe363a200d895147349a87b0377d5851945e0aa34c21",
+  "sourceImplementationManifests": {
+    "referenceRunner": {
+      "format": "gosp-source-implementation-v1",
+      "id": "gosp.rep.reference-runner",
+      "revision": "0.1.0",
+      "files": [
+        {
+          "path": "packages/contracts/src/canonical/executionModel.ts",
+          "contentHash": "764bf8dc3176a9877207cd6e6377f872c88ba98249bcb2e0e6c4b293bd41c056"
+        },
+        {
+          "path": "packages/contracts/src/canonical/identity.ts",
+          "contentHash": "f5941bff72323dad10d99ec0dc4494264d19f9a4652cfac5b591ee2605917b0c"
+        },
+        {
+          "path": "packages/contracts/src/canonical/truthModel.ts",
+          "contentHash": "3cb4d00f0c2aa429a6e7e3c25fc2f5595c1f86d6a2f594201476402feca891b1"
+        },
+        {
+          "path": "packages/contracts/src/rep/rep.ts",
+          "contentHash": "c4d674233ae7229b82531396e661883e813719251a608b4b8923d7dcc72b2ff9"
+        },
+        {
+          "path": "packages/contracts/src/shared/primitives.ts",
+          "contentHash": "7c613b9cc5cf5eecc4ad9de6e27a47bbda265afae69baec32fcb74a8f7e05bac"
+        },
+        {
+          "path": "packages/contracts/src/shared/sourceRefs.ts",
+          "contentHash": "39ec9bd0b49cc9b7006a929441eb5fbc0a89d746aab451f70423f5cb99f8624a"
+        },
+        {
+          "path": "packages/contracts/tsconfig.json",
+          "contentHash": "e8383d61ccf0cfaee5c57234505e10932981ac18b5e9185a9dcfaaf04cf09112"
+        },
+        {
+          "path": "packages/sim-core/src/hash/canonicalJson.ts",
+          "contentHash": "b386e913393c1144e58b5ebbdf5e452c3c3e9e2d5fb3d637d2ec749c47236ce9"
+        },
+        {
+          "path": "packages/sim-core/src/hash/sha256.ts",
+          "contentHash": "d98f1686ea4ae5f9b166bf2d2460771f2f7d8b776e8e0fea592c09fbe5d10838"
+        },
+        {
+          "path": "packages/sim-core/src/rep/referenceRunner.ts",
+          "contentHash": "5ba0814589eee6c4ebc04e193cd7d20e7d2ea184e8f161423dfc2c1ea2990936"
+        },
+        {
+          "path": "packages/sim-core/src/rep/sourceImplementationIdentity.ts",
+          "contentHash": "b6fe5fc30d42f3a111c8ca189079bd1fcd637b692b0867b474e1eaef3d60252c"
+        },
+        {
+          "path": "packages/sim-core/tsconfig.json",
+          "contentHash": "e8383d61ccf0cfaee5c57234505e10932981ac18b5e9185a9dcfaaf04cf09112"
+        },
+        {
+          "path": "tsconfig.base.json",
+          "contentHash": "50d5cf26195889745e828f1dc68123067543550a1cce2044d7c2a588084eeabd"
+        }
+      ],
+      "toolchain": {
+        "typescript": "5.9.3"
+      },
+      "runtimeDependencies": {
+        "zod": "3.25.76"
+      }
+    },
+    "sandbox001Solver": {
+      "format": "gosp-source-implementation-v1",
+      "id": "solver.sandbox-001",
+      "revision": "1.0.0",
+      "files": [
+        {
+          "path": "packages/sim-core/src/rep/sandbox001.ts",
+          "contentHash": "a341844edc27c28997ae0a1ae01d7be7da9af88d9ef65459c581d403e43326d5"
+        },
+        {
+          "path": "packages/sim-core/src/rep/sourceImplementationIdentity.ts",
+          "contentHash": "b6fe5fc30d42f3a111c8ca189079bd1fcd637b692b0867b474e1eaef3d60252c"
+        },
+        {
+          "path": "packages/sim-core/tsconfig.json",
+          "contentHash": "e8383d61ccf0cfaee5c57234505e10932981ac18b5e9185a9dcfaaf04cf09112"
+        },
+        {
+          "path": "tsconfig.base.json",
+          "contentHash": "50d5cf26195889745e828f1dc68123067543550a1cce2044d7c2a588084eeabd"
+        }
+      ],
+      "toolchain": {
+        "typescript": "5.9.3"
+      },
+      "runtimeDependencies": {
+        "zod": "3.25.76"
+      }
+    }
+  },
+  "inputHashMatches": true,
+  "resultHashMatches": true,
+  "startedAt": "2026-08-08T01:26:58.146Z",
+  "completedAt": "2026-08-08T01:26:58.161Z",
+  "environment": {
+    "os": "win32 10.0.26200",
+    "architecture": "x64",
+    "runtime": "v22.16.0",
+    "locale": "en-US",
+    "timezone": "America/New_York",
+    "processId": 66132,
+    "workingDirectory": "C:\\Projects\\GOSP-Forge"
+  },
+  "exitStatus": 0
+}

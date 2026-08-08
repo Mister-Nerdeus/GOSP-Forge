@@ -1,0 +1,24 @@
+{
+  "kind": "RepEnvironmentReport",
+  "reportVersion": "0.1.0",
+  "environmentId": "windows-node22",
+  "recordPath": "examples/rep/sandbox-001.replay.json",
+  "expectedMaterialInputHash": "bebe2c8fe4dcbc0fdb327d44c5fffeee7864161f49c278a2c32ab5ca25d3af2e",
+  "expectedMaterialResultHash": "3cfd0c28a321535667e55ee92a74788d68c1083cd76748348f54fb758fe05b95",
+  "materialInputHash": "bebe2c8fe4dcbc0fdb327d44c5fffeee7864161f49c278a2c32ab5ca25d3af2e",
+  "materialResultHash": "3cfd0c28a321535667e55ee92a74788d68c1083cd76748348f54fb758fe05b95",
+  "inputHashMatches": true,
+  "resultHashMatches": true,
+  "startedAt": "2026-08-08T00:35:41.675Z",
+  "completedAt": "2026-08-08T00:35:41.682Z",
+  "environment": {
+    "os": "win32 10.0.26200",
+    "architecture": "x64",
+    "runtime": "v22.16.0",
+    "locale": "en-US",
+    "timezone": "America/New_York",
+    "processId": 21172,
+    "workingDirectory": "C:\\Projects\\GOSP-Forge"
+  },
+  "exitStatus": 0
+}

@@ -1,26 +1,17 @@
 import { ProjectManifestV2Schema } from '@gosp/contracts';
 import {
+  CLEAN_WATER_SCORING_PROFILE,
   compileCleanWaterInput,
+  createCleanWaterRepMaterialInput,
   createSimulationRunEnvelope,
+  evaluateCleanWaterRep,
   generateModuleScorecards,
   generateSystemScorecard,
   simulatePowerFlow,
   simulateWaterFlow,
-} from '@gosp/sim-core';
+} from '@gosp/vertical-clean-water';
 import { readJsonFile } from '../exampleRegistry.js';
 import { resolveProjectRefs } from '../refResolver.js';
-
-const cleanWaterScoringProfile = {
-  id: 'clean-water-scoring-profile',
-  version: '0.1.0',
-  sponsorNeutral: true as const,
-  components: [
-    { id: 'clean-water-volume', weight: 0.45 },
-    { id: 'power-compatibility', weight: 0.25 },
-    { id: 'confidence', weight: 0.2 },
-    { id: 'warning-penalty', weight: 0.1 },
-  ],
-};
 
 export function simulateCommand(file: string) {
   const project = ProjectManifestV2Schema.parse(readJsonFile(file));
@@ -42,13 +33,13 @@ export function simulateCommand(file: string) {
   const warnings = [...input.warnings, ...flow.warnings];
   const moduleScorecards = generateModuleScorecards({
     moduleIds: input.moduleIds,
-    profileId: cleanWaterScoringProfile.id,
+    profileId: CLEAN_WATER_SCORING_PROFILE.id,
     warnings,
     defaultedInputs: input.defaultedInputs,
   });
   const systemScorecard = generateSystemScorecard({
     projectId: input.projectId,
-    profile: cleanWaterScoringProfile,
+    profile: CLEAN_WATER_SCORING_PROFILE,
     flow,
     power,
     confidenceLevel: input.confidence.level,
@@ -59,6 +50,12 @@ export function simulateCommand(file: string) {
     modules: moduleScorecards,
     system: systemScorecard,
   };
+  const repMaterialInput = createCleanWaterRepMaterialInput({
+    project,
+    compiledInput: input,
+    resolvedRefs: resolvedRefs.documents,
+  });
+  const repEvaluation = evaluateCleanWaterRep(repMaterialInput);
 
   return {
     ok: true,
@@ -66,6 +63,7 @@ export function simulateCommand(file: string) {
     flow,
     power,
     scorecards,
+    repEvaluation,
     envelope: createSimulationRunEnvelope({
       runId: 'clean-water-run-v0',
       projectId: input.projectId,

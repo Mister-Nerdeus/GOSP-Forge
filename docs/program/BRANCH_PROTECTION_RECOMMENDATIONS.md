@@ -2,6 +2,8 @@
 
 These are recommended GitHub branch protection settings for foundation promotion. They are not a statement that branch protection is currently configured; repository settings must be verified in GitHub before making that claim.
 
+These recommendations are inactive while the local-only/no-GitHub-Actions policy is in force. Do not configure required Actions checks or restore automatic workflow triggers without explicit user authorization and a new policy review.
+
 ## Recommended Branch Rules
 
 | Branch | Recommended PR rule | Recommended status checks | Direct push policy | Notes |

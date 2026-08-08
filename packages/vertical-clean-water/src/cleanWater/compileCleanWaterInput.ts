@@ -1,6 +1,7 @@
 import type { WaterFlowInput } from './waterFlowTypes.js';
 import { applyProductSpecEffects } from '../specMeaning/applyProductSpecEffects.js';
 import { validateCleanWaterGraphConsistency } from './graphConsistency.js';
+import { CleanWaterScenarioExtensionSchema } from './scenarioSettings.js';
 
 type RefValue = {
   id: string;
@@ -40,7 +41,7 @@ export function compileCleanWaterInput(
   project: {
     id: string;
     mode?: string;
-    scenarioSettings?: { cleanWater?: { sourceLiters?: number; runMinutes?: number } };
+    scenarioSettings?: unknown;
   },
   refs: RefValue[],
 ) {
@@ -67,8 +68,22 @@ export function compileCleanWaterInput(
       : undefined;
   const pumpCurrentA =
     typeof effects.target.pumpCurrentA === 'number' ? effects.target.pumpCurrentA : undefined;
-  const sourceLiters = project.scenarioSettings?.cleanWater?.sourceLiters;
-  const runMinutes = project.scenarioSettings?.cleanWater?.runMinutes;
+  const parsedScenarioSettings = CleanWaterScenarioExtensionSchema.safeParse(
+    project.scenarioSettings ?? {},
+  );
+  if (!parsedScenarioSettings.success) {
+    warnings.push({
+      code: 'invalid-clean-water-scenario-settings',
+      message: 'Clean Water scenario extension is invalid; visible defaults will be used.',
+      severity: 'warning',
+    });
+  }
+  const sourceLiters = parsedScenarioSettings.success
+    ? parsedScenarioSettings.data.cleanWater?.sourceLiters
+    : undefined;
+  const runMinutes = parsedScenarioSettings.success
+    ? parsedScenarioSettings.data.cleanWater?.runMinutes
+    : undefined;
   const hasValidFilterEfficiency =
     filterEfficiency !== undefined && filterEfficiency > 0 && filterEfficiency <= 1;
   const hasValidPumpCurrent = pumpCurrentA !== undefined && pumpCurrentA > 0;
@@ -129,7 +144,7 @@ export function compileCleanWaterInput(
 
   warnings.push(...graphConsistency.warnings);
 
-  const water: WaterFlowInput = {
+  const water: Required<WaterFlowInput> = {
     pumpFlowLpm: pumpFlowLpm ?? 1,
     filterEfficiency: hasValidFilterEfficiency ? filterEfficiency : 0.8,
     sourceLiters: sourceLiters ?? 20,

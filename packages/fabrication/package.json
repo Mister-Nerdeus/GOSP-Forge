@@ -8,10 +8,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
   },
   "dependencies": {
-    "@gosp/contracts": "workspace:*",
-    "@gosp/fabrication": "workspace:*"
+    "@gosp/contracts": "workspace:*"
   }
 }

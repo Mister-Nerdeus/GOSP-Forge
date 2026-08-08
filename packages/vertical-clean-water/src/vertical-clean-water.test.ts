@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { sha256, stableStringify } from '@gosp/sim-core';
 import {
   createSimulationRunEnvelope,
   compileCleanWaterInput,
@@ -9,12 +10,29 @@ import {
   generateSystemScorecard,
   runWaterWarningController,
   scoreCleanWater,
-  sha256,
   simulatePowerFlow,
   simulateWaterFlow,
-  stableStringify,
+  validateCleanWaterEducationGuide,
+  validateCleanWaterModuleSafety,
 } from './index.js';
-describe('sim-core foundation', () => {
+describe('Clean Water vertical foundation', () => {
+  it('owns potable-water safety and education validation', () => {
+    expect(
+      validateCleanWaterModuleSafety({
+        id: 'classroom-pump',
+        name: 'Classroom Pump',
+        type: 'physical',
+        capabilities: { capabilities: ['water', 'pump'] },
+        safetyProfile: { realWorldUseLimit: 'Certified potable water output.' },
+      }).some((issue) => issue.code === 'unsafe-potable-water-claim'),
+    ).toBe(true);
+    expect(
+      validateCleanWaterEducationGuide(
+        'This guide is free for public-school use. Safety: supervised classroom use only.',
+        'student',
+      ).some((issue) => issue.code === 'missing-no-potable-claim'),
+    ).toBe(true);
+  });
   it('stable stringifies and hashes deterministically', () => {
     expect(stableStringify({ b: 1, a: 2 })).toBe(stableStringify({ a: 2, b: 1 }));
     expect(sha256('x')).toBe(sha256('x'));
