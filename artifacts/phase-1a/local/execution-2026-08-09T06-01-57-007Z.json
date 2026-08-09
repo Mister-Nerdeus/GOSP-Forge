@@ -1,0 +1,545 @@
+{
+  "kind": "Phase1ALocalVerificationEvidence",
+  "evidenceVersion": "0.1.0",
+  "startedAt": "2026-08-09T06:01:06.599Z",
+  "completedAt": "2026-08-09T06:01:57.007Z",
+  "git": {
+    "sha": "2945361038ee63d26304b4279d703c11ed66d14b",
+    "branch": "develop",
+    "statusBeforeVerification": [
+      "M README.md",
+      " M apps/web/package.json",
+      " M apps/web/src/App.test.ts",
+      " M apps/web/src/App.tsx",
+      " M apps/web/src/main.tsx",
+      " M apps/web/src/styles.css",
+      " M apps/web/tsconfig.json",
+      " M config/intended-tests.json",
+      " M docs/README.md",
+      " M docs/product/BUILDER_UI_SHELL.md",
+      " M docs/testing/BROWSER_SMOKE_TEST_STRATEGY.md",
+      " M package.json",
+      " M packages/api/package.json",
+      " M packages/api/src/server.test.ts",
+      " M packages/api/src/server.ts",
+      " M packages/contracts/src/index.ts",
+      " M pnpm-lock.yaml",
+      "?? apps/web/src/phase1a/",
+      "?? apps/web/vite.config.ts",
+      "?? artifacts/phase-1a/",
+      "?? docs/phase-0c/",
+      "?? docs/product/PHASE_1A_MINIMAL_PRODUCT_LOOP.md",
+      "?? docs/source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R3.md",
+      "?? examples/phase-1a/",
+      "?? packages/api/src/phase1a/",
+      "?? packages/contracts/src/application/",
+      "?? scripts/phase-1a/"
+    ],
+    "statusAfterVerification": [
+      "M README.md",
+      " M apps/web/package.json",
+      " M apps/web/src/App.test.ts",
+      " M apps/web/src/App.tsx",
+      " M apps/web/src/main.tsx",
+      " M apps/web/src/styles.css",
+      " M apps/web/tsconfig.json",
+      " M config/intended-tests.json",
+      " M docs/README.md",
+      " M docs/product/BUILDER_UI_SHELL.md",
+      " M docs/testing/BROWSER_SMOKE_TEST_STRATEGY.md",
+      " M package.json",
+      " M packages/api/package.json",
+      " M packages/api/src/server.test.ts",
+      " M packages/api/src/server.ts",
+      " M packages/contracts/src/index.ts",
+      " M pnpm-lock.yaml",
+      "?? apps/web/src/phase1a/",
+      "?? apps/web/vite.config.ts",
+      "?? artifacts/phase-1a/",
+      "?? docs/phase-0c/",
+      "?? docs/product/PHASE_1A_MINIMAL_PRODUCT_LOOP.md",
+      "?? docs/source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R3.md",
+      "?? examples/phase-1a/",
+      "?? packages/api/src/phase1a/",
+      "?? packages/contracts/src/application/",
+      "?? scripts/phase-1a/"
+    ],
+    "statusSnapshotSemantics": "statusAfterVerification is captured after verification and evidence extraction, before this evidence artifact is written."
+  },
+  "environment": {
+    "os": "win32 10.0.26200",
+    "architecture": "x64",
+    "runtime": "v22.16.0",
+    "packageManager": "9.15.5",
+    "locale": "en-US",
+    "timezone": "America/New_York",
+    "processId": 23076,
+    "workingDirectory": "C:\\Projects\\GOSP-Forge"
+  },
+  "verification": {
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Mister Nerdeus\\AppData\\Local\\node\\corepack\\v1\\pnpm\\9.15.5\\bin\\pnpm.cjs",
+      "verify"
+    ],
+    "exitStatus": 0,
+    "outputSha256": "07f63111953dc0b7dce0b96b7937b781bac37982e20a5bd1ec2e5ab92f7a9ce9",
+    "outputTail": [
+      "      \"required\": true,",
+      "      \"exists\": true,",
+      "      \"status\": \"pass\"",
+      "    },",
+      "    {",
+      "      \"file\": \"examples/problems/clean-water.problem.json\",",
+      "      \"required\": true,",
+      "      \"exists\": true,",
+      "      \"status\": \"pass\"",
+      "    },",
+      "    {",
+      "      \"file\": \"scripts/controls/verify-runtime-version.mjs\",",
+      "      \"required\": true,",
+      "      \"exists\": true,",
+      "      \"status\": \"pass\"",
+      "    },",
+      "    {",
+      "      \"file\": \"scripts/controls/write-local-validation.mjs\",",
+      "      \"required\": true,",
+      "      \"exists\": true,",
+      "      \"status\": \"pass\"",
+      "    },",
+      "    {",
+      "      \"file\": \"scripts/controls/verify-local-validation-current.mjs\",",
+      "      \"required\": true,",
+      "      \"exists\": true,",
+      "      \"status\": \"pass\"",
+      "    },",
+      "    {",
+      "      \"file\": \"packages/api/src/server.ts\",",
+      "      \"required\": true,",
+      "      \"exists\": true,",
+      "      \"status\": \"pass\",",
+      "      \"note\": \"API validation is foundation-local behavior only and must not be treated as production hosting, identity, or storage.\"",
+      "    },",
+      "    {",
+      "      \"file\": \"apps/web/package.json\",",
+      "      \"required\": false,",
+      "      \"exists\": true,",
+      "      \"status\": \"pass\",",
+      "      \"note\": \"Builder UI is a read-only foundation shell only; no CAD editor, persistence, potable-water, professional, or production-manufacturing claim.\"",
+      "    }",
+      "  ],",
+      "  \"generatedAt\": \"2026-08-09T06:01:56.209Z\",",
+      "  \"claimScan\": {",
+      "    \"ok\": true,",
+      "    \"findings\": [],",
+      "    \"scannedFiles\": 189",
+      "  }",
+      "}"
+    ]
+  },
+  "testDiscovery": {
+    "run": {
+      "command": [
+        "node",
+        "scripts/controls/verify-test-discovery.mjs"
+      ],
+      "exitStatus": 0,
+      "outputSha256": "2953502708748fa1be4400535207140205c446ef4a347b24fcd8cea0096d1877",
+      "outputTail": [
+        "{",
+        "  \"ok\": true,",
+        "  \"intendedTestFiles\": 31,",
+        "  \"discoveredTestFiles\": 31,",
+        "  \"missing\": [],",
+        "  \"unlisted\": [],",
+        "  \"packageErrors\": []",
+        "}"
+      ]
+    },
+    "value": {
+      "ok": true,
+      "intendedTestFiles": 31,
+      "discoveredTestFiles": 31,
+      "missing": [],
+      "unlisted": [],
+      "packageErrors": []
+    }
+  },
+  "productLoop": {
+    "run": {
+      "command": [
+        "node",
+        "scripts/phase-1a/read-product-loop-results.mjs"
+      ],
+      "exitStatus": 0,
+      "outputSha256": "d6da9a0569bccc81b432eb0cbd0809ff4f5d096bb92007410fb7128caf69dd10",
+      "outputTail": [
+        "{\"milestone\":\"Phase-1A — Minimal Challenge-Facing Product Loop\",\"persistence\":{\"kind\":\"process-local-memory\",\"durable\":false,\"disclosure\":\"Records exist only in this local API process and reset when it restarts.\"},\"challenge\":{\"id\":\"sandbox-001\",\"revision\":\"1.0.0\",\"model\":\"model.sandbox-001\",\"solver\":{\"kind\":\"solver\",\"id\":\"solver.sandbox-001\",\"revision\":\"1.0.0\",\"contentHash\":\"0997b38d17fc9d33951d0b63d085894cc645ff2428922279f1b658a260466946\"}},\"evaluations\":[{\"submission\":\"submission.sandbox-001.reference@1.0.0\",\"evaluation\":\"evaluation.submission.sandbox-001.reference@0.1.0\",\"result\":{\"value\":53,\"terms\":[2,6,15],\"weightedSum\":23},\"materialInputHash\":\"72886e655374bcc81162f72fb3a942bb6e596164aea85025453feac0ada8b383\",\"materialResultHash\":\"991b9464d74424297f88fe363a200d895147349a87b0377d5851945e0aa34c21\",\"hardGatesPassed\":true,\"evidenceReadiness\":\"computationally-reproduced\",\"deploymentReadiness\":\"concept-only\",\"replay\":{\"ok\":true,\"inputHashMatches\":true,\"resultHashMatches\":true,\"reproductionStatus\":\"verified-local-replay\"},\"unresolvedProofObligationIds\":[\"proof.independent-reproduction\",\"proof.physical-validation\"]},{\"submission\":\"submission.sandbox-001.candidate-low@1.0.0\",\"evaluation\":\"evaluation.submission.sandbox-001.candidate-low@0.1.0\",\"result\":{\"value\":23,\"terms\":[0,3,5],\"weightedSum\":8},\"materialInputHash\":\"92d014f850618400977ed29862391acae4c046c52ee00b24a6ec4c912157c11b\",\"materialResultHash\":\"e2224d21bdaf7f0a58d0086ef04d0b0ae728cd787849a9783e846d8d2fc38985\",\"hardGatesPassed\":true,\"evidenceReadiness\":\"computationally-reproduced\",\"deploymentReadiness\":\"concept-only\",\"replay\":{\"ok\":true,\"inputHashMatches\":true,\"resultHashMatches\":true,\"reproductionStatus\":\"verified-local-replay\"},\"unresolvedProofObligationIds\":[\"proof.independent-reproduction\",\"proof.physical-validation\"]}],\"comparison\":{\"comparable\":true,\"changedInputPaths\":[\"submission.id\",\"submission.materialPayload.values[0]\",\"submission.materialPayload.values[1]\",\"submission.materialPayload.values[2]\"],\"fixedInputPathCount\":134,\"resultDeltas\":[{\"resultPath\":\"result.terms[0]\",\"baseline\":2,\"candidate\":0,\"delta\":-2,\"interpretation\":\"result.terms[0] changed by -2.\"},{\"resultPath\":\"result.terms[1]\",\"baseline\":6,\"candidate\":3,\"delta\":-3,\"interpretation\":\"result.terms[1] changed by -3.\"},{\"resultPath\":\"result.terms[2]\",\"baseline\":15,\"candidate\":5,\"delta\":-10,\"interpretation\":\"result.terms[2] changed by -10.\"},{\"resultPath\":\"result.value\",\"baseline\":53,\"candidate\":23,\"delta\":-30,\"interpretation\":\"result.value changed by -30.\"},{\"resultPath\":\"result.weightedSum\",\"baseline\":23,\"candidate\":8,\"delta\":-15,\"interpretation\":\"result.weightedSum changed by -15.\"}],\"hardGateChanges\":[{\"constraintId\":\"constraint.sandbox-001.valid-completion\",\"baselinePassed\":true,\"candidatePassed\":true,\"changed\":false}],\"explanation\":{\"summary\":\"The baseline performed better on result.value; the candidate delta is -30.\",\"primaryReasons\":[\"submission.materialPayload.values[0] changed from 1 to 0.\",\"submission.materialPayload.values[1] changed from 2 to 1.\",\"submission.materialPayload.values[2] changed from 3 to 1.\"],\"limitations\":[\"Synthetic deterministic benchmark only; it does not establish physical validity.\",\"Local replay is not independent external reproduction.\",\"No professional approval, product certification, regulatory approval, or deployment readiness is claimed.\"]}},\"explainability\":{\"equationIds\":[\"sandbox-001.weighted-sum\"],\"intermediateValueIds\":[\"weighted-sum\",\"scale\",\"offset\"],\"modelFidelity\":\"analytical\",\"runner\":{\"kind\":\"runner\",\"id\":\"gosp.rep.reference-runner\",\"revision\":\"0.1.0\",\"contentHash\":\"9b069e97fc2246b2be0ee21990b9200fb9536f3c9ce755143030319f18f1590d\"}},\"nonClaims\":[\"Synthetic deterministic benchmark only; it does not establish physical validity.\",\"Local replay is not independent external reproduction.\",\"No professional approval, product certification, regulatory approval, or deployment readiness is claimed.\"]}"
+      ]
+    },
+    "value": {
+      "milestone": "Phase-1A — Minimal Challenge-Facing Product Loop",
+      "persistence": {
+        "kind": "process-local-memory",
+        "durable": false,
+        "disclosure": "Records exist only in this local API process and reset when it restarts."
+      },
+      "challenge": {
+        "id": "sandbox-001",
+        "revision": "1.0.0",
+        "model": "model.sandbox-001",
+        "solver": {
+          "kind": "solver",
+          "id": "solver.sandbox-001",
+          "revision": "1.0.0",
+          "contentHash": "0997b38d17fc9d33951d0b63d085894cc645ff2428922279f1b658a260466946"
+        }
+      },
+      "evaluations": [
+        {
+          "submission": "submission.sandbox-001.reference@1.0.0",
+          "evaluation": "evaluation.submission.sandbox-001.reference@0.1.0",
+          "result": {
+            "value": 53,
+            "terms": [
+              2,
+              6,
+              15
+            ],
+            "weightedSum": 23
+          },
+          "materialInputHash": "72886e655374bcc81162f72fb3a942bb6e596164aea85025453feac0ada8b383",
+          "materialResultHash": "991b9464d74424297f88fe363a200d895147349a87b0377d5851945e0aa34c21",
+          "hardGatesPassed": true,
+          "evidenceReadiness": "computationally-reproduced",
+          "deploymentReadiness": "concept-only",
+          "replay": {
+            "ok": true,
+            "inputHashMatches": true,
+            "resultHashMatches": true,
+            "reproductionStatus": "verified-local-replay"
+          },
+          "unresolvedProofObligationIds": [
+            "proof.independent-reproduction",
+            "proof.physical-validation"
+          ]
+        },
+        {
+          "submission": "submission.sandbox-001.candidate-low@1.0.0",
+          "evaluation": "evaluation.submission.sandbox-001.candidate-low@0.1.0",
+          "result": {
+            "value": 23,
+            "terms": [
+              0,
+              3,
+              5
+            ],
+            "weightedSum": 8
+          },
+          "materialInputHash": "92d014f850618400977ed29862391acae4c046c52ee00b24a6ec4c912157c11b",
+          "materialResultHash": "e2224d21bdaf7f0a58d0086ef04d0b0ae728cd787849a9783e846d8d2fc38985",
+          "hardGatesPassed": true,
+          "evidenceReadiness": "computationally-reproduced",
+          "deploymentReadiness": "concept-only",
+          "replay": {
+            "ok": true,
+            "inputHashMatches": true,
+            "resultHashMatches": true,
+            "reproductionStatus": "verified-local-replay"
+          },
+          "unresolvedProofObligationIds": [
+            "proof.independent-reproduction",
+            "proof.physical-validation"
+          ]
+        }
+      ],
+      "comparison": {
+        "comparable": true,
+        "changedInputPaths": [
+          "submission.id",
+          "submission.materialPayload.values[0]",
+          "submission.materialPayload.values[1]",
+          "submission.materialPayload.values[2]"
+        ],
+        "fixedInputPathCount": 134,
+        "resultDeltas": [
+          {
+            "resultPath": "result.terms[0]",
+            "baseline": 2,
+            "candidate": 0,
+            "delta": -2,
+            "interpretation": "result.terms[0] changed by -2."
+          },
+          {
+            "resultPath": "result.terms[1]",
+            "baseline": 6,
+            "candidate": 3,
+            "delta": -3,
+            "interpretation": "result.terms[1] changed by -3."
+          },
+          {
+            "resultPath": "result.terms[2]",
+            "baseline": 15,
+            "candidate": 5,
+            "delta": -10,
+            "interpretation": "result.terms[2] changed by -10."
+          },
+          {
+            "resultPath": "result.value",
+            "baseline": 53,
+            "candidate": 23,
+            "delta": -30,
+            "interpretation": "result.value changed by -30."
+          },
+          {
+            "resultPath": "result.weightedSum",
+            "baseline": 23,
+            "candidate": 8,
+            "delta": -15,
+            "interpretation": "result.weightedSum changed by -15."
+          }
+        ],
+        "hardGateChanges": [
+          {
+            "constraintId": "constraint.sandbox-001.valid-completion",
+            "baselinePassed": true,
+            "candidatePassed": true,
+            "changed": false
+          }
+        ],
+        "explanation": {
+          "summary": "The baseline performed better on result.value; the candidate delta is -30.",
+          "primaryReasons": [
+            "submission.materialPayload.values[0] changed from 1 to 0.",
+            "submission.materialPayload.values[1] changed from 2 to 1.",
+            "submission.materialPayload.values[2] changed from 3 to 1."
+          ],
+          "limitations": [
+            "Synthetic deterministic benchmark only; it does not establish physical validity.",
+            "Local replay is not independent external reproduction.",
+            "No professional approval, product certification, regulatory approval, or deployment readiness is claimed."
+          ]
+        }
+      },
+      "explainability": {
+        "equationIds": [
+          "sandbox-001.weighted-sum"
+        ],
+        "intermediateValueIds": [
+          "weighted-sum",
+          "scale",
+          "offset"
+        ],
+        "modelFidelity": "analytical",
+        "runner": {
+          "kind": "runner",
+          "id": "gosp.rep.reference-runner",
+          "revision": "0.1.0",
+          "contentHash": "9b069e97fc2246b2be0ee21990b9200fb9536f3c9ce755143030319f18f1590d"
+        }
+      },
+      "nonClaims": [
+        "Synthetic deterministic benchmark only; it does not establish physical validity.",
+        "Local replay is not independent external reproduction.",
+        "No professional approval, product certification, regulatory approval, or deployment readiness is claimed."
+      ]
+    }
+  },
+  "foundationMaterialResults": {
+    "run": {
+      "command": [
+        "node",
+        "scripts/phase-0b/read-material-results.mjs"
+      ],
+      "exitStatus": 0,
+      "outputSha256": "7baaf615869e5d506193d5d77170f9124462c3ceffcf6ed272773bbc1883f94c",
+      "outputTail": [
+        "{\"sandbox001\":{\"record\":\"examples/rep/sandbox-001.replay.json\",\"materialInputHash\":\"72886e655374bcc81162f72fb3a942bb6e596164aea85025453feac0ada8b383\",\"materialResultHash\":\"991b9464d74424297f88fe363a200d895147349a87b0377d5851945e0aa34c21\",\"inputHashMatches\":true,\"resultHashMatches\":true},\"cleanWater\":{\"project\":\"examples/projects/automated-water-filter.project-v2.json\",\"cleanWaterLiters\":8,\"legacyInputHash\":\"2355da693fad75a3337887d0c9129df41e432de3824a70997f2673e9369441a6\",\"legacyOutputHash\":\"d500dfecaf0afa7a7ca6c9c6ff1dca97343f1f1f096a1798b3ba887d7d474bde\",\"repMaterialInputHash\":\"809bf1cad1f3b3d18e1c605fbd4550feb8346545c7fa10720a22a00f45f90d0c\",\"repMaterialResultHash\":\"0912de0a81bf5cc327663cfb31df0f97dd2f76102190521a912507cdae2ee5e6\"},\"sourceImplementationManifests\":{\"referenceRunner\":{\"format\":\"gosp-source-implementation-v1\",\"id\":\"gosp.rep.reference-runner\",\"revision\":\"0.1.0\",\"files\":[{\"path\":\"packages/contracts/src/canonical/executionModel.ts\",\"contentHash\":\"764bf8dc3176a9877207cd6e6377f872c88ba98249bcb2e0e6c4b293bd41c056\"},{\"path\":\"packages/contracts/src/canonical/identity.ts\",\"contentHash\":\"f5941bff72323dad10d99ec0dc4494264d19f9a4652cfac5b591ee2605917b0c\"},{\"path\":\"packages/contracts/src/canonical/truthModel.ts\",\"contentHash\":\"3cb4d00f0c2aa429a6e7e3c25fc2f5595c1f86d6a2f594201476402feca891b1\"},{\"path\":\"packages/contracts/src/rep/rep.ts\",\"contentHash\":\"c4d674233ae7229b82531396e661883e813719251a608b4b8923d7dcc72b2ff9\"},{\"path\":\"packages/contracts/src/shared/primitives.ts\",\"contentHash\":\"7c613b9cc5cf5eecc4ad9de6e27a47bbda265afae69baec32fcb74a8f7e05bac\"},{\"path\":\"packages/contracts/src/shared/sourceRefs.ts\",\"contentHash\":\"39ec9bd0b49cc9b7006a929441eb5fbc0a89d746aab451f70423f5cb99f8624a\"},{\"path\":\"packages/contracts/tsconfig.json\",\"contentHash\":\"e8383d61ccf0cfaee5c57234505e10932981ac18b5e9185a9dcfaaf04cf09112\"},{\"path\":\"packages/sim-core/src/hash/canonicalJson.ts\",\"contentHash\":\"b386e913393c1144e58b5ebbdf5e452c3c3e9e2d5fb3d637d2ec749c47236ce9\"},{\"path\":\"packages/sim-core/src/hash/sha256.ts\",\"contentHash\":\"d98f1686ea4ae5f9b166bf2d2460771f2f7d8b776e8e0fea592c09fbe5d10838\"},{\"path\":\"packages/sim-core/src/rep/referenceRunner.ts\",\"contentHash\":\"5ba0814589eee6c4ebc04e193cd7d20e7d2ea184e8f161423dfc2c1ea2990936\"},{\"path\":\"packages/sim-core/src/rep/sourceImplementationIdentity.ts\",\"contentHash\":\"b6fe5fc30d42f3a111c8ca189079bd1fcd637b692b0867b474e1eaef3d60252c\"},{\"path\":\"packages/sim-core/tsconfig.json\",\"contentHash\":\"e8383d61ccf0cfaee5c57234505e10932981ac18b5e9185a9dcfaaf04cf09112\"},{\"path\":\"tsconfig.base.json\",\"contentHash\":\"50d5cf26195889745e828f1dc68123067543550a1cce2044d7c2a588084eeabd\"}],\"toolchain\":{\"typescript\":\"5.9.3\"},\"runtimeDependencies\":{\"zod\":\"3.25.76\"}},\"sandbox001Solver\":{\"format\":\"gosp-source-implementation-v1\",\"id\":\"solver.sandbox-001\",\"revision\":\"1.0.0\",\"files\":[{\"path\":\"packages/sim-core/src/rep/sandbox001.ts\",\"contentHash\":\"a341844edc27c28997ae0a1ae01d7be7da9af88d9ef65459c581d403e43326d5\"},{\"path\":\"packages/sim-core/src/rep/sourceImplementationIdentity.ts\",\"contentHash\":\"b6fe5fc30d42f3a111c8ca189079bd1fcd637b692b0867b474e1eaef3d60252c\"},{\"path\":\"packages/sim-core/tsconfig.json\",\"contentHash\":\"e8383d61ccf0cfaee5c57234505e10932981ac18b5e9185a9dcfaaf04cf09112\"},{\"path\":\"tsconfig.base.json\",\"contentHash\":\"50d5cf26195889745e828f1dc68123067543550a1cce2044d7c2a588084eeabd\"}],\"toolchain\":{\"typescript\":\"5.9.3\"},\"runtimeDependencies\":{\"zod\":\"3.25.76\"}},\"cleanWaterSolver\":{\"format\":\"gosp-source-implementation-v1\",\"id\":\"gosp.vertical.clean-water.screening-solver\",\"revision\":\"0.1.0\",\"files\":[{\"path\":\"packages/sim-core/src/rep/sourceImplementationIdentity.ts\",\"contentHash\":\"b6fe5fc30d42f3a111c8ca189079bd1fcd637b692b0867b474e1eaef3d60252c\"},{\"path\":\"packages/vertical-clean-water/src/cleanWater/powerCompatibility.ts\",\"contentHash\":\"62fcff7069816b815577122f3fa5b3dfba21ead7a631612659db96374ea4efbb\"},{\"path\":\"packages/vertical-clean-water/src/cleanWater/powerFlowEngine.ts\",\"contentHash\":\"f1c9f411bd2a059fe4e885924253906b3f9d08b0ce92164a075cf891b232d32d\"},{\"path\":\"packages/vertical-clean-water/src/cleanWater/scoreCleanWater.ts\",\"contentHash\":\"a6b3c98ac88bedf26539911995f0af38a356763f7cd48a93809888e573885302\"},{\"path\":\"packages/vertical-clean-water/src/cleanWater/waterFlowEngine.ts\",\"contentHash\":\"b348a1a54fbabca3fd568c6c435c2a2bb7ebe07ea9d705ed4cb097fc737cc5bb\"},{\"path\":\"packages/vertical-clean-water/src/cleanWater/waterFlowTypes.ts\",\"contentHash\":\"b97ef95f55771e5944a5e9834a60e73bb92a5a08afdaf59ac3aa9a1308f480b6\"},{\"path\":\"packages/vertical-clean-water/src/rep/cleanWaterRepAdapter.ts\",\"contentHash\":\"1b1514ebe676609ee7bbbb4d3e4d0574b8777eb0c71f1329f6567c09e54d130e\"},{\"path\":\"packages/vertical-clean-water/src/scoring/moduleScorecardGenerator.ts\",\"contentHash\":\"a0e08fa3e0bc2605d6e7cd83b9aebe8d121be58ff2bd0c89c018b4d018282630\"},{\"path\":\"packages/vertical-clean-water/src/scoring/systemScorecardGenerator.ts\",\"contentHash\":\"1aaccb5f5d8eb3afe39a8eebb10c93198c9fec0621754714116a24b7b3df4ad5\"},{\"path\":\"packages/vertical-clean-water/tsconfig.json\",\"contentHash\":\"fd63ddf63679d2ac470f49b470a160d3e0038974c2ce0362a294f119382f3eb8\"},{\"path\":\"tsconfig.base.json\",\"contentHash\":\"50d5cf26195889745e828f1dc68123067543550a1cce2044d7c2a588084eeabd\"}],\"toolchain\":{\"typescript\":\"5.9.3\"},\"runtimeDependencies\":{\"zod\":\"3.25.76\"}}}}"
+      ]
+    },
+    "value": {
+      "sandbox001": {
+        "record": "examples/rep/sandbox-001.replay.json",
+        "materialInputHash": "72886e655374bcc81162f72fb3a942bb6e596164aea85025453feac0ada8b383",
+        "materialResultHash": "991b9464d74424297f88fe363a200d895147349a87b0377d5851945e0aa34c21",
+        "inputHashMatches": true,
+        "resultHashMatches": true
+      },
+      "cleanWater": {
+        "project": "examples/projects/automated-water-filter.project-v2.json",
+        "cleanWaterLiters": 8,
+        "legacyInputHash": "2355da693fad75a3337887d0c9129df41e432de3824a70997f2673e9369441a6",
+        "legacyOutputHash": "d500dfecaf0afa7a7ca6c9c6ff1dca97343f1f1f096a1798b3ba887d7d474bde",
+        "repMaterialInputHash": "809bf1cad1f3b3d18e1c605fbd4550feb8346545c7fa10720a22a00f45f90d0c",
+        "repMaterialResultHash": "0912de0a81bf5cc327663cfb31df0f97dd2f76102190521a912507cdae2ee5e6"
+      },
+      "sourceImplementationManifests": {
+        "referenceRunner": {
+          "format": "gosp-source-implementation-v1",
+          "id": "gosp.rep.reference-runner",
+          "revision": "0.1.0",
+          "files": [
+            {
+              "path": "packages/contracts/src/canonical/executionModel.ts",
+              "contentHash": "764bf8dc3176a9877207cd6e6377f872c88ba98249bcb2e0e6c4b293bd41c056"
+            },
+            {
+              "path": "packages/contracts/src/canonical/identity.ts",
+              "contentHash": "f5941bff72323dad10d99ec0dc4494264d19f9a4652cfac5b591ee2605917b0c"
+            },
+            {
+              "path": "packages/contracts/src/canonical/truthModel.ts",
+              "contentHash": "3cb4d00f0c2aa429a6e7e3c25fc2f5595c1f86d6a2f594201476402feca891b1"
+            },
+            {
+              "path": "packages/contracts/src/rep/rep.ts",
+              "contentHash": "c4d674233ae7229b82531396e661883e813719251a608b4b8923d7dcc72b2ff9"
+            },
+            {
+              "path": "packages/contracts/src/shared/primitives.ts",
+              "contentHash": "7c613b9cc5cf5eecc4ad9de6e27a47bbda265afae69baec32fcb74a8f7e05bac"
+            },
+            {
+              "path": "packages/contracts/src/shared/sourceRefs.ts",
+              "contentHash": "39ec9bd0b49cc9b7006a929441eb5fbc0a89d746aab451f70423f5cb99f8624a"
+            },
+            {
+              "path": "packages/contracts/tsconfig.json",
+              "contentHash": "e8383d61ccf0cfaee5c57234505e10932981ac18b5e9185a9dcfaaf04cf09112"
+            },
+            {
+              "path": "packages/sim-core/src/hash/canonicalJson.ts",
+              "contentHash": "b386e913393c1144e58b5ebbdf5e452c3c3e9e2d5fb3d637d2ec749c47236ce9"
+            },
+            {
+              "path": "packages/sim-core/src/hash/sha256.ts",
+              "contentHash": "d98f1686ea4ae5f9b166bf2d2460771f2f7d8b776e8e0fea592c09fbe5d10838"
+            },
+            {
+              "path": "packages/sim-core/src/rep/referenceRunner.ts",
+              "contentHash": "5ba0814589eee6c4ebc04e193cd7d20e7d2ea184e8f161423dfc2c1ea2990936"
+            },
+            {
+              "path": "packages/sim-core/src/rep/sourceImplementationIdentity.ts",
+              "contentHash": "b6fe5fc30d42f3a111c8ca189079bd1fcd637b692b0867b474e1eaef3d60252c"
+            },
+            {
+              "path": "packages/sim-core/tsconfig.json",
+              "contentHash": "e8383d61ccf0cfaee5c57234505e10932981ac18b5e9185a9dcfaaf04cf09112"
+            },
+            {
+              "path": "tsconfig.base.json",
+              "contentHash": "50d5cf26195889745e828f1dc68123067543550a1cce2044d7c2a588084eeabd"
+            }
+          ],
+          "toolchain": {
+            "typescript": "5.9.3"
+          },
+          "runtimeDependencies": {
+            "zod": "3.25.76"
+          }
+        },
+        "sandbox001Solver": {
+          "format": "gosp-source-implementation-v1",
+          "id": "solver.sandbox-001",
+          "revision": "1.0.0",
+          "files": [
+            {
+              "path": "packages/sim-core/src/rep/sandbox001.ts",
+              "contentHash": "a341844edc27c28997ae0a1ae01d7be7da9af88d9ef65459c581d403e43326d5"
+            },
+            {
+              "path": "packages/sim-core/src/rep/sourceImplementationIdentity.ts",
+              "contentHash": "b6fe5fc30d42f3a111c8ca189079bd1fcd637b692b0867b474e1eaef3d60252c"
+            },
+            {
+              "path": "packages/sim-core/tsconfig.json",
+              "contentHash": "e8383d61ccf0cfaee5c57234505e10932981ac18b5e9185a9dcfaaf04cf09112"
+            },
+            {
+              "path": "tsconfig.base.json",
+              "contentHash": "50d5cf26195889745e828f1dc68123067543550a1cce2044d7c2a588084eeabd"
+            }
+          ],
+          "toolchain": {
+            "typescript": "5.9.3"
+          },
+          "runtimeDependencies": {
+            "zod": "3.25.76"
+          }
+        },
+        "cleanWaterSolver": {
+          "format": "gosp-source-implementation-v1",
+          "id": "gosp.vertical.clean-water.screening-solver",
+          "revision": "0.1.0",
+          "files": [
+            {
+              "path": "packages/sim-core/src/rep/sourceImplementationIdentity.ts",
+              "contentHash": "b6fe5fc30d42f3a111c8ca189079bd1fcd637b692b0867b474e1eaef3d60252c"
+            },
+            {
+              "path": "packages/vertical-clean-water/src/cleanWater/powerCompatibility.ts",
+              "contentHash": "62fcff7069816b815577122f3fa5b3dfba21ead7a631612659db96374ea4efbb"
+            },
+            {
+              "path": "packages/vertical-clean-water/src/cleanWater/powerFlowEngine.ts",
+              "contentHash": "f1c9f411bd2a059fe4e885924253906b3f9d08b0ce92164a075cf891b232d32d"
+            },
+            {
+              "path": "packages/vertical-clean-water/src/cleanWater/scoreCleanWater.ts",
+              "contentHash": "a6b3c98ac88bedf26539911995f0af38a356763f7cd48a93809888e573885302"
+            },
+            {
+              "path": "packages/vertical-clean-water/src/cleanWater/waterFlowEngine.ts",
+              "contentHash": "b348a1a54fbabca3fd568c6c435c2a2bb7ebe07ea9d705ed4cb097fc737cc5bb"
+            },
+            {
+              "path": "packages/vertical-clean-water/src/cleanWater/waterFlowTypes.ts",
+              "contentHash": "b97ef95f55771e5944a5e9834a60e73bb92a5a08afdaf59ac3aa9a1308f480b6"
+            },
+            {
+              "path": "packages/vertical-clean-water/src/rep/cleanWaterRepAdapter.ts",
+              "contentHash": "1b1514ebe676609ee7bbbb4d3e4d0574b8777eb0c71f1329f6567c09e54d130e"
+            },
+            {
+              "path": "packages/vertical-clean-water/src/scoring/moduleScorecardGenerator.ts",
+              "contentHash": "a0e08fa3e0bc2605d6e7cd83b9aebe8d121be58ff2bd0c89c018b4d018282630"
+            },
+            {
+              "path": "packages/vertical-clean-water/src/scoring/systemScorecardGenerator.ts",
+              "contentHash": "1aaccb5f5d8eb3afe39a8eebb10c93198c9fec0621754714116a24b7b3df4ad5"
+            },
+            {
+              "path": "packages/vertical-clean-water/tsconfig.json",
+              "contentHash": "fd63ddf63679d2ac470f49b470a160d3e0038974c2ce0362a294f119382f3eb8"
+            },
+            {
+              "path": "tsconfig.base.json",
+              "contentHash": "50d5cf26195889745e828f1dc68123067543550a1cce2044d7c2a588084eeabd"
+            }
+          ],
+          "toolchain": {
+            "typescript": "5.9.3"
+          },
+          "runtimeDependencies": {
+            "zod": "3.25.76"
+          }
+        }
+      }
+    }
+  },
+  "result": "PASS",
+  "claims": {
+    "scope": "Local Phase-1A application projection and preserved Phase-0B regression boundary only.",
+    "notEstablished": [
+      "independent external reproduction",
+      "physical validation",
+      "professional approval",
+      "certification",
+      "regulatory approval",
+      "deployment readiness",
+      "durable production persistence",
+      "business Gate A"
+    ]
+  }
+}

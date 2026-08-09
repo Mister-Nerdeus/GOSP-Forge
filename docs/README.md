@@ -4,7 +4,8 @@ This index points to the current foundation documentation. The repository remain
 
 ## Start Here
 
-- [Revision 2 source of truth](source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R2.md)
+- [Revision 3 source of truth](source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R3.md)
+- [Revision 2 source of truth (historical)](source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R2.md)
 - [Repository status reconciliation](source-of-truth/REPOSITORY_STATUS_RECONCILIATION_2026-08-07.md)
 - [Phase-0B implementation status](source-of-truth/PHASE_0B_IMPLEMENTATION_STATUS_2026-08-07.md)
 - [REP v0.1](rep/REP_V0.1.md)
@@ -45,11 +46,19 @@ This index points to the current foundation documentation. The repository remain
 
 ## UI And API
 
-- [Builder UI shell](product/BUILDER_UI_SHELL.md)
+- [Phase-1A product loop](product/PHASE_1A_MINIMAL_PRODUCT_LOOP.md)
+- [Phase-1A web application surface](product/BUILDER_UI_SHELL.md)
 - [Foundation UI inspection](product/FOUNDATION_UI_INSPECTION.md)
 - [Browser smoke strategy](testing/BROWSER_SMOKE_TEST_STRATEGY.md)
 - [API non-claims](api/API_NON_CLAIMS.md)
 - [API health and version](api/HEALTH_AND_VERSION.md)
+
+## Phase-0C Preparation
+
+- [External one-page explanation](phase-0c/GOSP_FORGE_EXTERNAL_ONE_PAGE.md)
+- [Structured interview script](phase-0c/EXTERNAL_INTERVIEW_SCRIPT.md)
+- [External feedback evidence template](phase-0c/EXTERNAL_FEEDBACK_EVIDENCE_TEMPLATE.json)
+- [Gate A tracker](phase-0c/GATE_A_TRACKER.md)
 
 ## Gates And Audit
 

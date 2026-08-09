@@ -9,6 +9,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
   },
+  "dependencies": {
+    "@gosp/contracts": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^5.9.3",
     "vite": "^7.2.0"

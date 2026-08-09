@@ -7,4 +7,4 @@ if (!root) {
   throw new Error('Missing #root element');
 }
 
-renderApp(root);
+void renderApp(root);

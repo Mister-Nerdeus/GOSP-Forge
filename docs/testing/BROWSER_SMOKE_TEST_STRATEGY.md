@@ -4,7 +4,7 @@ Date: 2026-05-14
 
 ## Decision
 
-Use a minimal committed Vitest DOM smoke for the read-only inspection shell. Full Playwright or equivalent browser automation remains postponed until the UI has a user workflow beyond read-only inspection.
+Use the existing committed Vitest DOM smoke for the Phase-1A projection. It verifies that the canonical Challenge, REP result, comparison, explainability, evidence, replay/export affordance, persistence disclosure, and non-claims render. Full Playwright or equivalent browser automation remains postponed; this milestone does not add a large E2E framework.
 
 ## Current Required Evidence
 
@@ -17,7 +17,7 @@ The web package test script is `vitest run` without `--passWithNoTests`; missing
 A local Vite HTTP smoke may still be run when UI files change:
 
 ```bash
-pnpm --filter @gosp/web dev -- --host 127.0.0.1 --port 5173
+pnpm dev:phase1a
 ```
 
 Then request `http://127.0.0.1:5173` and record HTTP 200 evidence in the issue closeout.
@@ -32,7 +32,7 @@ Then request `http://127.0.0.1:5173` and record HTTP 200 evidence in the issue c
 
 - App loads the Clean Water manifest summary.
 - Project, module, product, safety, education, and output panels render without blank states.
-- Safety, no-potable-water, read-only inspection, and no-CAD-editing boundaries are visible.
+- The UI visibly states that records are process-local, results are synthetic, local replay is not independent reproduction, and no professional approval, certification, or deployment readiness is claimed.
 - No persistence, CAD, or editor workflow claim is introduced.
 
 ## Future Gate Trigger

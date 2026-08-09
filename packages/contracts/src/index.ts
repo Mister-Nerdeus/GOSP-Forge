@@ -79,3 +79,4 @@ export * from './canonical/truthModel.js';
 export * from './canonical/executionModel.js';
 export * from './canonical/canonicalObject.js';
 export * from './rep/rep.js';
+export * from './application/phase1a.js';

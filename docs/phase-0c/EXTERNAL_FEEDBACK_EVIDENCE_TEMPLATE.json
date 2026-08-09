@@ -1,0 +1,46 @@
+{
+  "recordVersion": "1.0.0",
+  "organizationType": "",
+  "organizationIdentity": null,
+  "participantRole": "",
+  "participantIdentity": null,
+  "interviewDate": null,
+  "consentAndPrivacy": {
+    "noteTakingAllowed": null,
+    "attributionAllowed": null,
+    "confidentialityConstraints": []
+  },
+  "problemAndPain": [],
+  "currentWorkflow": {
+    "summary": "",
+    "tools": [],
+    "handoffs": [],
+    "failureModes": []
+  },
+  "valueHypotheses": [],
+  "objections": [],
+  "requestedFeatures": [],
+  "rejectionCriteria": [],
+  "pilotCandidate": {
+    "identified": false,
+    "description": null,
+    "constraints": [],
+    "decisionOwnerRole": null
+  },
+  "willingnessToPay": {
+    "status": "not-assessed",
+    "scope": null,
+    "conditions": [],
+    "evidenceRefs": []
+  },
+  "followUp": {
+    "status": "not-requested",
+    "actions": []
+  },
+  "provenance": {
+    "capturedBy": "",
+    "sourceType": "interview-notes",
+    "sourceRefs": [],
+    "limitations": []
+  }
+}

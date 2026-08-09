@@ -1,6 +1,6 @@
 # GOSP Forge
 
-GOSP Forge is a problem-first, domain-neutral protocol foundation for reproducible STEM and engineering evaluation. This repository contains canonical contracts, REP v0.1, a deterministic synthetic benchmark, local evidence tooling, foundation services, a Clean Water vertical, and a read-only builder UI shell. It does not provide a complete product UI, CAD tool, marketplace, professional engineering workflow, potable-water validation, certification, or production manufacturing approval.
+GOSP Forge is a problem-first, domain-neutral protocol foundation for reproducible STEM and engineering evaluation. This repository contains canonical contracts, REP v0.1, a deterministic synthetic benchmark, local evidence tooling, foundation services, a Clean Water vertical, and a minimal local Challenge → Submission → Evaluation → Evidence → Comparison application slice. It does not provide a complete product UI, CAD tool, marketplace, professional engineering workflow, potable-water validation, certification, production persistence, or production manufacturing approval.
 
 ## Current State
 

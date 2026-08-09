@@ -1,11 +1,15 @@
 import { createServer } from 'node:http';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { sendJson, HttpError } from './http/errors.js';
 import { readJsonBody } from './http/readJsonBody.js';
 import { rateLimit } from './http/rateLimit.js';
 import { healthResponse } from './routes/health.js';
 import { validateProjectBody } from './routes/validate.js';
 import { versionResponse } from './routes/version.js';
+import { Phase1aService, Phase1aValidationError } from './phase1a/service.js';
 export function createGospServer() {
+  const phase1a = new Phase1aService();
   return createServer(async (req, res) => {
     try {
       const key = req.socket.remoteAddress ?? 'unknown';
@@ -15,6 +19,54 @@ export function createGospServer() {
       if (req.method === 'GET' && req.url === '/version')
         return sendJson(res, 200, versionResponse());
       const requestUrl = new URL(req.url ?? '/', 'http://localhost');
+      if (req.method === 'GET' && requestUrl.pathname === '/api/phase1a/workspace') {
+        return sendJson(res, 200, await phase1a.getWorkspace());
+      }
+      if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/challenges') {
+        const body = await readJsonBody(req);
+        return sendJson(res, 201, { ok: true, challenge: await phase1a.createChallenge(body) });
+      }
+      if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/submissions') {
+        const body = await readJsonBody(req);
+        return sendJson(res, 201, { ok: true, submission: await phase1a.createSubmission(body) });
+      }
+      if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/evaluations') {
+        const body = (await readJsonBody(req)) as { submissionId?: unknown; revision?: unknown };
+        if (typeof body.submissionId !== 'string' || typeof body.revision !== 'string') {
+          throw new Phase1aValidationError('Evaluation requires string submissionId and revision.');
+        }
+        return sendJson(
+          res,
+          200,
+          await phase1a.evaluateSubmission(body.submissionId, body.revision),
+        );
+      }
+      if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/comparisons') {
+        const body = (await readJsonBody(req)) as {
+          baseline?: { id?: unknown; revision?: unknown };
+          candidate?: { id?: unknown; revision?: unknown };
+        };
+        if (
+          typeof body.baseline?.id !== 'string' ||
+          typeof body.baseline.revision !== 'string' ||
+          typeof body.candidate?.id !== 'string' ||
+          typeof body.candidate.revision !== 'string'
+        ) {
+          throw new Phase1aValidationError('Comparison requires baseline and candidate Submission references.');
+        }
+        const baseline = await phase1a.evaluateSubmission(body.baseline.id, body.baseline.revision);
+        const candidate = await phase1a.evaluateSubmission(body.candidate.id, body.candidate.revision);
+        return sendJson(res, 200, await phase1a.compare(baseline, candidate));
+      }
+      if (req.method === 'GET' && requestUrl.pathname === '/api/phase1a/export') {
+        const submissionId = requestUrl.searchParams.get('submissionId');
+        const revision = requestUrl.searchParams.get('revision');
+        if (!submissionId || !revision) {
+          throw new Phase1aValidationError('Export requires submissionId and revision query parameters.');
+        }
+        const evaluation = await phase1a.evaluateSubmission(submissionId, revision);
+        return sendJson(res, 200, evaluation.replayRecord);
+      }
       if (req.method === 'POST' && requestUrl.pathname === '/validate') {
         const body = await readJsonBody(req);
         const mode = requestUrl.searchParams.get('mode') === 'repo' ? 'repo' : 'schema-only';
@@ -25,11 +77,16 @@ export function createGospServer() {
     } catch (error) {
       if (error instanceof HttpError)
         return sendJson(res, error.statusCode, { error: error.message });
+      if (error instanceof Phase1aValidationError)
+        return sendJson(res, 422, { error: error.message, issues: error.issues });
       return sendJson(res, 500, { error: 'internal_error' });
     }
   });
 }
-if (import.meta.url === 'file://' + process.argv[1]) {
+const isDirectExecution =
+  process.argv[1] !== undefined && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (isDirectExecution) {
   const port = Number(process.env.PORT ?? 3080);
   createGospServer().listen(port, () =>
     console.log(JSON.stringify({ ok: true, url: 'http://localhost:' + port })),

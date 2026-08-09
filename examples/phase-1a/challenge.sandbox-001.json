@@ -1,0 +1,19 @@
+{
+  "kind": "Challenge",
+  "id": "sandbox-001",
+  "revision": "1.0.0",
+  "provenance": { "sources": [], "method": "authored", "notes": [] },
+  "relationships": [],
+  "supersedes": [],
+  "title": "Sandbox 001 deterministic weighted sum",
+  "problemStatement": "Evaluate a finite weighted sum under a controlled scalar scenario.",
+  "requirementRefs": [],
+  "constraintRefs": [],
+  "hazardRefs": [],
+  "permittedScenarioRefs": [
+    { "kind": "Scenario", "id": "scenario.sandbox-001.reference", "revision": "1.0.0" }
+  ],
+  "evaluationModelRef": { "kind": "Model", "id": "model.sandbox-001", "revision": "1.0.0" },
+  "workflowRef": { "kind": "Workflow", "id": "workflow.sandbox-001", "revision": "1.0.0" },
+  "status": "open"
+}

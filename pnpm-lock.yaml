@@ -41,6 +41,10 @@ importers:
         version: 4.1.5(@types/node@25.6.2)(vite@7.3.3(@types/node@25.6.2)(tsx@4.21.0))
 
   apps/web:
+    dependencies:
+      '@gosp/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -56,6 +60,9 @@ importers:
       '@gosp/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@gosp/sim-core':
+        specifier: workspace:*
+        version: link:../sim-core
 
   packages/cli:
     dependencies:

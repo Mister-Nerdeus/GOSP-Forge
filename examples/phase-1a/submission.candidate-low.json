@@ -1,0 +1,13 @@
+{
+  "kind": "Submission",
+  "id": "submission.sandbox-001.candidate-low",
+  "revision": "1.0.0",
+  "provenance": { "sources": [], "method": "authored", "notes": [] },
+  "relationships": [],
+  "supersedes": [],
+  "challengeRef": { "kind": "Challenge", "id": "sandbox-001", "revision": "1.0.0" },
+  "scenarioRef": { "kind": "Scenario", "id": "scenario.sandbox-001.reference", "revision": "1.0.0" },
+  "materialPayload": { "values": [0, 1, 1], "weights": [2, 3, 5], "offset": 7 },
+  "componentData": [],
+  "status": "submitted"
+}
