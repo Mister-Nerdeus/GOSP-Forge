@@ -640,6 +640,25 @@ Everything else should proceed without requiring owner micromanagement.
 
 # 20. Push policy
 
+## Publication status update — 2026-08-10
+
+The original text in this section records the repository state and publication policy as of Revision 3 on 2026-08-07.
+
+Since Revision 3 was issued, the verified lineage completed Stage 1 publication to the remote branch `canonical/verified-lineage`. The exact Stage 1 object and the current authority-transition state are recorded in [GOSP Remote Publication Status](GOSP_REMOTE_PUBLICATION_STATUS_2026-08-10.md).
+
+As of this update:
+
+- the verified lineage is publicly reachable on `canonical/verified-lineage`;
+- the Stage 1 published commit was independently checked against the verified local object;
+- the repository default branch remains `main`;
+- authority transition has not occurred;
+- branch-protection transition has not occurred;
+- PR #2 has not been merged into the authoritative lineage;
+- automatic CI is not being substituted for recorded local verification;
+- publication does not create professional, physical-test, certification, or production-readiness claims.
+
+The original Section 20 text below is retained as the historical state/policy record applicable when Revision 3 was issued.
+
 The Phase-0B checkpoint currently exists only locally.
 
 A future push should be treated as an **owner-level publication/collaboration decision**, not a routine coding step.

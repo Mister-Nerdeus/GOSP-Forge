@@ -5,6 +5,7 @@ This index points to the current foundation documentation. The repository remain
 ## Start Here
 
 - [Revision 3 source of truth](source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R3.md)
+- [Stage 1 remote publication status](source-of-truth/GOSP_REMOTE_PUBLICATION_STATUS_2026-08-10.md)
 - [Revision 2 source of truth (historical)](source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R2.md)
 - [Repository status reconciliation](source-of-truth/REPOSITORY_STATUS_RECONCILIATION_2026-08-07.md)
 - [Phase-0B implementation status](source-of-truth/PHASE_0B_IMPLEMENTATION_STATUS_2026-08-07.md)
