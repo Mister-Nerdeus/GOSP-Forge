@@ -8,6 +8,9 @@ import { healthResponse } from './routes/health.js';
 import { validateProjectBody } from './routes/validate.js';
 import { versionResponse } from './routes/version.js';
 import { Phase1aService, Phase1aValidationError } from './phase1a/service.js';
+
+export const PHASE1A_LOCAL_HOST = '127.0.0.1';
+
 export function createGospServer() {
   const phase1a = new Phase1aService();
   return createServer(async (req, res) => {
@@ -88,7 +91,7 @@ const isDirectExecution =
 
 if (isDirectExecution) {
   const port = Number(process.env.PORT ?? 3080);
-  createGospServer().listen(port, () =>
-    console.log(JSON.stringify({ ok: true, url: 'http://localhost:' + port })),
+  createGospServer().listen(port, PHASE1A_LOCAL_HOST, () =>
+    console.log(JSON.stringify({ ok: true, url: `http://${PHASE1A_LOCAL_HOST}:${port}` })),
   );
 }

@@ -1,7 +1,22 @@
 import { describe, expect, it } from 'vitest';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { readTextFile } from './exampleRegistry.js';
 import { resolveProjectRefs } from './refResolver.js';
 
 describe('resolveProjectRefs', () => {
+  it('normalizes text refs independently of BOM and checkout line endings', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'gosp-text-ref-'));
+    const file = join(directory, 'guide.md');
+    try {
+      writeFileSync(file, '\uFEFFfirst\r\nsecond\rthird\n', 'utf8');
+      expect(readTextFile(file)).toBe('first\nsecond\nthird\n');
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
+
   it('fails missing required refs', () => {
     const result = resolveProjectRefs({
       refs: [

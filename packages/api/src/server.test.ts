@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createGospServer } from './server.js';
+import { createGospServer, PHASE1A_LOCAL_HOST } from './server.js';
 
 async function withServer<T>(run: (baseUrl: string) => Promise<T>) {
   const server = createGospServer();
-  await new Promise<void>((resolve) => server.listen(0, resolve));
+  await new Promise<void>((resolve) => server.listen(0, PHASE1A_LOCAL_HOST, resolve));
   const address = server.address();
   if (!address || typeof address === 'string') throw new Error('Expected TCP listener');
 
@@ -17,6 +17,10 @@ async function withServer<T>(run: (baseUrl: string) => Promise<T>) {
 }
 
 describe('createGospServer', () => {
+  it('uses the documented loopback-only host for local API listeners', () => {
+    expect(PHASE1A_LOCAL_HOST).toBe('127.0.0.1');
+  });
+
   it('serves the complete local Phase-1A workspace and REP export', async () => {
     await withServer(async (baseUrl) => {
       const workspaceResponse = await fetch(`${baseUrl}/api/phase1a/workspace`);

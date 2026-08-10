@@ -24,7 +24,10 @@ export function readJsonFile(file: string): unknown {
 }
 
 export function readTextFile(file: string): string {
-  return fs.readFileSync(resolveRepoPath(file), 'utf8');
+  return fs
+    .readFileSync(resolveRepoPath(file), 'utf8')
+    .replace(/^\uFEFF/u, '')
+    .replace(/\r\n?/gu, '\n');
 }
 
 export function listExampleJson(root = 'examples'): string[] {
