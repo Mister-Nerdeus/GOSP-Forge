@@ -1,0 +1,40 @@
+name: Architecture decision
+description: Propose a durable architecture decision that may require an ADR.
+title: "[ADR] "
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What decision is needed and why now?
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options considered
+    validations:
+      required: true
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Proposed decision
+    validations:
+      required: true
+  - type: textarea
+    id: consequences
+    attributes:
+      label: Consequences and migration impact
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Boundary checks
+      options:
+        - label: Domain-neutral core remains free of vertical-specific concepts.
+          required: true
+        - label: Material identity and evidence impact are explicitly addressed.
+          required: true
+        - label: No unperformed validation, review, approval, or certification is claimed.
+          required: true

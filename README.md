@@ -4,15 +4,16 @@ GOSP Forge is a problem-first, domain-neutral protocol foundation for reproducib
 
 ## Current State
 
-Implemented locally in the current Phase-0B working tree: the 18 canonical Engineering Program Graph object contracts, typed claims/proof obligations/evidence, separate fidelity and readiness metadata, domain-neutral Scenario and controlled comparison structures, REP v0.1, normative canonical JSON, `sandbox-001`, recorded replay, material/execution-evidence separation, truthful local verification commands, and a Clean Water vertical adapter consuming generic core.
+Implemented in the current verified local technical lineage: the 18 canonical Engineering Program Graph object contracts, typed claims/proof obligations/evidence, separate fidelity and readiness metadata, domain-neutral Scenario and controlled comparison structures, REP v0.1, normative canonical JSON, `sandbox-001`, recorded replay, material/execution-evidence separation, truthful local verification commands, a Clean Water vertical adapter consuming generic core, and the minimal Phase-1A Challenge → Submission → Evaluation → Evidence → Comparison loop.
 
-The recorded `sandbox-001` material hash matches in native Windows/Node 22 and Docker Linux/Node 24. These changes remain uncommitted and unpushed.
+The protected Phase-0B `sandbox-001` material hash matches in native Windows/Node 22 and Docker Linux/Node 24. The Phase-1A checkpoint and its separately committed remediation descendant have been locally re-audited. The selected lineage remains unpublished remotely.
 
 Not implemented yet: full editor UI, full CAD, professional-grade simulation, manufacturer verification workflows, public leaderboards, production storage, production deployment readiness, or imported legacy code.
 
 ## Canonical Docs
 
-- [Revision 2 source of truth](docs/source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R2.md)
+- [Revision 3 source of truth](docs/source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R3.md)
+- [Revision 2 source of truth (historical)](docs/source-of-truth/GOSP_Forge_Project_Source_of_Truth_2026-08-07_R2.md)
 - [Observed repository reconciliation](docs/source-of-truth/REPOSITORY_STATUS_RECONCILIATION_2026-08-07.md)
 - [Current Phase-0B implementation status](docs/source-of-truth/PHASE_0B_IMPLEMENTATION_STATUS_2026-08-07.md)
 - [REP v0.1](docs/rep/REP_V0.1.md)
@@ -29,6 +30,9 @@ Not implemented yet: full editor UI, full CAD, professional-grade simulation, ma
 - [Foundation release checklist](docs/program/FOUNDATION_RELEASE_CHECKLIST.md)
 - [Release evidence command](docs/cli/RELEASE_EVIDENCE.md)
 - [Branch protection recommendations](docs/program/BRANCH_PROTECTION_RECOMMENDATIONS.md)
+- [Authoritative-lineage ADR](docs/adr/0006-authoritative-repository-lineage.md)
+- [Repository lineage audit](docs/program/GOSP_REPOSITORY_LINEAGE_AUDIT_2026-08-09.md)
+- [Reconciliation work-order provenance](docs/program/WORK_ORDER_PROVENANCE_2026-08-09.md)
 - [Browser smoke strategy](docs/testing/BROWSER_SMOKE_TEST_STRATEGY.md)
 
 ## Local Gates

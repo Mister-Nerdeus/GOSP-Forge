@@ -1,5 +1,7 @@
 # Branch Protection Recommendations
 
+> Historical foundation recommendation. The tiered, solo-owner-compatible policy in `BRANCH_PROTECTION_AND_REPOSITORY_CONTROL_POLICY_2026-08-09.md` supersedes this file for the selected Option A lineage. In particular, automatic status checks remain prohibited while local-only policy is active.
+
 These are recommended GitHub branch protection settings for foundation promotion. They are not a statement that branch protection is currently configured; repository settings must be verified in GitHub before making that claim.
 
 These recommendations are inactive while the local-only/no-GitHub-Actions policy is in force. Do not configure required Actions checks or restore automatic workflow triggers without explicit user authorization and a new policy review.

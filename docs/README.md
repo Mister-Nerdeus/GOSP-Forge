@@ -15,6 +15,10 @@ This index points to the current foundation documentation. The repository remain
 - [What GOSP Forge is not](product/WHAT_GOSP_FORGE_IS_NOT.md)
 - [Product invariants](governance/PRODUCT_INVARIANTS.md)
 - [Claim implementation map](program/CLAIM_IMPLEMENTATION_MAP.md)
+- [Phase-1A checkpoint reconciliation](program/PHASE_1A_CHECKPOINT_RECONCILIATION_2026-08-09.md)
+- [Canonical document inventory](program/CANONICAL_DOCUMENT_INVENTORY_2026-08-09.md)
+- [Repository lineage audit](program/GOSP_REPOSITORY_LINEAGE_AUDIT_2026-08-09.md)
+- [Authoritative-lineage ADR](adr/0006-authoritative-repository-lineage.md)
 
 ## Contracts
 
@@ -70,11 +74,17 @@ This index points to the current foundation documentation. The repository remain
 - [Foundation release checklist](program/FOUNDATION_RELEASE_CHECKLIST.md)
 - [Develop to main promotion](program/DEVELOP_TO_MAIN_FOUNDATION_PROMOTION.md)
 - [Branch protection recommendations](program/BRANCH_PROTECTION_RECOMMENDATIONS.md)
+- [Branch protection and repository control policy](program/BRANCH_PROTECTION_AND_REPOSITORY_CONTROL_POLICY_2026-08-09.md)
+- [PR #2 supersession map](program/PR_2_SUPERSESSION_MAP_2026-08-09.md)
+- [Remote branch disposition plan](program/REMOTE_BRANCH_PRESERVATION_AND_DISPOSITION_2026-08-09.md)
+- [Remote automation audit](program/REMOTE_AUTOMATION_AUDIT_2026-08-09.md)
+- [Work-order provenance](program/WORK_ORDER_PROVENANCE_2026-08-09.md)
 - [Rollback record template](program/ROLLBACK_RECORD_TEMPLATE.md)
 - [Foundation audit](audits/GOSP_FORGE_FOUNDATION_AUDIT.md)
 
 ## Governance
 
+- [Licensing strategy](licensing/strategy.md)
 - [Safety and use policy](governance/SAFETY_AND_USE_POLICY.md)
 - [Sponsor independence charter](governance/SPONSOR_INDEPENDENCE_CHARTER.md)
 - [Pay-to-win prohibition](governance/PAY_TO_WIN_PROHIBITION.md)

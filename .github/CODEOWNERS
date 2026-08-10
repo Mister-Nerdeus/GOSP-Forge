@@ -1,0 +1,11 @@
+# The repository currently has one owner. CODEOWNERS identifies review-sensitive
+# boundaries; it does not claim independent review.
+* @Mister-Nerdeus
+
+/packages/contracts/ @Mister-Nerdeus
+/packages/sim-core/src/rep/ @Mister-Nerdeus
+/docs/source-of-truth/ @Mister-Nerdeus
+/docs/adr/ @Mister-Nerdeus
+/docs/verification/ @Mister-Nerdeus
+/docs/licensing/ @Mister-Nerdeus
+/.github/workflows/ @Mister-Nerdeus
