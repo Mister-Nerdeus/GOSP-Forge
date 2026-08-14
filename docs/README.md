@@ -18,6 +18,10 @@ This index points to the current foundation documentation. The repository remain
 - [Claim implementation map](program/CLAIM_IMPLEMENTATION_MAP.md)
 - [Phase-1A checkpoint reconciliation](program/PHASE_1A_CHECKPOINT_RECONCILIATION_2026-08-09.md)
 - [Canonical document inventory](program/CANONICAL_DOCUMENT_INVENTORY_2026-08-09.md)
+- [Reconciliation evidence custody](program/RECONCILIATION_EVIDENCE_CUSTODY_2026-08-14.md)
+- [Legacy published host-path disclosure](program/LEGACY_PUBLISHED_HOST_PATH_DISCLOSURE_2026-08-14.md)
+- [Privacy-safe publication candidate handoff](program/PRIVACY_SAFE_PUBLICATION_CANDIDATE_2026-08-14.md)
+- [Development-tool advisory remediation](program/DEVELOPMENT_TOOL_ADVISORY_REMEDIATION_2026-08-14.md)
 - [Repository lineage audit](program/GOSP_REPOSITORY_LINEAGE_AUDIT_2026-08-09.md)
 - [Authoritative-lineage ADR](adr/0006-authoritative-repository-lineage.md)
 
@@ -64,6 +68,12 @@ This index points to the current foundation documentation. The repository remain
 - [Structured interview script](phase-0c/EXTERNAL_INTERVIEW_SCRIPT.md)
 - [External feedback evidence template](phase-0c/EXTERNAL_FEEDBACK_EVIDENCE_TEMPLATE.json)
 - [Gate A tracker](phase-0c/GATE_A_TRACKER.md)
+- [Participant selection and outreach plan](phase-0c/PARTICIPANT_SELECTION_AND_OUTREACH_PLAN.md)
+- [Candidate organization research register](phase-0c/CANDIDATE_ORGANIZATION_RESEARCH_REGISTER.md)
+- [Outreach message drafts](phase-0c/OUTREACH_MESSAGE_DRAFTS.md)
+- [Minimal-loop demo runbook](phase-0c/MINIMAL_LOOP_DEMO_RUNBOOK.md)
+- [Interview evidence and privacy protocol](phase-0c/INTERVIEW_EVIDENCE_AND_PRIVACY_PROTOCOL.md)
+- [Bounded pilot specification template](phase-0c/BOUNDED_PILOT_SPECIFICATION_TEMPLATE.md)
 
 ## Gates And Audit
 

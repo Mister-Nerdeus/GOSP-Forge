@@ -1,6 +1,14 @@
 # Phase-0B Dependency Advisory Follow-up — 2026-08-07
 
-## Status
+## Current-status overlay — 2026-08-14
+
+The development-tool advisory follow-up is resolved in the current local publication candidate. Direct development-tool dependencies were refreshed within their existing major lines, the frozen lockfile was regenerated, and both complete and production-only package audits subsequently reported zero advisories.
+
+The exact changes and executed local verification are recorded in `DEVELOPMENT_TOOL_ADVISORY_REMEDIATION_2026-08-14.md`. This result is a package-registry advisory result for the resolved dependency graph, not a product vulnerability assessment, security certification, or production-readiness decision.
+
+The original Phase-0B disposition is retained below as historical checkpoint provenance.
+
+## Historical status at issuance
 
 Unresolved maintenance/security follow-up. This record is separate from the Phase-0B behavioral
 checkpoint decision.
@@ -21,5 +29,5 @@ options, compatibility effects, exploitability in GOSP Forge's actual developmen
 residual risk were not assessed during Phase-0B. No dependency upgrade was performed as part of
 the checkpoint.
 
-This follow-up must not be interpreted as evidence of a product vulnerability assessment, a
+At issuance, this follow-up did not establish a product vulnerability assessment, a
 release-readiness decision, or a resolved security review.
