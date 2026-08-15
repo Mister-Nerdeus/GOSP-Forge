@@ -53,15 +53,16 @@ describe('Phase1aService canonical product loop', () => {
     ).rejects.toThrow(/different Submission/);
   });
 
-  it('accepts a valid local Challenge and rejects invalid or conflicting identities', async () => {
+  it('accepts a registered Challenge revision and rejects invalid or conflicting identities', async () => {
     const service = new Phase1aService();
     const workspace = await service.getWorkspace();
     const valid = structuredClone(workspace.challenge.record);
-    valid.id = 'sandbox-001.local-copy';
+    valid.revision = '1.0.1';
 
     await expect(service.createChallenge(valid)).resolves.toMatchObject({
       kind: 'Challenge',
-      id: 'sandbox-001.local-copy',
+      id: 'sandbox-001',
+      revision: '1.0.1',
     });
     await expect(service.createChallenge({ ...valid, title: '' })).rejects.toBeInstanceOf(
       Phase1aValidationError,
@@ -72,6 +73,9 @@ describe('Phase1aService canonical product loop', () => {
         evaluationModelRef: { ...valid.evaluationModelRef, revision: 'mistyped' },
       }),
     ).rejects.toThrow(/evaluationModelRef/);
+    await expect(
+      service.createChallenge({ ...valid, id: 'sandbox-001.local-copy' }),
+    ).rejects.toThrow(/does not define a new logical Challenge ID/);
 
     await expect(service.createChallenge({ ...valid, title: 'Conflicting title' })).rejects.toThrow(
       /different Challenge/,
