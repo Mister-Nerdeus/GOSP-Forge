@@ -3,6 +3,8 @@
 Date: 2026-08-14 (America/New_York)
 Status: Locally verified candidate; commit and remote actions remain owner-gated
 
+Current-state overlay: the candidate was committed as `9db3839b8b4a0e5d222ef5e4c8edd1ef19086091`, verified from an exact detached checkout, and published by an owner-authorized non-force fast-forward of `canonical/verified-lineage`. The separately authorized Phase-0C first wave was also sent. See the [2026-08-14 canonical publication and Phase-0C status](../source-of-truth/GOSP_CANONICAL_PUBLICATION_AND_PHASE_0C_STATUS_2026-08-14.md). The candidate-state and remaining-gate text below is preserved as execution provenance.
+
 Privacy scope: the candidate introduces no new host-profile or private attachment path and excludes the unpublished reconciliation history. Six host-path occurrences remain in historical execution records already present in the published Stage-1 ancestry; see the [legacy published host-path disclosure](LEGACY_PUBLISHED_HOST_PATH_DISCLOSURE_2026-08-14.md). This is not a claim that the inherited repository history is path-free.
 
 ## Lineage
@@ -18,8 +20,8 @@ No immutable checkpoint is amended, rebased, squashed, or rewritten. No unrelate
 - the privacy-safe reconciliation custody record;
 - development-tool advisory remediation within existing major lines;
 - the current API-backed browser-smoke strategy;
-- Phase-0C demo, participant-selection, consent/evidence, and pilot-specification materials;
-- a fifteen-organization research register and bounded outreach-message drafts, with no contact performed;
+- Phase-0C demo, participant-selection, consent/evidence, and pilot-specification materials retained as historical/internal records;
+- a fifteen-organization research register and bounded outreach-message drafts that were unsent at candidate preparation time and are now marked do-not-send under the later owner closure;
 - the updated dependency manifests and lockfile.
 
 ## Excluded content
@@ -58,6 +60,6 @@ These results apply to the current uncommitted Windows worktree. They are not ex
 2. Exact detached re-verification of the created commit.
 3. Separate authorization for a one-ref, non-force fast-forward of `canonical/verified-lineage`.
 4. Separate authorization for branch protection, default-branch transition, and PR #2 disposition.
-5. Separate authorization before contacting any Phase-0C participant.
+5. No Phase-0C participant contact: later owner direction closes outreach, replies, follow-ups, scheduling, and other external communication.
 
 No item in this handoff grants any of those permissions by itself.

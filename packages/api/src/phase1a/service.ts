@@ -12,6 +12,7 @@ import {
   type Phase1aEvaluationView,
   type Phase1aHardGate,
   type Phase1aWorkspace,
+  type Phase1aWorkspaceSelection,
   type RepExecutionEvidence,
   type RepMaterialInput,
   type Submission,
@@ -453,7 +454,7 @@ export class Phase1aService {
     return comparePhase1aEvaluations(baseline, candidate);
   }
 
-  async getWorkspace(): Promise<Phase1aWorkspace> {
+  async getWorkspace(selection?: Phase1aWorkspaceSelection): Promise<Phase1aWorkspace> {
     const base = await this.baseInput();
     const challengeRefs = await this.refs('Challenge');
     const availableChallenges = await Promise.all(
@@ -465,11 +466,40 @@ export class Phase1aService {
     const submissions = await Promise.all(
       submissionRefs.map((ref) => this.submission(ref.id, ref.revision)),
     );
+    if (submissions.length < 2) {
+      throw new Phase1aValidationError('The local workspace requires at least two Submissions.');
+    }
+    const selected = selection ?? {
+      baseline: { id: submissions[0]!.id, revision: submissions[0]!.revision },
+      candidate: { id: submissions[1]!.id, revision: submissions[1]!.revision },
+    };
+    if (
+      selected.baseline.id === selected.candidate.id &&
+      selected.baseline.revision === selected.candidate.revision
+    ) {
+      throw new Phase1aValidationError('Select two different Submission identities for comparison.');
+    }
+    const selectedSubmissions = await Promise.all([
+      this.submission(selected.baseline.id, selected.baseline.revision),
+      this.submission(selected.candidate.id, selected.candidate.revision),
+    ]);
     const evaluations = await Promise.all(
-      submissions.slice(0, 2).map((submission) => this.evaluateSubmission(submission.id, submission.revision)),
+      selectedSubmissions.map((submission) =>
+        this.evaluateSubmission(submission.id, submission.revision),
+      ),
     );
     return {
       milestone: 'Phase-1A — Minimal Challenge-Facing Product Loop',
+      selection: {
+        baseline: {
+          id: selectedSubmissions[0]!.id,
+          revision: selectedSubmissions[0]!.revision,
+        },
+        candidate: {
+          id: selectedSubmissions[1]!.id,
+          revision: selectedSubmissions[1]!.revision,
+        },
+      },
       persistence: {
         kind: 'process-local-memory',
         durable: false,

@@ -42,6 +42,8 @@ h1 { max-width: 800px; margin: 10px 0 8px; font-family: Georgia, serif; font-siz
 
 .select-control, .json-editor { width: 100%; border: 1px solid #c9c3b6; border-radius: 8px; background: #fff; color: #17231f; }
 .select-control { padding: 10px 12px; }
+.selection-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.selection-control { display: grid; gap: 6px; }
 .json-editor { min-height: 230px; padding: 12px; resize: vertical; font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; line-height: 1.5; }
 
 .key-values { display: grid; grid-template-columns: minmax(130px, .35fr) minmax(0, 1fr); gap: 8px 14px; margin: 0; }
@@ -86,7 +88,7 @@ button:hover { background: #19483c; }
   .app-shell { grid-template-columns: 1fr; width: min(100vw - 20px, 620px); padding-top: 10px; }
   .wide { grid-column: auto; }
   .hero { padding: 24px 20px; }
-  .result-grid, .replay-grid { grid-template-columns: 1fr; }
+  .result-grid, .replay-grid, .selection-grid { grid-template-columns: 1fr; }
   .key-values { grid-template-columns: 1fr; gap: 3px; }
   .key-values dd { margin-bottom: 8px; }
 }

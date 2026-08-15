@@ -3,6 +3,10 @@
 Date: 2026-08-10 (America/New_York)
 Status: Stage 1 published; authority transition not completed
 
+## Current-status overlay — 2026-08-14
+
+The canonical branch was subsequently advanced by an owner-authorized, one-ref, non-force fast-forward to exact commit `9db3839b8b4a0e5d222ef5e4c8edd1ef19086091`. The update and post-publication observations are governed by [GOSP Canonical Publication and Phase-0C Status](GOSP_CANONICAL_PUBLICATION_AND_PHASE_0C_STATUS_2026-08-14.md). The original Stage-1 identity and observations below remain historical provenance.
+
 This dated record overlays only repository-publication and authority-transition state that advanced after Revision 3 was issued. It does not rewrite Revision 3's historical execution record or change technical, material, professional, physical-validation, certification, or production-readiness claims.
 
 ## Stage 1 identity

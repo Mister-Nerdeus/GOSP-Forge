@@ -6,7 +6,7 @@ Date: 2026-08-09 (America/New_York)
 
 This is a preserved historical Stage-1 plan. Its exact new-ref publication command was subsequently authorized and executed for `51df178bfc886f0102343b602b2653557f1c3b19`, and the resulting remote object was verified. Do not execute the Stage-1 command below again.
 
-The remote branch `canonical/verified-lineage` currently remains at `51df178...`; local documentation descendant `6ef362b...` and later local corrections are not published. Any further update requires a newly reviewed exact descendant, a current remote preflight, and explicit owner authorization for a non-force fast-forward. Default-branch, protection, and PR #2 actions remain incomplete and separately gated.
+The remote branch `canonical/verified-lineage` was subsequently advanced by an owner-authorized, one-ref, non-force fast-forward from `51df178...` to exact commit `9db3839b8b4a0e5d222ef5e4c8edd1ef19086091`. Exact post-publication checks found no unexpected ref change or automation. See the [2026-08-14 canonical publication status](../source-of-truth/GOSP_CANONICAL_PUBLICATION_AND_PHASE_0C_STATUS_2026-08-14.md). Default-branch, protection, and PR #2 actions remain incomplete and separately gated.
 
 The original plan is retained below as historical execution and rollback provenance.
 

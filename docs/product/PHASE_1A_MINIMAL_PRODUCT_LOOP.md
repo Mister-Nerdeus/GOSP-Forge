@@ -26,6 +26,8 @@ The API listens on `127.0.0.1:3080`; Vite uses its normal local port and proxies
 - Validate/create canonical Challenge JSON.
 - Validate/import canonical Submission JSON with exact Challenge and Scenario reference checks.
 - Evaluate two valid candidate Submissions through the existing REP runner.
+- Select any two process-local Submissions for evaluation and controlled comparison.
+- Refresh the displayed workspace after a local import so the new result, evidence, and comparison are visible without restarting the app.
 - Display material identities separately from execution evidence.
 - Display result metrics, hard-gate outcomes, Claim/Evidence readiness, contradictions, limitations, and unresolved proof obligations.
 - Compare changed/fixed material input paths, numeric result deltas, hard-gate changes, readiness, and proof obligations.

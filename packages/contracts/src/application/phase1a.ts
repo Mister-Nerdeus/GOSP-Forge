@@ -16,6 +16,13 @@ import type {
 
 export type Phase1aProofObligation = typeof ProofObligationSchema._output;
 
+export type Phase1aSubmissionIdentity = Pick<Submission, 'id' | 'revision'>;
+
+export type Phase1aWorkspaceSelection = {
+  baseline: Phase1aSubmissionIdentity;
+  candidate: Phase1aSubmissionIdentity;
+};
+
 export type Phase1aHardGate = {
   constraint: CanonicalConstraint;
   resultPath: string;
@@ -78,6 +85,7 @@ export type Phase1aComparison = {
 
 export type Phase1aWorkspace = {
   milestone: 'Phase-1A — Minimal Challenge-Facing Product Loop';
+  selection: Phase1aWorkspaceSelection;
   persistence: {
     kind: 'process-local-memory';
     durable: false;

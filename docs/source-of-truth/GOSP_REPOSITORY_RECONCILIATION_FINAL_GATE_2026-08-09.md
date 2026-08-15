@@ -8,7 +8,7 @@ Governing lineage decision: Option A
 
 This record is preserved as the historical pre-publication gate for exact candidate `51df178bfc886f0102343b602b2653557f1c3b19`. Stage 1 was later authorized, executed, and independently verified at that exact SHA. The current remote-publication state is governed by `GOSP_REMOTE_PUBLICATION_STATUS_2026-08-10.md` and later observed evidence.
 
-Do not interpret the original result below as current authorization to repeat the Stage-1 push. The remote canonical branch remains at `51df178...`; local descendant `6ef362b...` and later local corrections require a new exact-SHA review and explicit fast-forward authorization. Authority transition, branch protection, default-branch change, and PR #2 disposition remain incomplete.
+Do not interpret the original result below as current authorization to repeat the Stage-1 push. The remote canonical branch was later advanced by a separately authorized non-force fast-forward to `9db3839b8b4a0e5d222ef5e4c8edd1ef19086091`; see the [2026-08-14 canonical publication status](GOSP_CANONICAL_PUBLICATION_AND_PHASE_0C_STATUS_2026-08-14.md). Authority transition, branch protection, default-branch change, and PR #2 disposition remain incomplete.
 
 The original gate is retained below as historical execution provenance.
 

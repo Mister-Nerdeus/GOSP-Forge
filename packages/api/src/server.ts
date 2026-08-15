@@ -23,7 +23,33 @@ export function createGospServer() {
         return sendJson(res, 200, versionResponse());
       const requestUrl = new URL(req.url ?? '/', 'http://localhost');
       if (req.method === 'GET' && requestUrl.pathname === '/api/phase1a/workspace') {
-        return sendJson(res, 200, await phase1a.getWorkspace());
+        const selectionValues = {
+          baselineId: requestUrl.searchParams.get('baselineId'),
+          baselineRevision: requestUrl.searchParams.get('baselineRevision'),
+          candidateId: requestUrl.searchParams.get('candidateId'),
+          candidateRevision: requestUrl.searchParams.get('candidateRevision'),
+        };
+        const suppliedSelectionValues = Object.values(selectionValues).filter(
+          (value) => value !== null,
+        );
+        if (suppliedSelectionValues.length !== 0 && suppliedSelectionValues.length !== 4) {
+          throw new Phase1aValidationError(
+            'Workspace selection requires baselineId, baselineRevision, candidateId, and candidateRevision together.',
+          );
+        }
+        const selection = suppliedSelectionValues.length === 4
+          ? {
+              baseline: {
+                id: selectionValues.baselineId!,
+                revision: selectionValues.baselineRevision!,
+              },
+              candidate: {
+                id: selectionValues.candidateId!,
+                revision: selectionValues.candidateRevision!,
+              },
+            }
+          : undefined;
+        return sendJson(res, 200, await phase1a.getWorkspace(selection));
       }
       if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/challenges') {
         const body = await readJsonBody(req);

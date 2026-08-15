@@ -33,15 +33,21 @@ The actual Vite port may differ when its preferred port is already in use. Recor
 2. Challenge, Submission, REP results, controlled comparison, all four explainability layers, evidence, replay, persistence disclosure, and non-claims render;
 3. `Validate / create Challenge` succeeds for the seeded canonical record;
 4. `Validate / import / run Submission` succeeds and executes through the canonical REP runner;
-5. material identities, result values, and unresolved proof obligations are visible;
-6. no browser console error is observed during the smoke;
-7. the API listener remains loopback-only.
+5. any two process-local Submissions can be selected and rerun as the controlled comparison pair;
+6. an imported Submission appears in the workspace and can become the active comparison candidate without restarting the app;
+7. material identities, result values, and unresolved proof obligations are visible;
+8. no browser console error is observed during the smoke;
+9. the API listener remains loopback-only.
 
 The live smoke is execution evidence for the tested environment. It is not cross-browser certification or production end-to-end coverage.
 
 ## 2026-08-14 maintenance smoke
 
 After the Vite 7 patch refresh, the application loaded at the dynamically selected local Vite URL while the API listened on `127.0.0.1:3080`. The complete Phase-1A surface rendered, Challenge creation succeeded, Submission import/evaluation succeeded, and zero browser console errors were observed. The local processes were stopped after the test.
+
+## 2026-08-14 selectable-comparison smoke
+
+After the selectable process-local comparison increment, the application loaded at `http://localhost:5176/` while the API listened on `127.0.0.1:3080`. Reversing the seeded baseline/candidate selection reran the pair and changed the displayed `result.value` delta from `-30` to `30`. Importing `submission.sandbox-001.local-import@1.0.0` added a third process-local Submission and refreshed the active comparison without restarting the app. The selected evaluation cards, material identities, comparison boundary, replay status, evidence, proof obligations, persistence disclosure, and non-claims remained visible. No browser console warning or error was observed. The local processes were stopped after the test.
 
 ## Deferred automated-browser harness
 

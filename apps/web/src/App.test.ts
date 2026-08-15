@@ -55,6 +55,10 @@ const evaluationView = (id: string, value: number, hash: string, passed: boolean
 
 const workspace = {
   milestone: 'Phase-1A — Minimal Challenge-Facing Product Loop',
+  selection: {
+    baseline: { id: 'submission.reference', revision: '1.0.0' },
+    candidate: { id: 'submission.candidate', revision: '1.0.0' },
+  },
   persistence: { kind: 'process-local-memory', durable: false, disclosure: 'Records reset when the local process restarts.' },
   challenge: {
     record: { kind: 'Challenge', id: 'sandbox-001', revision: '1.0.0', title: 'Sandbox 001 deterministic weighted sum', problemStatement: 'Evaluate a finite weighted sum.', status: 'open' },
@@ -111,6 +115,11 @@ describe('renderApp', () => {
     expect(text).toContain('No professional approval');
     expect(text).toContain('Export REP replay package');
     expect(text).toContain('Validate / import / run Submission');
+    expect(text).toContain('Process-local canonical candidates');
+    expect(text).toContain('Choose comparison pair');
+    expect(text).toContain('Run selected comparison');
+    expect(text).toContain('submission.reference@1.0.0');
+    expect(text).toContain('submission.candidate@1.0.0');
     expect(text).toContain('process restarts');
   });
 });

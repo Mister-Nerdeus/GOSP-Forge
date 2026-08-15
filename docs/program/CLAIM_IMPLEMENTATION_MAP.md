@@ -20,10 +20,12 @@ d49e9d11116fd59e3f3f38c638dfe63c1bc02924  Phase-1A remediation
   |
 51df178bfc886f0102343b602b2653557f1c3b19  published Stage-1 governance checkpoint
   |
-6ef362b2324f562420d8f4b6d1a4c3af7305cf83  local documentation-remediation descendant
+6ef362b2324f562420d8f4b6d1a4c3af7305cf83  published documentation-remediation descendant
+  |
+9db3839b8b4a0e5d222ef5e4c8edd1ef19086091  current published canonical checkpoint
 ```
 
-`canonical/verified-lineage` is publicly reachable at `51df178bfc886f0102343b602b2653557f1c3b19`. The local `6ef362b...` descendant has not been published. The GitHub default branch remains legacy `main`; branch-protection transition and PR #2 disposition have not been completed. Local publication does not establish remote CI reproduction, deployment, external validation, professional approval, physical validation, certification, or production readiness.
+`canonical/verified-lineage` is publicly reachable at `9db3839b8b4a0e5d222ef5e4c8edd1ef19086091`. The GitHub default branch remains legacy `main`; branch-protection transition and PR #2 disposition have not been completed. Publication does not establish remote CI reproduction, deployment, external validation, professional approval, physical validation, certification, or production readiness.
 
 ## Implemented and evidenced claims
 
@@ -48,14 +50,15 @@ Claims not listed here remain non-claims unless later implementation, tests, gat
 | Phase-1A implements Challenge -> Submission -> Evaluation -> Evidence -> Comparison | `packages/contracts/src/application/phase1a.ts`, `packages/api/src/phase1a/**`, `apps/web/src/phase1a/**`, `apps/web/src/App.tsx` | Phase-1A tests, product-loop reader, checkpoint reconciliation | Implemented local minimal loop |
 | Phase-1A exposes explanation, math, model inspection, and evidence inspection | Phase-1A API service and web projection | Phase-1A tests and product-loop evidence | Implemented for `sandbox-001` only |
 | Phase-1A comparison preserves fixed/changed input boundaries | `packages/api/src/phase1a/comparison.test.ts`, `packages/api/src/phase1a/service.ts` | comparison tests and adversarial probes | Implemented for supported local evaluator |
+| Phase-1A can select, rerun, and compare any two process-local Submissions | `packages/contracts/src/application/phase1a.ts`, `packages/api/src/phase1a/service.ts`, `packages/api/src/server.ts`, `apps/web/src/App.tsx` | API/service tests and 2026-08-14 live local browser smoke | Implemented locally for `sandbox-001`; storage remains non-durable |
 | Phase-1A storage is process-local and non-durable | `packages/api/src/storage/localMemoryStorage.ts`, Phase-1A documentation | API tests and product-loop reader | Implemented local storage boundary; not production persistence |
 | Audit command checks required files and risky claims | `packages/cli/src/commands/audit.ts`, `packages/cli/src/audit/**` | `pnpm run audit` | Implemented foundation audit |
 | Exact test discovery is enforced | `config/intended-tests.json`, `scripts/controls/verify-test-discovery.mjs` | `pnpm test` through `pnpm verify` | Implemented local gate |
 | Local evidence writers preserve historical validation records | `scripts/phase-0b/**`, `scripts/phase-1a/**`, evidence documentation | recorded local evidence and currentness checks | Implemented local evidence workflow |
 | A manual-only GitHub Actions workflow exists | `.github/workflows/ci.yml`, ADR 0004, `docs/gates/CI_GATE_POLICY.md` | workflow inspection | Configured for manual dispatch only; no remote CI claim |
-| Stage-1 verified lineage is publicly reachable | `docs/source-of-truth/GOSP_REMOTE_PUBLICATION_STATUS_2026-08-10.md` | exact remote-object review and current read-only remote observation | Published at `51df178...`; authority transition incomplete |
+| Verified lineage is publicly reachable | `docs/source-of-truth/GOSP_CANONICAL_PUBLICATION_AND_PHASE_0C_STATUS_2026-08-14.md` | exact detached verification, non-force fast-forward, and current read-only remote observation | Published at `9db3839...`; authority transition incomplete |
 | Branch-protection and default-branch controls are specified | ADR 0006 and repository-control documents | local policy review | Policy prepared; remote configuration not established |
-| Phase-0C evidence collection is prepared | `docs/phase-0c/**` | Gate A tracker | Materials prepared; Gate A not met |
+| Phase-0C historical evidence is preserved | `docs/phase-0c/**` | Gate A tracker and verified first-wave Sent Mail | Five discovery messages were sent; no human feedback or Gate-A evidence; all further outreach closed by owner direction |
 
 ## Explicit non-claims and unresolved gates
 
@@ -67,9 +70,10 @@ Claims not listed here remain non-claims unless later implementation, tests, gat
 - No production authentication, tenancy, durable storage, deployment, or manufacturing readiness is established.
 - No manufacturer-verification process, public leaderboard, marketplace, or imported HouseSim implementation exists.
 - Phase-0C Gate A is not met: recorded organization confirmations and paid-pilot commitments remain zero.
+- External outreach, replies, follow-ups, scheduling, and other project communications are prohibited by current owner direction; Phase-0C materials are historical/internal only.
 
 ## Maintenance and evidence qualifications
 
 - The complete and production-only dependency audits currently report zero advisories after the 2026-08-14 patch/minor development-tool refresh. This is a package-audit result, not a general security certification.
-- The published canonical ref does not yet include local commit `6ef362b...` or later local documentation/evidence corrections.
+- The published canonical ref remains exact commit `9db3839...`; the post-action reconciliation and selectable-comparison increment are local-only in the descendant commit containing this map and have not been published remotely.
 - Reconciliation review packages are preserved on a separate local-only checkpoint and are intentionally excluded from this privacy-safe publication candidate. A raw batch-state artifact containing private Codex attachment paths also remains local-only. Neither local preservation nor this candidate establishes an external immutable archive.

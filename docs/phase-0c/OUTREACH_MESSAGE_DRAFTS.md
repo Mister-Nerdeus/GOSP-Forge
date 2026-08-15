@@ -1,6 +1,8 @@
-# Phase-0C Outreach Message Drafts
+# Phase-0C Historical Outreach Message Drafts — Do Not Send
 
-Status: Drafts only; owner approval is required before any message is sent
+Status: Preserved templates; five tailored first-wave messages were owner-authorized and sent 2026-08-14
+
+These templates are retained only as historical provenance. The sent messages retained the limitations and non-claims below, but delivery does not establish interest, association, endorsement, validation, or a confirmed interview. Owner direction issued after the first wave prohibits all further outreach, replies, follow-ups, scheduling, and other external communication. Do not use these templates to send a message.
 
 These messages request problem-discovery interviews. They do not offer a pilot, payment, NDA, publicity, data transfer, partnership, or follow-up commitment. Replace bracketed fields only after the owner approves the organization, target role, sender identity, and exact wording.
 

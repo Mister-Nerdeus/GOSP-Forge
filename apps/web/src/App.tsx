@@ -1,15 +1,20 @@
 import type {
   Phase1aEvaluationView,
   Phase1aWorkspace,
+  Phase1aWorkspaceSelection,
   Submission,
 } from '@gosp/contracts';
 import { createPhase1aClient, type Phase1aClient } from './phase1a/client';
 
-export async function renderApp(root: HTMLElement, client: Phase1aClient = createPhase1aClient()) {
+export async function renderApp(
+  root: HTMLElement,
+  client: Phase1aClient = createPhase1aClient(),
+  selection?: Phase1aWorkspaceSelection,
+) {
   root.replaceChildren(element('main', 'app-shell', 'Loading the local Phase-1A workspace…'));
   try {
-    const workspace = await client.loadWorkspace();
-    root.replaceChildren(createShell(workspace, client));
+    const workspace = await client.loadWorkspace(selection);
+    root.replaceChildren(createShell(workspace, client, root));
   } catch (error) {
     root.replaceChildren(
       element(
@@ -21,7 +26,7 @@ export async function renderApp(root: HTMLElement, client: Phase1aClient = creat
   }
 }
 
-function createShell(workspace: Phase1aWorkspace, client: Phase1aClient) {
+function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: HTMLElement) {
   const app = document.createElement('main');
   app.className = 'app-shell';
 
@@ -29,12 +34,13 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient) {
     hero(workspace),
     challengePanel(workspace),
     submissionPanel(workspace),
+    comparisonSelectionPanel(workspace, client, root),
     resultPanel(workspace),
     comparisonPanel(workspace),
     explainabilityPanel(workspace),
     evidencePanel(workspace),
     replayPanel(workspace, client),
-    importPanel(workspace, client),
+    importPanel(workspace, client, root),
   );
   return app;
 }
@@ -99,7 +105,7 @@ function submissionPanel(workspace: Phase1aWorkspace) {
     element(
       'p',
       'muted',
-      'Two canonical candidates target the same exact Challenge and controlled Scenario. Validation failures are returned without repairing material input.',
+      'Process-local canonical candidates target the same exact Challenge and controlled Scenario. Validation failures are returned without repairing material input.',
     ),
     cardList(
       workspace.submissions.map((submission) => ({
@@ -108,6 +114,48 @@ function submissionPanel(workspace: Phase1aWorkspace) {
         body: JSON.stringify(submission.materialPayload),
       })),
     ),
+  ], 'wide');
+}
+
+function comparisonSelectionPanel(
+  workspace: Phase1aWorkspace,
+  client: Phase1aClient,
+  root: HTMLElement,
+) {
+  const baseline = submissionSelect(workspace.submissions, workspace.selection.baseline);
+  const candidate = submissionSelect(workspace.submissions, workspace.selection.candidate);
+  const status = element(
+    'p',
+    'form-status',
+    'Choose two process-local submissions evaluated under the same controlled boundary.',
+  );
+  const button = actionButton('Run selected comparison', async () => {
+    await runFormAction(status, async () => {
+      const selection = {
+        baseline: selectedSubmission(workspace.submissions, baseline),
+        candidate: selectedSubmission(workspace.submissions, candidate),
+      };
+      if (
+        selection.baseline.id === selection.candidate.id &&
+        selection.baseline.revision === selection.candidate.revision
+      ) {
+        throw new Error('Select two different submissions.');
+      }
+      await refreshWorkspace(root, client, selection);
+    }, 'Comparison updated.');
+  });
+  return panel('Choose comparison pair', [
+    element(
+      'p',
+      'muted',
+      'The API reruns both selected submissions through REP and rejects comparisons that cross fixed Challenge, Scenario, Model, solver, runner, contract, or dataset boundaries.',
+    ),
+    elementContainer('div', 'selection-grid', [
+      labeledControl('Baseline', baseline),
+      labeledControl('Candidate', candidate),
+    ]),
+    button,
+    status,
   ], 'wide');
 }
 
@@ -138,6 +186,10 @@ function evaluationCard(view: Phase1aEvaluationView) {
 function comparisonPanel(workspace: Phase1aWorkspace) {
   const comparison = workspace.comparison;
   return panel('Controlled comparison', [
+    keyValues([
+      ['Baseline', `${workspace.selection.baseline.id}@${workspace.selection.baseline.revision}`],
+      ['Candidate', `${workspace.selection.candidate.id}@${workspace.selection.candidate.revision}`],
+    ]),
     element('p', 'comparison-summary', comparison.explanation.summary),
     statStrip([
       ['Changed paths', String(comparison.changedInputPaths.length)],
@@ -262,7 +314,7 @@ function replayPanel(workspace: Phase1aWorkspace, client: Phase1aClient) {
   return panel('Replay & export', [body], 'wide');
 }
 
-function importPanel(workspace: Phase1aWorkspace, client: Phase1aClient) {
+function importPanel(workspace: Phase1aWorkspace, client: Phase1aClient, root: HTMLElement) {
   const challengeStatus = element('p', 'form-status', 'Ready to validate canonical Challenge JSON.');
   const challengeEditor = editor(JSON.stringify(workspace.challenge.record, null, 2));
   const challengeButton = actionButton('Validate / create Challenge', async () => {
@@ -278,6 +330,10 @@ function importPanel(workspace: Phase1aWorkspace, client: Phase1aClient) {
       const value = JSON.parse(submissionEditor.value) as Submission;
       await client.createSubmission(value);
       await client.evaluateSubmission(value.id, value.revision);
+      await refreshWorkspace(root, client, {
+        baseline: workspace.selection.baseline,
+        candidate: { id: value.id, revision: value.revision },
+      });
     }, 'Submission accepted and executed through the canonical REP runner.');
   });
 
@@ -286,6 +342,48 @@ function importPanel(workspace: Phase1aWorkspace, client: Phase1aClient) {
     formBlock('Challenge JSON', challengeEditor, challengeButton, challengeStatus),
     formBlock('Submission JSON', submissionEditor, submissionButton, submissionStatus),
   ], 'wide');
+}
+
+async function refreshWorkspace(
+  root: HTMLElement,
+  client: Phase1aClient,
+  selection: Phase1aWorkspaceSelection,
+) {
+  const workspace = await client.loadWorkspace(selection);
+  root.replaceChildren(createShell(workspace, client, root));
+}
+
+function submissionSelect(
+  submissions: Submission[],
+  selected: Phase1aWorkspaceSelection['baseline'],
+) {
+  const select = document.createElement('select');
+  select.className = 'select-control';
+  let selectedIndex = 0;
+  submissions.forEach((submission, index) => {
+    const option = document.createElement('option');
+    option.value = String(index);
+    option.textContent = `${submission.id}@${submission.revision}`;
+    select.append(option);
+    if (submission.id === selected.id && submission.revision === selected.revision) {
+      selectedIndex = index;
+    }
+  });
+  select.value = String(selectedIndex);
+  return select;
+}
+
+function selectedSubmission(submissions: Submission[], select: HTMLSelectElement) {
+  const submission = submissions[Number(select.value)];
+  if (!submission) throw new Error('Select a valid process-local submission.');
+  return { id: submission.id, revision: submission.revision };
+}
+
+function labeledControl(label: string, control: HTMLElement) {
+  const wrapper = document.createElement('label');
+  wrapper.className = 'selection-control';
+  wrapper.append(element('span', 'metric-label', label), control);
+  return wrapper;
 }
 
 async function runFormAction(status: HTMLElement, action: () => Promise<unknown>, success: string) {

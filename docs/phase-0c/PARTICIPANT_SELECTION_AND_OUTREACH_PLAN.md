@@ -1,6 +1,16 @@
 # Phase-0C Participant Selection and Outreach Plan
 
-Status: Planning only; no organization has been contacted or associated with GOSP Forge
+Status: Historical plan; first-wave sends recorded; all further outreach closed by owner direction
+
+## Execution overlay — 2026-08-14
+
+The owner approved Georgia Tech Digital Building Laboratory, Purdue EPICS, Engineering for Change, the New York State Pollution Prevention Institute, and Olin College SCOPE as the first wave. Five tailored messages were sent through officially verified public routes. Olin returned an automatic out-of-office response; no human feedback has been verified from any organization.
+
+Sending establishes only delivery evidence. It does not establish interest, partnership, endorsement, validation, a confirmed interview, or Gate A. No follow-up commitment, pilot, payment, NDA, publicity, or data exchange was offered.
+
+## Owner closure — 2026-08-14
+
+The owner subsequently prohibited all further outreach. Do not send, reply, follow up, schedule, request data, or contact any listed or unlisted organization. The remaining plan is retained only as historical planning provenance and is not an executable outreach workflow. Local product work may continue; Gate A remains unmet.
 
 ## Objective
 

@@ -25,6 +25,34 @@ describe('Phase1aService canonical product loop', () => {
     );
   });
 
+  it('selects any two process-local submissions for the displayed comparison', async () => {
+    const service = new Phase1aService(undefined, () => '2026-08-09T12:00:00.000Z');
+    const workspace = await service.getWorkspace();
+    const imported = structuredClone(workspace.submissions[0]!);
+    imported.id = 'submission.sandbox-001.local-comparison';
+    imported.materialPayload = { values: [2, 2, 3], weights: [2, 3, 5], offset: 7 };
+    await service.createSubmission(imported);
+
+    const selected = await service.getWorkspace({
+      baseline: workspace.selection.baseline,
+      candidate: { id: imported.id, revision: imported.revision },
+    });
+
+    expect(selected.submissions).toHaveLength(3);
+    expect(selected.selection.candidate).toEqual({ id: imported.id, revision: imported.revision });
+    expect(selected.evaluations.map((item) => item.evaluation.submissionRef.id)).toEqual([
+      workspace.selection.baseline.id,
+      imported.id,
+    ]);
+    expect(selected.comparison.changedInputPaths).toContain('submission.materialPayload.values[0]');
+    expect(selected.comparison.resultDeltas).toContainEqual(
+      expect.objectContaining({ resultPath: 'result.value', delta: 4 }),
+    );
+    await expect(
+      service.getWorkspace({ baseline: selected.selection.baseline, candidate: selected.selection.baseline }),
+    ).rejects.toThrow(/different Submission/);
+  });
+
   it('accepts a valid local Challenge and rejects invalid or conflicting identities', async () => {
     const service = new Phase1aService();
     const workspace = await service.getWorkspace();

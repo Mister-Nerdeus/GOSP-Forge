@@ -32,6 +32,26 @@ describe('createGospServer', () => {
       expect(workspace.persistence.durable).toBe(false);
       expect(workspace.evaluations.map((item) => item.evaluation.result.value)).toEqual([53, 23]);
 
+      const selectedResponse = await fetch(
+        `${baseUrl}/api/phase1a/workspace?baselineId=submission.sandbox-001.candidate-low&baselineRevision=1.0.0&candidateId=submission.sandbox-001.reference&candidateRevision=1.0.0`,
+      );
+      expect(selectedResponse.status).toBe(200);
+      await expect(selectedResponse.json()).resolves.toMatchObject({
+        selection: {
+          baseline: { id: 'submission.sandbox-001.candidate-low', revision: '1.0.0' },
+          candidate: { id: 'submission.sandbox-001.reference', revision: '1.0.0' },
+        },
+        evaluations: [
+          { evaluation: { result: { value: 23 } } },
+          { evaluation: { result: { value: 53 } } },
+        ],
+      });
+
+      const incompleteSelection = await fetch(
+        `${baseUrl}/api/phase1a/workspace?baselineId=submission.sandbox-001.reference`,
+      );
+      expect(incompleteSelection.status).toBe(422);
+
       const exportResponse = await fetch(
         `${baseUrl}/api/phase1a/export?submissionId=submission.sandbox-001.reference&revision=1.0.0`,
       );

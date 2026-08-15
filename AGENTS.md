@@ -18,6 +18,7 @@ Revision 3 governs project direction. The dated remote-publication status record
 ## Current operating policy
 
 - Work and verify locally only.
+- Do not perform external outreach or use connected communications services for this project. Drafts may be prepared locally, but do not send emails, replies, follow-ups, invitations, scheduling requests, direct messages, or other external communications.
 - Do not push, modify pull requests, or make other remote GitHub changes without explicit user authorization.
 - Do not trigger GitHub Actions.
 - Do not commit without explicit user authorization.
