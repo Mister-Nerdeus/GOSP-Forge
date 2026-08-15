@@ -1,7 +1,11 @@
 # GOSP Canonical Publication and Phase-0C Status
 
 Date: 2026-08-14 (America/New_York)
-Status: Canonical publication update executed; historical first-wave sends recorded; external outreach closed; authority transition incomplete
+Status: Historical 2026-08-14 record; see 2026-08-15 current-status overlay
+
+## Current-status overlay — 2026-08-15
+
+The separately authorized authority transition and subsequent technical publication are complete. The governing current remote-state record is [GOSP Canonical Authority Status](GOSP_CANONICAL_AUTHORITY_STATUS_2026-08-15.md). The 2026-08-14 observations below remain historical provenance, including the five sends and the later permanent no-outreach direction.
 
 This dated record governs repository-publication and Phase-0C outreach state after the 2026-08-10 remote-publication record. It does not change technical, material, professional, physical-validation, certification, or production-readiness claims.
 

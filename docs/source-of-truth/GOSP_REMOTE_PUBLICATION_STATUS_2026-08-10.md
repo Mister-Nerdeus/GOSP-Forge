@@ -1,7 +1,11 @@
 # GOSP Remote Publication Status
 
 Date: 2026-08-10 (America/New_York)
-Status: Stage 1 published; authority transition not completed
+Status: Historical Stage-1 record; see 2026-08-15 current-status overlay
+
+## Current-status overlay — 2026-08-15
+
+The authoritative technical checkpoint was advanced by non-force fast-forward to `922869db6b1b8d3782d2fbdab9fe231ccdbf9ab3`; `canonical/verified-lineage` is now the protected default branch, and the superseded PR/issues have been administratively closed without merging or rewriting their histories. The current state is governed by [GOSP Canonical Authority Status](GOSP_CANONICAL_AUTHORITY_STATUS_2026-08-15.md). The Stage-1 observations below remain historical provenance.
 
 ## Current-status overlay — 2026-08-14
 

@@ -50,6 +50,10 @@ After the Vite 7 patch refresh, the application loaded at the dynamically select
 
 After the selectable process-local comparison increment, the application loaded at `http://localhost:5176/` while the API listened on `127.0.0.1:3080`. Reversing the seeded baseline/candidate selection reran the pair and changed the displayed `result.value` delta from `-30` to `30`. Importing `submission.sandbox-001.local-import@1.0.0` added a third process-local Submission and refreshed the active comparison without restarting the app. The selected evaluation cards, material identities, comparison boundary, replay status, evidence, proof obligations, persistence disclosure, and non-claims remained visible. No browser console warning or error was observed. The local processes were stopped after the test.
 
+## 2026-08-15 durable multi-evaluator smoke
+
+The application loaded at `http://localhost:5176/` while the API listened on `127.0.0.1:3080`. Switching to the Clean Water evaluator displayed seeded educational results of 64 and 72 at `result.flow.cleanWaterLiters` with the potable-water boundary visible. Attempting an arbitrary logical Challenge ID was rejected at the registered-evaluator boundary; after restart, the authored local state remained present. Authoring registered Challenge revision `sandbox-001@1.0.1` and two Submissions produced a selected comparison from 53 to 57 with material hashes visible. Archive and portable-evidence controls rendered, and no browser console warning or error was observed. Programmatic observation of the browser download event was inconclusive; API export/validation and archive round-trip behavior passed automated tests. The local processes were stopped after the test.
+
 ## Deferred automated-browser harness
 
 A repository-owned automated browser harness remains deferred while the application is a single local demonstrator and the current unit/API/live-smoke combination covers its narrow behavior. Add a durable automated browser suite before claiming any of the following:

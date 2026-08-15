@@ -2,9 +2,13 @@
 
 Date: 2026-08-09 (America/New_York)
 
-Status: selected policy for later configuration after publication authorization. This document does not claim that any GitHub protection is configured.
+Status: Tier 1 configured on the authoritative branch on 2026-08-15; later tiers remain policy
 
-## Current observation
+## 2026-08-15 implementation overlay
+
+Authenticated post-change inspection established that `canonical/verified-lineage` is the protected default branch. Force pushes and deletion are disabled, conversation resolution is required where applicable, no pull-request approval or remote status check is required, and administrator enforcement is disabled so the solo owner retains the documented direct maintenance path. PR #2 was closed as superseded without merge, and legacy branch refs were preserved. See the [current canonical authority status](../source-of-truth/GOSP_CANONICAL_AUTHORITY_STATUS_2026-08-15.md).
+
+## Historical observation at policy selection
 
 Authenticated GitHub inspection reports `main`, `develop`, `baseline/phase-0-rebaseline`, and `ai-001-verification-scaffold` as unprotected, with no repository rulesets. The repository is owned and maintained by one owner. GitHub Actions remain local-policy manual only in the selected candidate.
 
