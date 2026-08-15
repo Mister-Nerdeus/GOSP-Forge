@@ -32,7 +32,7 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
 
   app.append(
     hero(workspace),
-    challengePanel(workspace),
+    challengePanel(workspace, client, root),
     submissionPanel(workspace),
     comparisonSelectionPanel(workspace, client, root),
     resultPanel(workspace),
@@ -54,14 +54,18 @@ function hero(workspace: Phase1aWorkspace) {
     element(
       'p',
       'lede',
-      'Canonical Challenge → Submission → REP Evaluation → Evidence → Comparison, with no parallel scoring or hashing in the browser.',
+      `${workspace.evaluator.title}: canonical Challenge → Submission → REP Evaluation → Evidence → Comparison, with no parallel scoring or hashing in the browser.`,
     ),
     element('p', 'persistence-notice', workspace.persistence.disclosure),
   );
   return wrapper;
 }
 
-function challengePanel(workspace: Phase1aWorkspace) {
+function challengePanel(
+  workspace: Phase1aWorkspace,
+  client: Phase1aClient,
+  root: HTMLElement,
+) {
   const { record, requirements, constraints, assumptions, model, scenario } = workspace.challenge;
   const selector = document.createElement('select');
   selector.className = 'select-control';
@@ -70,9 +74,26 @@ function challengePanel(workspace: Phase1aWorkspace) {
     option.value = `${challenge.id}@${challenge.revision}`;
     option.textContent = `${challenge.title} · ${challenge.id}@${challenge.revision}`;
     selector.append(option);
+    if (challenge.id === record.id && challenge.revision === record.revision) {
+      option.selected = true;
+    }
   }
+  const switchStatus = element('p', 'form-status', workspace.evaluator.description);
+  selector.addEventListener('change', () => {
+    const [id, revision] = selector.value.split('@');
+    if (!id || !revision) return;
+    switchStatus.textContent = 'Loading evaluator workspace…';
+    void client
+      .loadChallenge(id, revision)
+      .then((next) => root.replaceChildren(createShell(next, client, root)))
+      .catch((error) => {
+        switchStatus.className = 'form-status error';
+        switchStatus.textContent = error instanceof Error ? error.message : String(error);
+      });
+  });
   return panel('Challenge', [
     selector,
+    switchStatus,
     keyValues([
       ['Identity', `${record.id}@${record.revision}`],
       ['Status', record.status],
@@ -167,20 +188,35 @@ function resultPanel(workspace: Phase1aWorkspace) {
 }
 
 function evaluationCard(view: Phase1aEvaluationView) {
-  const result = view.evaluation.result as { value: number; weightedSum: number; terms: number[] };
+  const resultMetrics = numericLeaves(view.evaluation.result).slice(0, 4);
   const card = document.createElement('article');
   card.className = 'result-card';
   card.append(
     element('span', `status ${view.hardGates.every((gate) => gate.passed) ? 'pass' : 'fail'}`, view.hardGates.every((gate) => gate.passed) ? 'HARD GATES PASS' : 'HARD GATE FAIL'),
     element('h3', '', view.evaluation.submissionRef.id),
-    metric('Result', String(result.value)),
-    metric('Weighted sum', String(result.weightedSum)),
-    metric('Terms', result.terms.join(', ')),
+    ...resultMetrics.map(([path, value]) => metric(path, String(value))),
     codeRow('Material input', view.evaluation.materialInputHash),
     codeRow('Material result', view.evaluation.materialResultHash),
     codeRow('Evaluation', `${view.evaluation.id}@${view.evaluation.revision}`),
   );
   return card;
+}
+
+function numericLeaves(value: unknown, path = 'result', output: Array<[string, number]> = []) {
+  if (typeof value === 'number') {
+    output.push([path, value]);
+    return output;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => numericLeaves(item, `${path}[${index}]`, output));
+    return output;
+  }
+  if (value && typeof value === 'object') {
+    Object.entries(value as Record<string, unknown>).forEach(([key, item]) =>
+      numericLeaves(item, `${path}.${key}`, output),
+    );
+  }
+  return output;
 }
 
 function comparisonPanel(workspace: Phase1aWorkspace) {
@@ -298,6 +334,16 @@ function replayPanel(workspace: Phase1aWorkspace, client: Phase1aClient) {
       const record = await client.exportReplay(view.evaluation.submissionRef.id, view.evaluation.submissionRef.revision);
       downloadJson(`${view.evaluation.submissionRef.id}.replay.json`, record);
     });
+    const evidenceButton = document.createElement('button');
+    evidenceButton.type = 'button';
+    evidenceButton.textContent = 'Export portable evidence package';
+    evidenceButton.addEventListener('click', async () => {
+      const record = await client.exportEvidencePackage(
+        view.evaluation.submissionRef.id,
+        view.evaluation.submissionRef.revision,
+      );
+      downloadJson(`${view.evaluation.submissionRef.id}.evidence-package.json`, record);
+    });
     item.append(
       element('h3', '', view.evaluation.submissionRef.id),
       keyValues([
@@ -308,6 +354,7 @@ function replayPanel(workspace: Phase1aWorkspace, client: Phase1aClient) {
         ['Execution runtime', view.executionEvidence.environment.runtime],
       ]),
       button,
+      evidenceButton,
     );
     body.append(item);
   }
@@ -315,32 +362,106 @@ function replayPanel(workspace: Phase1aWorkspace, client: Phase1aClient) {
 }
 
 function importPanel(workspace: Phase1aWorkspace, client: Phase1aClient, root: HTMLElement) {
-  const challengeStatus = element('p', 'form-status', 'Ready to validate canonical Challenge JSON.');
-  const challengeEditor = editor(JSON.stringify(workspace.challenge.record, null, 2));
-  const challengeButton = actionButton('Validate / create Challenge', async () => {
-    await runFormAction(challengeStatus, () => client.createChallenge(JSON.parse(challengeEditor.value)), 'Challenge accepted into process-local memory.');
+  let authoredChallenge = structuredClone(workspace.challenge.record);
+  const authoredSubmissionRefs: Array<{ id: string; revision: string }> = [];
+  const challengeStatus = element('p', 'form-status', 'Ready to author a canonical Challenge revision.');
+  const challengeId = textInput(workspace.challenge.record.id);
+  challengeId.readOnly = true;
+  const challengeRevision = textInput('1.0.1');
+  const challengeTitle = textInput(`${workspace.challenge.record.title} — local copy`);
+  const challengeProblem = editor(workspace.challenge.record.problemStatement);
+  challengeProblem.classList.add('compact-editor');
+  const challengeButton = actionButton('Create structured Challenge', async () => {
+    await runFormAction(challengeStatus, async () => {
+      authoredChallenge = {
+        ...structuredClone(workspace.challenge.record),
+        id: challengeId.value,
+        revision: challengeRevision.value,
+        title: challengeTitle.value,
+        problemStatement: challengeProblem.value,
+        status: 'draft',
+      };
+      await client.createChallenge(authoredChallenge);
+    }, 'Challenge accepted. Create two submissions to open its comparison workspace.');
   });
 
-  const submissionStatus = element('p', 'form-status', 'Ready to validate canonical Submission JSON.');
-  const template = structuredClone(workspace.submissions[1]!) as Submission;
-  template.id = 'submission.sandbox-001.local-import';
-  const submissionEditor = editor(JSON.stringify(template, null, 2));
-  const submissionButton = actionButton('Validate / import / run Submission', async () => {
+  const submissionStatus = element('p', 'form-status', 'Ready to author and evaluate a canonical Submission.');
+  const submissionId = textInput(`submission.${workspace.challenge.record.id}.authored-1`);
+  const submissionRevision = textInput('1.0.0');
+  const payloadEditor = editor(JSON.stringify(workspace.submissions[0]!.materialPayload, null, 2));
+  const submissionButton = actionButton('Create and evaluate Submission', async () => {
     await runFormAction(submissionStatus, async () => {
-      const value = JSON.parse(submissionEditor.value) as Submission;
+      const template = structuredClone(workspace.submissions[0]!) as Submission;
+      const value: Submission = {
+        ...template,
+        id: submissionId.value,
+        revision: submissionRevision.value,
+        challengeRef: {
+          kind: 'Challenge',
+          id: authoredChallenge.id,
+          revision: authoredChallenge.revision,
+        },
+        materialPayload: JSON.parse(payloadEditor.value) as Submission['materialPayload'],
+        status: 'submitted',
+      };
       await client.createSubmission(value);
       await client.evaluateSubmission(value.id, value.revision);
-      await refreshWorkspace(root, client, {
-        baseline: workspace.selection.baseline,
-        candidate: { id: value.id, revision: value.revision },
-      });
-    }, 'Submission accepted and executed through the canonical REP runner.');
+      authoredSubmissionRefs.push({ id: value.id, revision: value.revision });
+      if (
+        authoredChallenge.id === workspace.challenge.record.id &&
+        authoredChallenge.revision === workspace.challenge.record.revision
+      ) {
+        await refreshWorkspace(root, client, {
+          baseline: workspace.selection.baseline,
+          candidate: { id: value.id, revision: value.revision },
+        });
+      } else if (authoredSubmissionRefs.length >= 2) {
+        const next = await client.loadChallenge(authoredChallenge.id, authoredChallenge.revision);
+        root.replaceChildren(createShell(next, client, root));
+      } else {
+        submissionId.value = submissionId.value.replace(/\d+$/, '2');
+      }
+    }, 'Submission accepted and executed through its registered REP evaluator.');
   });
 
-  return panel('Create / import canonical records', [
-    element('p', 'muted', 'These controls send JSON to canonical Zod validation in the local API. Invalid identities and material inputs are rejected and displayed; no production persistence is implied.'),
-    formBlock('Challenge JSON', challengeEditor, challengeButton, challengeStatus),
-    formBlock('Submission JSON', submissionEditor, submissionButton, submissionStatus),
+  const archiveStatus = element('p', 'form-status', 'Workspace archive and evidence validation are local-only operations.');
+  const exportArchive = actionButton('Export workspace archive', async () => {
+    await runFormAction(archiveStatus, async () => {
+      downloadJson('gosp-phase1a-workspace.archive.json', await client.exportArchive());
+    }, 'Workspace archive exported.');
+  });
+  const importArchiveInput = jsonFileInput(async (value) => {
+    await runFormAction(archiveStatus, () => client.importArchive(value), 'Workspace archive validated and restored.');
+  });
+  const evidenceInput = jsonFileInput(async (value) => {
+    await runFormAction(archiveStatus, async () => {
+      const result = (await client.validateEvidencePackage(value)) as { ok?: boolean };
+      if (!result.ok) throw new Error('Evidence package hashes or replay did not match.');
+    }, 'Evidence package material hash and REP replay matched.');
+  });
+
+  return panel('Author canonical records & manage local evidence', [
+    element('p', 'muted', 'Structured identity and narrative controls remain projections over canonical API validation. Material payload JSON stays visible because no evaluator-specific form may silently change engineering input.'),
+    formGrid([
+      labeledControl('Challenge ID', challengeId),
+      labeledControl('Revision', challengeRevision),
+      labeledControl('Title', challengeTitle),
+    ]),
+    labeledControl('Problem statement', challengeProblem),
+    challengeButton,
+    challengeStatus,
+    formGrid([
+      labeledControl('Submission ID', submissionId),
+      labeledControl('Revision', submissionRevision),
+    ]),
+    labeledControl('Material payload', payloadEditor),
+    submissionButton,
+    submissionStatus,
+    subheading('Backup, recovery & portable verification'),
+    elementContainer('div', 'button-row', [exportArchive]),
+    labeledControl('Restore workspace archive', importArchiveInput),
+    labeledControl('Validate evidence package', evidenceInput),
+    archiveStatus,
   ], 'wide');
 }
 
@@ -414,11 +535,29 @@ function editor(value: string) {
   return textarea;
 }
 
-function formBlock(title: string, textarea: HTMLTextAreaElement, button: HTMLButtonElement, status: HTMLElement) {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'form-block';
-  wrapper.append(subheading(title), textarea, button, status);
-  return wrapper;
+function textInput(value: string) {
+  const input = document.createElement('input');
+  input.className = 'text-control';
+  input.type = 'text';
+  input.value = value;
+  return input;
+}
+
+function jsonFileInput(onValue: (value: unknown) => Promise<void>) {
+  const input = document.createElement('input');
+  input.className = 'file-control';
+  input.type = 'file';
+  input.accept = 'application/json,.json';
+  input.addEventListener('change', () => {
+    const file = input.files?.[0];
+    if (!file) return;
+    void file.text().then((text) => onValue(JSON.parse(text)));
+  });
+  return input;
+}
+
+function formGrid(children: HTMLElement[]) {
+  return elementContainer('div', 'form-grid', children);
 }
 
 function downloadJson(filename: string, value: unknown) {

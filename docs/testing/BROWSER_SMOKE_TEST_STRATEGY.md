@@ -7,7 +7,7 @@ Status: Current Phase-1A local-browser strategy
 
 Phase-1A includes a local API-backed Challenge and Submission workflow, deterministic evaluation, comparison, evidence inspection, and replay export. The browser remains a projection: canonical validation, scoring, comparison, and hashing are owned by the local API and canonical packages.
 
-The application is local-only, uses process-memory storage, and has no production authentication, tenancy, durable persistence, deployment, or professional-approval claim.
+The application is local-only. Direct server execution uses owner-controlled durable filesystem storage; tests may use process memory. It has no production authentication, tenancy, transactional database, deployment, or professional-approval claim.
 
 ## Required automated evidence
 
@@ -31,13 +31,14 @@ The actual Vite port may differ when its preferred port is already in use. Recor
 
 1. the application and API respond locally;
 2. Challenge, Submission, REP results, controlled comparison, all four explainability layers, evidence, replay, persistence disclosure, and non-claims render;
-3. `Validate / create Challenge` succeeds for the seeded canonical record;
-4. `Validate / import / run Submission` succeeds and executes through the canonical REP runner;
-5. any two process-local Submissions can be selected and rerun as the controlled comparison pair;
-6. an imported Submission appears in the workspace and can become the active comparison candidate without restarting the app;
-7. material identities, result values, and unresolved proof obligations are visible;
-8. no browser console error is observed during the smoke;
-9. the API listener remains loopback-only.
+3. the evaluator selector switches between `sandbox-001` and Clean Water without crossing comparison boundaries;
+4. structured Challenge and Submission authoring reaches canonical API validation and registered REP evaluation;
+5. any two local Submissions for the same exact Challenge can be selected and rerun;
+6. restart preserves authored records when filesystem storage is active;
+7. REP replay, portable evidence package, workspace archive, and evidence validation controls are visible;
+8. material identities, result values, limitations, and unresolved proof obligations are visible;
+9. no browser console error is observed during the smoke;
+10. the API listener remains loopback-only.
 
 The live smoke is execution evidence for the tested environment. It is not cross-browser certification or production end-to-end coverage.
 
@@ -53,14 +54,14 @@ After the selectable process-local comparison increment, the application loaded 
 
 A repository-owned automated browser harness remains deferred while the application is a single local demonstrator and the current unit/API/live-smoke combination covers its narrow behavior. Add a durable automated browser suite before claiming any of the following:
 
-- durable or multi-user editing;
+- multi-user editing;
 - authenticated or role-specific behavior;
 - production deployment readiness;
 - cross-browser compatibility;
 - multi-page routing with material workflow state;
-- persisted submission/evaluation lifecycle behavior;
+- authenticated or concurrent persisted lifecycle behavior;
 - or a substantially broader evaluator catalog.
 
 ## Non-claims
 
-This strategy does not claim broad browser automation, cross-browser support, production deployment, durable persistence, professional review, or physical validation.
+This strategy does not claim broad browser automation, cross-browser support, production deployment, production database readiness, professional review, or physical validation.

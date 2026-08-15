@@ -24,3 +24,5 @@ No interviews, organizations, endorsements, letters of intent, design partnershi
 ## Update rule
 
 Update counts only from attributable evidence records with the necessary consent/privacy treatment. Interest is not a commitment. A design-partner confirmation is not a paid-pilot commitment. Technical verification does not affect Gate A counts.
+
+All project outreach and replies are prohibited. Evidence may be added only when independently supplied by the owner under the [owner-controlled validation gate](OWNER_CONTROLLED_VALIDATION_GATE.md). The tracker must not initiate contact, schedule a session, or treat unsolicited inbound material as evidence unless the owner explicitly supplies it with adequate attribution and consent context.

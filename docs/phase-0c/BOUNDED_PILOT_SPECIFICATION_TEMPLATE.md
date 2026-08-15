@@ -2,6 +2,8 @@
 
 Status: Template only; no pilot or participant is established
 
+Operating boundary: this template may be completed only from owner-supplied participant, consent, commercial, and evidence inputs. It is not permission for outreach, replies, scheduling, or external commitments. See [Owner-Controlled Validation Gate](OWNER_CONTROLLED_VALIDATION_GATE.md).
+
 ## Identity and authority
 
 - Pilot ID:

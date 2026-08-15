@@ -1,85 +1,37 @@
 import {
-  CanonicalConstraintSchema,
   ChallengeSchema,
   ClaimSchema,
   ControlledComparisonSchema,
   EvidenceSchema,
+  GospEvidencePackageSchema,
+  Phase1aWorkspaceArchiveSchema,
   RepExecutionEvidenceSchema,
   RepMaterialInputSchema,
-  RequirementSchema,
   SubmissionSchema,
+  type GospEvidencePackage,
   type Phase1aComparison,
   type Phase1aEvaluationView,
   type Phase1aHardGate,
+  type Phase1aWorkspaceArchive,
   type Phase1aWorkspace,
   type Phase1aWorkspaceSelection,
   type RepExecutionEvidence,
   type RepMaterialInput,
   type Submission,
 } from '@gosp/contracts';
-import {
-  canonicalJson,
-  createSandbox001MaterialInput,
-  replayRep,
-  runSandbox001,
-} from '@gosp/sim-core';
+import { canonicalJson, sha256 } from '@gosp/sim-core';
 import type { StorageAdapter } from '../storage/storageAdapter.js';
 import { LocalMemoryStorage } from '../storage/localMemoryStorage.js';
-
-const provenance = { sources: [], method: 'authored' as const, notes: [] };
-const challengeRef = { kind: 'Challenge' as const, id: 'sandbox-001', revision: '1.0.0' };
-const requirementHardGate = RequirementSchema.parse({
-  kind: 'Requirement',
-  id: 'requirement.sandbox-001.valid-input',
-  revision: '1.0.0',
-  provenance,
-  relationships: [
-    { type: 'applies-to', target: challengeRef, description: 'Input validity requirement.' },
-  ],
-  statement: 'A submission shall provide equal-length finite values and weights.',
-  obligation: 'shall',
-  status: 'accepted',
-  verificationMethod: 'analysis',
-});
-
-const requirementObjective = RequirementSchema.parse({
-  kind: 'Requirement',
-  id: 'requirement.sandbox-001.maximize-result',
-  revision: '1.0.0',
-  provenance,
-  relationships: [
-    { type: 'applies-to', target: challengeRef, description: 'Optimization objective.' },
-  ],
-  statement: 'A candidate should maximize result.value within the controlled scenario.',
-  obligation: 'should',
-  status: 'accepted',
-  verificationMethod: 'analysis',
-});
-
-const validationGate = CanonicalConstraintSchema.parse({
-  kind: 'Constraint',
-  id: 'constraint.sandbox-001.valid-completion',
-  revision: '1.0.0',
-  provenance,
-  relationships: [
-    { type: 'applies-to', target: challengeRef, description: 'Canonical validation hard gate.' },
-  ],
-  statement: 'The Submission must pass canonical REP and sandbox input validation and complete evaluation.',
-  constraintType: 'logical',
-  parameter: 'evaluation.status',
-  operator: 'eq',
-  value: 'completed',
-  status: 'active',
-});
-
-const limitations = [
-  'Synthetic deterministic benchmark only; it does not establish physical validity.',
-  'Local replay is not independent external reproduction.',
-  'No professional approval, product certification, regulatory approval, or deployment readiness is claimed.',
-];
+import {
+  Phase1aEvaluatorRegistry,
+  type Phase1aEvaluatorDefinition,
+} from './evaluatorRegistry.js';
 
 const storageKey = (kind: string, id: string, revision: string) =>
   `phase1a:${kind}:${id}@${revision}`;
+
+const templateKey = (id: string, revision: string) =>
+  `phase1a:material-template:${id}@${revision}`;
 
 function exactRef(
   left: { kind: string; id: string; revision: string },
@@ -125,33 +77,62 @@ export class Phase1aService {
   constructor(
     private readonly storage: StorageAdapter = new LocalMemoryStorage(),
     private readonly now: () => string = () => new Date().toISOString(),
+    private readonly evaluators = new Phase1aEvaluatorRegistry(),
   ) {}
 
   private async ensureSeeded() {
     if (this.seeded) return;
-    const baseInput = createSandbox001MaterialInput();
-    const candidate = SubmissionSchema.parse({
-      ...structuredClone(baseInput.submission),
-      id: 'submission.sandbox-001.candidate-low',
-      materialPayload: { values: [0, 1, 1], weights: [2, 3, 5], offset: 7 },
-    });
-    await this.storage.set('phase1a:base-material-input', baseInput);
-    await this.storage.set(storageKey('Challenge', baseInput.challenge.id, baseInput.challenge.revision), baseInput.challenge);
-    await this.storage.set(storageKey('Submission', baseInput.submission.id, baseInput.submission.revision), baseInput.submission);
-    await this.storage.set(storageKey('Submission', candidate.id, candidate.revision), candidate);
-    await this.storage.set('phase1a:challenge-refs', [
-      { kind: 'Challenge', id: baseInput.challenge.id, revision: baseInput.challenge.revision },
-    ]);
-    await this.storage.set('phase1a:submission-refs', [
-      { kind: 'Submission', id: baseInput.submission.id, revision: baseInput.submission.revision },
-      { kind: 'Submission', id: candidate.id, revision: candidate.revision },
-    ]);
+    const schemaVersion = await this.storage.get('phase1a:schema-version');
+    if (schemaVersion === '1') {
+      this.seeded = true;
+      return;
+    }
+    if (schemaVersion !== undefined) {
+      throw new Error(`Unsupported Phase-1A storage schema ${String(schemaVersion)}.`);
+    }
+    const challengeRefs: Array<{ kind: 'Challenge'; id: string; revision: string }> = [];
+    const submissionRefs: Array<{ kind: 'Submission'; id: string; revision: string }> = [];
+    for (const definition of this.evaluators.definitions) {
+      const baseInput = definition.template;
+      await this.storage.set(
+        templateKey(baseInput.challenge.id, baseInput.challenge.revision),
+        baseInput,
+      );
+      await this.storage.set(
+        storageKey('Challenge', baseInput.challenge.id, baseInput.challenge.revision),
+        baseInput.challenge,
+      );
+      challengeRefs.push({
+        kind: 'Challenge',
+        id: baseInput.challenge.id,
+        revision: baseInput.challenge.revision,
+      });
+      for (const submission of definition.seedSubmissions) {
+        await this.storage.set(
+          storageKey('Submission', submission.id, submission.revision),
+          submission,
+        );
+        submissionRefs.push({
+          kind: 'Submission',
+          id: submission.id,
+          revision: submission.revision,
+        });
+      }
+    }
+    await this.storage.set('phase1a:challenge-refs', challengeRefs);
+    await this.storage.set('phase1a:submission-refs', submissionRefs);
+    await this.storage.set('phase1a:schema-version', '1');
     this.seeded = true;
   }
 
-  private async baseInput() {
+  private async materialTemplate(challengeId: string, revision: string) {
     await this.ensureSeeded();
-    const value = await this.storage.get('phase1a:base-material-input');
+    const value = await this.storage.get(templateKey(challengeId, revision));
+    if (!value) {
+      throw new Phase1aValidationError(
+        `No material template is available for Challenge ${challengeId}@${revision}.`,
+      );
+    }
     return RepMaterialInputSchema.parse(value);
   }
 
@@ -165,14 +146,25 @@ export class Phase1aService {
   }
 
   async createChallenge(raw: unknown) {
+    await this.ensureSeeded();
     const parsed = ChallengeSchema.safeParse(raw);
     if (!parsed.success) {
       throw new Phase1aValidationError('Challenge failed canonical schema validation.', formatIssues(parsed.error));
     }
-    const base = await this.baseInput();
     const challenge = parsed.data;
-    if (!exactRef(challenge.evaluationModelRef, base.model)) {
-      throw new Phase1aValidationError('Challenge evaluationModelRef is not available at the exact declared revision.');
+    let definition: Phase1aEvaluatorDefinition;
+    try {
+      definition = this.evaluators.forChallenge(challenge);
+    } catch (error) {
+      throw new Phase1aValidationError(
+        `Challenge evaluationModelRef is not available: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+    const base = definition.template;
+    if (challenge.id !== base.challenge.id) {
+      throw new Phase1aValidationError(
+        `Registered evaluator ${definition.id} accepts revisions of Challenge ${base.challenge.id}; it does not define a new logical Challenge ID.`,
+      );
     }
     if (!exactRef(challenge.workflowRef, base.workflow)) {
       throw new Phase1aValidationError('Challenge workflowRef is not available at the exact declared revision.');
@@ -188,6 +180,15 @@ export class Phase1aService {
       throw new Phase1aValidationError('A different Challenge already uses this identity and revision.');
     }
     await this.storage.set(key, challenge);
+    const template = RepMaterialInputSchema.parse({
+      ...base,
+      challenge,
+      submission: {
+        ...base.submission,
+        challengeRef: { kind: 'Challenge', id: challenge.id, revision: challenge.revision },
+      },
+    });
+    await this.storage.set(templateKey(challenge.id, challenge.revision), template);
     const refs = await this.refs('Challenge');
     if (!refs.some((ref) => exactRef(ref, challenge))) {
       await this.storage.set('phase1a:challenge-refs', [
@@ -199,18 +200,20 @@ export class Phase1aService {
   }
 
   async createSubmission(raw: unknown) {
+    await this.ensureSeeded();
     const parsed = SubmissionSchema.safeParse(raw);
     if (!parsed.success) {
       throw new Phase1aValidationError('Submission failed canonical schema validation.', formatIssues(parsed.error));
     }
     const submission = parsed.data;
-    const base = await this.baseInput();
-    const challenge = await this.storage.get(
+    const rawChallenge = await this.storage.get(
       storageKey('Challenge', submission.challengeRef.id, submission.challengeRef.revision),
     );
-    if (!challenge) {
+    if (!rawChallenge) {
       throw new Phase1aValidationError('Submission challengeRef does not resolve to an exact local Challenge revision.');
     }
+    const challenge = ChallengeSchema.parse(rawChallenge);
+    const base = await this.materialTemplate(challenge.id, challenge.revision);
     if (!exactRef(submission.scenarioRef, base.compiledScenario)) {
       throw new Phase1aValidationError('Submission scenarioRef does not resolve to the controlled Scenario revision.');
     }
@@ -238,14 +241,14 @@ export class Phase1aService {
   }
 
   private async materialInputFor(submission: Submission) {
-    const base = await this.baseInput();
+    const base = await this.materialTemplate(
+      submission.challengeRef.id,
+      submission.challengeRef.revision,
+    );
     const challenge = await this.storage.get(
       storageKey('Challenge', submission.challengeRef.id, submission.challengeRef.revision),
     );
     if (!challenge) throw new Phase1aValidationError('Submission Challenge is no longer available.');
-    if (submission.challengeRef.id !== 'sandbox-001') {
-      throw new Phase1aValidationError('Only sandbox-001 has an evaluator in Phase-1A.');
-    }
     const parsed = RepMaterialInputSchema.safeParse({ ...base, challenge, submission });
     if (!parsed.success) {
       throw new Phase1aValidationError('Submission and Challenge do not form a valid REP material input.', formatIssues(parsed.error));
@@ -256,10 +259,11 @@ export class Phase1aService {
   async evaluateSubmission(id: string, revision: string, overrides: ExecutionOverrides = {}) {
     const submission = await this.submission(id, revision);
     const materialInput = await this.materialInputFor(submission);
+    const definition = this.evaluators.forMaterialInput(materialInput);
     const startedAt = overrides.startedAt ?? this.now();
-    let result: ReturnType<typeof runSandbox001>;
+    let result: ReturnType<Phase1aEvaluatorDefinition['evaluate']>;
     try {
-      result = runSandbox001(materialInput);
+      result = definition.evaluate(materialInput);
     } catch (error) {
       throw new Phase1aValidationError(
         `REP evaluation rejected the material input${error instanceof Error ? `: ${error.message}` : '.'}`,
@@ -289,7 +293,12 @@ export class Phase1aService {
       warnings: [],
       exitStatus: 0,
     });
-    const view = this.buildEvaluationView(materialInput, result.evaluation, executionEvidence);
+    const view = this.buildEvaluationView(
+      materialInput,
+      result.evaluation,
+      executionEvidence,
+      definition,
+    );
     await this.storage.set(storageKey('Evaluation', view.evaluation.id, view.evaluation.revision), view);
     return view;
   }
@@ -298,6 +307,7 @@ export class Phase1aService {
     materialInput: RepMaterialInput,
     evaluation: Phase1aEvaluationView['evaluation'],
     executionEvidence: RepExecutionEvidence,
+    definition: Phase1aEvaluatorDefinition,
   ): Phase1aEvaluationView {
     const evaluationRef = {
       kind: 'Evaluation' as const,
@@ -326,7 +336,16 @@ export class Phase1aService {
       expectedMaterialInputHash: evaluation.materialInputHash,
       expectedMaterialResultHash: evaluation.materialResultHash,
     };
-    const replayed = replayRep(replayRecord);
+    const replayEvaluation = definition.evaluate(replayRecord.materialInput);
+    const replayed = {
+      ok:
+        replayRecord.expectedMaterialInputHash === replayEvaluation.materialInputHash &&
+        replayRecord.expectedMaterialResultHash === replayEvaluation.materialResultHash,
+      inputHashMatches:
+        replayRecord.expectedMaterialInputHash === replayEvaluation.materialInputHash,
+      resultHashMatches:
+        replayRecord.expectedMaterialResultHash === replayEvaluation.materialResultHash,
+    };
     const evidence = [
       EvidenceSchema.parse({
         kind: 'Evidence',
@@ -376,13 +395,17 @@ export class Phase1aService {
       kind: 'Claim',
       id: claimRef.id,
       revision: claimRef.revision,
-      provenance: { sources: [], method: 'derived', notes: ['Limited to the synthetic REP result.'] },
+      provenance: {
+        sources: [],
+        method: 'derived',
+        notes: ['Limited to the registered evaluator and recorded material boundary.'],
+      },
       relationships: evidence.map((record) => ({
         type: 'supported-by' as const,
         target: { kind: 'Evidence' as const, id: record.id, revision: record.revision },
       })),
       claimType: 'performance',
-      statement: `Under the recorded synthetic inputs, result.value is ${(evaluation.result as { value: number }).value}.`,
+      statement: definition.claimStatement(evaluation),
       subjectRefs: [evaluationRef],
       proofObligations: [
         {
@@ -419,7 +442,9 @@ export class Phase1aService {
       professionalDisposition: { status: 'not-assessed', evidenceRefs: [] },
       status: replayed.ok ? 'supported' : 'contradicted',
     });
-    const hardGates = [this.evaluateGate(validationGate, evaluation)];
+    const hardGates = this.evaluators
+      .constraintsFor(materialInput.challenge)
+      .map((constraint) => this.evaluateGate(constraint, evaluation));
     return {
       evaluation,
       materialInput,
@@ -435,27 +460,36 @@ export class Phase1aService {
         reproductionStatus: replayed.ok ? 'verified-local-replay' : 'failed',
       },
       contradictions: replayed.ok ? [] : [evidence[1]!],
-      limitations,
+      limitations: definition.limitations,
     };
   }
 
   private evaluateGate(
-    constraint: typeof validationGate,
+    constraint: Phase1aHardGate['constraint'],
     evaluation: Phase1aEvaluationView['evaluation'],
   ): Phase1aHardGate {
     const actual = evaluation.status;
     if (constraint.operator !== 'eq' || typeof constraint.value !== 'string') {
-      throw new Error('Phase-1A sandbox hard gate must be an exact evaluation-status constraint.');
+      throw new Error('Phase-1A completion hard gate must be an exact evaluation-status constraint.');
     }
     return { constraint, resultPath: 'evaluation.status', actual, passed: actual === constraint.value };
   }
 
   async compare(baseline: Phase1aEvaluationView, candidate: Phase1aEvaluationView) {
-    return comparePhase1aEvaluations(baseline, candidate);
+    const definition = this.evaluators.forMaterialInput(baseline.materialInput);
+    return comparePhase1aEvaluations(
+      baseline,
+      candidate,
+      definition.objectiveResultPath,
+      definition.limitations,
+    );
   }
 
-  async getWorkspace(selection?: Phase1aWorkspaceSelection): Promise<Phase1aWorkspace> {
-    const base = await this.baseInput();
+  async getWorkspace(
+    selection?: Phase1aWorkspaceSelection,
+    challengeIdentity?: { id: string; revision: string },
+  ): Promise<Phase1aWorkspace> {
+    await this.ensureSeeded();
     const challengeRefs = await this.refs('Challenge');
     const availableChallenges = await Promise.all(
       challengeRefs.map(async (ref) =>
@@ -466,12 +500,32 @@ export class Phase1aService {
     const submissions = await Promise.all(
       submissionRefs.map((ref) => this.submission(ref.id, ref.revision)),
     );
-    if (submissions.length < 2) {
-      throw new Phase1aValidationError('The local workspace requires at least two Submissions.');
+    const requestedChallenge = challengeIdentity
+      ? availableChallenges.find(
+          (challenge) =>
+            challenge.id === challengeIdentity.id && challenge.revision === challengeIdentity.revision,
+        )
+      : undefined;
+    if (challengeIdentity && !requestedChallenge) {
+      throw new Phase1aValidationError(
+        `Unknown Challenge ${challengeIdentity.id}@${challengeIdentity.revision}.`,
+      );
+    }
+    const challengeSubmissions = requestedChallenge
+      ? submissions.filter((submission) => exactRef(submission.challengeRef, requestedChallenge))
+      : submissions;
+    if (!selection && challengeSubmissions.length < 2) {
+      throw new Phase1aValidationError('The selected Challenge requires at least two Submissions.');
     }
     const selected = selection ?? {
-      baseline: { id: submissions[0]!.id, revision: submissions[0]!.revision },
-      candidate: { id: submissions[1]!.id, revision: submissions[1]!.revision },
+      baseline: {
+        id: challengeSubmissions[0]!.id,
+        revision: challengeSubmissions[0]!.revision,
+      },
+      candidate: {
+        id: challengeSubmissions[1]!.id,
+        revision: challengeSubmissions[1]!.revision,
+      },
     };
     if (
       selected.baseline.id === selected.candidate.id &&
@@ -483,6 +537,25 @@ export class Phase1aService {
       this.submission(selected.baseline.id, selected.baseline.revision),
       this.submission(selected.candidate.id, selected.candidate.revision),
     ]);
+    if (!exactRef(selectedSubmissions[0]!.challengeRef, selectedSubmissions[1]!.challengeRef)) {
+      throw new Phase1aValidationError(
+        'Selected Submissions must reference the same exact Challenge revision.',
+      );
+    }
+    const challenge = ChallengeSchema.parse(
+      await this.storage.get(
+        storageKey(
+          'Challenge',
+          selectedSubmissions[0]!.challengeRef.id,
+          selectedSubmissions[0]!.challengeRef.revision,
+        ),
+      ),
+    );
+    const base = await this.materialTemplate(challenge.id, challenge.revision);
+    const definition = this.evaluators.forMaterialInput(base);
+    const visibleSubmissions = submissions.filter((submission) =>
+      exactRef(submission.challengeRef, challenge),
+    );
     const evaluations = await Promise.all(
       selectedSubmissions.map((submission) =>
         this.evaluateSubmission(submission.id, submission.revision),
@@ -500,27 +573,130 @@ export class Phase1aService {
           revision: selectedSubmissions[1]!.revision,
         },
       },
-      persistence: {
-        kind: 'process-local-memory',
-        durable: false,
-        disclosure: 'Records exist only in this local API process and reset when it restarts.',
-      },
+      persistence: this.storage.describe(),
+      evaluator: this.evaluatorSummary(definition),
+      availableEvaluators: this.evaluators.definitions.map((item) => this.evaluatorSummary(item)),
       challenge: {
-        record: base.challenge,
+        record: challenge,
         availableChallenges,
-        requirements: [
-          { record: requirementHardGate, role: 'hard-gate' },
-          { record: requirementObjective, role: 'objective' },
-        ],
-        constraints: [validationGate],
+        requirements: this.evaluators.requirementsFor(challenge, definition),
+        constraints: this.evaluators.constraintsFor(challenge),
         assumptions: base.materialAssumptions,
         model: base.model,
         scenario: base.compiledScenario,
         workflow: base.workflow,
       },
-      submissions,
+      submissions: visibleSubmissions,
       evaluations,
-      comparison: comparePhase1aEvaluations(evaluations[0]!, evaluations[1]!),
+      comparison: comparePhase1aEvaluations(
+        evaluations[0]!,
+        evaluations[1]!,
+        definition.objectiveResultPath,
+        definition.limitations,
+      ),
+    };
+  }
+
+  private evaluatorSummary(definition: Phase1aEvaluatorDefinition) {
+    return {
+      id: definition.id,
+      title: definition.title,
+      description: definition.description,
+      challengeRef: {
+        kind: 'Challenge' as const,
+        id: definition.template.challenge.id,
+        revision: definition.template.challenge.revision,
+      },
+      modelRef: {
+        kind: 'Model' as const,
+        id: definition.template.model.id,
+        revision: definition.template.model.revision,
+      },
+      defaultSelection: {
+        baseline: {
+          id: definition.seedSubmissions[0]!.id,
+          revision: definition.seedSubmissions[0]!.revision,
+        },
+        candidate: {
+          id: definition.seedSubmissions[1]!.id,
+          revision: definition.seedSubmissions[1]!.revision,
+        },
+      },
+    };
+  }
+
+  async exportWorkspaceArchive(): Promise<Phase1aWorkspaceArchive> {
+    const challengeRefs = await this.refs('Challenge');
+    const submissionRefs = await this.refs('Submission');
+    const challenges = await Promise.all(
+      challengeRefs.map((ref) =>
+        this.storage.get(storageKey('Challenge', ref.id, ref.revision)),
+      ),
+    );
+    const submissions = await Promise.all(
+      submissionRefs.map((ref) => this.submission(ref.id, ref.revision)),
+    );
+    return Phase1aWorkspaceArchiveSchema.parse({
+      kind: 'Phase1aWorkspaceArchive',
+      archiveVersion: '1',
+      createdAt: this.now(),
+      challenges,
+      submissions,
+    });
+  }
+
+  async importWorkspaceArchive(raw: unknown) {
+    const archive = Phase1aWorkspaceArchiveSchema.parse(raw);
+    const parsedChallenges = archive.challenges.map((challenge) => ChallengeSchema.parse(challenge));
+    const parsedSubmissions = archive.submissions.map((submission) =>
+      SubmissionSchema.parse(submission),
+    );
+    const challenges = [];
+    for (const challenge of parsedChallenges) challenges.push(await this.createChallenge(challenge));
+    const submissions = [];
+    for (const submission of parsedSubmissions) submissions.push(await this.createSubmission(submission));
+    return { challenges: challenges.length, submissions: submissions.length };
+  }
+
+  async exportEvidencePackage(id: string, revision: string): Promise<GospEvidencePackage> {
+    const view = await this.evaluateSubmission(id, revision);
+    const material = {
+      replayRecord: view.replayRecord,
+      evaluation: view.evaluation,
+      claim: view.claim,
+      evidence: view.evidence,
+      limitations: view.limitations,
+    };
+    return GospEvidencePackageSchema.parse({
+      kind: 'GospEvidencePackage',
+      packageVersion: '0.1.0',
+      material,
+      materialPackageHash: sha256(canonicalJson(material)),
+      executionEvidence: view.executionEvidence,
+    });
+  }
+
+  async validateEvidencePackage(raw: unknown) {
+    const evidencePackage = GospEvidencePackageSchema.parse(raw);
+    const materialPackageHashMatches =
+      evidencePackage.materialPackageHash === sha256(canonicalJson(evidencePackage.material));
+    const definition = this.evaluators.forMaterialInput(
+      evidencePackage.material.replayRecord.materialInput,
+    );
+    const replayed = definition.evaluate(evidencePackage.material.replayRecord.materialInput);
+    const inputHashMatches =
+      replayed.materialInputHash ===
+      evidencePackage.material.replayRecord.expectedMaterialInputHash;
+    const resultHashMatches =
+      replayed.materialResultHash ===
+        evidencePackage.material.replayRecord.expectedMaterialResultHash &&
+      replayed.materialResultHash === evidencePackage.material.evaluation.materialResultHash;
+    return {
+      ok: materialPackageHashMatches && inputHashMatches && resultHashMatches,
+      evaluatorId: definition.id,
+      materialPackageHashMatches,
+      inputHashMatches,
+      resultHashMatches,
     };
   }
 }
@@ -567,6 +743,11 @@ function sameFlattenedValue(
 export function comparePhase1aEvaluations(
   baseline: Phase1aEvaluationView,
   candidate: Phase1aEvaluationView,
+  objectiveResultPath = 'result.value',
+  comparisonLimitations = [
+    'Synthetic deterministic benchmark only; it does not establish physical validity.',
+    'Local replay is not independent external reproduction.',
+  ],
 ): Phase1aComparison {
   if (canonicalJson(comparableIdentity(baseline.materialInput)) !== canonicalJson(comparableIdentity(candidate.materialInput))) {
     throw new Phase1aValidationError('Evaluations are not comparable across their Challenge, Scenario, Model, solver, runner, contract, or dataset boundaries.');
@@ -615,7 +796,8 @@ export function comparePhase1aEvaluations(
     changedInputPaths: changedInputs.map((change) => change.path),
     resultDeltas,
   });
-  const objectiveDelta = resultDeltas.find((delta) => delta.resultPath === 'result.value')!;
+  const objectiveDelta =
+    resultDeltas.find((delta) => delta.resultPath === objectiveResultPath) ?? resultDeltas[0]!;
   const better = objectiveDelta.delta > 0 ? 'candidate' : objectiveDelta.delta < 0 ? 'baseline' : 'neither';
   return {
     ...controlled,
@@ -645,11 +827,11 @@ export function comparePhase1aEvaluations(
       candidate: candidate.claim.proofObligations.filter((item) => item.status === 'open'),
     },
     explanation: {
-      summary: `${better === 'neither' ? 'Neither candidate' : `The ${better}`} performed better on result.value; the candidate delta is ${objectiveDelta.delta}.`,
+      summary: `${better === 'neither' ? 'Neither candidate' : `The ${better}`} performed better on ${objectiveDelta.resultPath}; the candidate delta is ${objectiveDelta.delta}.`,
       primaryReasons: changedInputs
         .filter((change) => change.path.startsWith('submission.materialPayload'))
         .map((change) => `${change.path} changed from ${String(change.baseline)} to ${String(change.candidate)}.`),
-      limitations,
+      limitations: comparisonLimitations,
     },
   };
 }

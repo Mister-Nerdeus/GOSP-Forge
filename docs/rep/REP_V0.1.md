@@ -67,6 +67,8 @@ Execution-only values must never enter either material hash.
 
 A `RepReplayRecord` contains the full material input and optional expected material-input and material-result hashes. Replay reevaluates the record and reports both comparisons. A mismatch is a failed reproducibility result and remains visible.
 
+The application layer also implements a [portable evidence package](PORTABLE_EVIDENCE_PACKAGE.md) around the normative replay record. That additive package does not change REP v0.1 material canonicalization or identity rules.
+
 ## sandbox-001
 
 The reference benchmark computes:

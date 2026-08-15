@@ -5,6 +5,7 @@ coverage/
 *.log
 reports/
 .env
+.gosp/
 .DS_Store
 artifacts/controls/local-validation/*
 !artifacts/controls/local-validation/.gitkeep

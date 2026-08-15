@@ -25,6 +25,9 @@ This index points to the current foundation documentation. The repository remain
 - [Development-tool advisory remediation](program/DEVELOPMENT_TOOL_ADVISORY_REMEDIATION_2026-08-14.md)
 - [Repository lineage audit](program/GOSP_REPOSITORY_LINEAGE_AUDIT_2026-08-09.md)
 - [Authoritative-lineage ADR](adr/0006-authoritative-repository-lineage.md)
+- [Registered evaluators and durable local workspaces ADR](adr/0007-registered-evaluators-and-durable-local-workspaces.md)
+- [Portable evidence package](rep/PORTABLE_EVIDENCE_PACKAGE.md)
+- [Local workspace threat model](security/LOCAL_WORKSPACE_THREAT_MODEL.md)
 
 ## Contracts
 
@@ -77,6 +80,7 @@ These records are retained for provenance and internal analysis. Owner direction
 - [Minimal-loop demo runbook](phase-0c/MINIMAL_LOOP_DEMO_RUNBOOK.md)
 - [Interview evidence and privacy protocol](phase-0c/INTERVIEW_EVIDENCE_AND_PRIVACY_PROTOCOL.md)
 - [Bounded pilot specification template](phase-0c/BOUNDED_PILOT_SPECIFICATION_TEMPLATE.md)
+- [Owner-controlled validation gate](phase-0c/OWNER_CONTROLLED_VALIDATION_GATE.md)
 
 ## Gates And Audit
 

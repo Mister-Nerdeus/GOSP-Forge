@@ -9,6 +9,7 @@ class TestElement {
   href = '';
   download = '';
   children: TestElement[] = [];
+  classList = { add: (...values: string[]) => { this.className = [this.className, ...values].filter(Boolean).join(' '); } };
 
   constructor(readonly tagName: string) {}
   append(...children: TestElement[]) { this.children.push(...children); }
@@ -59,7 +60,13 @@ const workspace = {
     baseline: { id: 'submission.reference', revision: '1.0.0' },
     candidate: { id: 'submission.candidate', revision: '1.0.0' },
   },
-  persistence: { kind: 'process-local-memory', durable: false, disclosure: 'Records reset when the local process restarts.' },
+  persistence: { kind: 'process-local-memory', durable: false, schemaVersion: '1', disclosure: 'Records reset when the local process restarts.' },
+  evaluator: {
+    id: 'evaluator.sandbox-001', title: 'Sandbox deterministic weighted sum', description: 'Synthetic reference evaluator.',
+    challengeRef: ref('Challenge', 'sandbox-001'), modelRef: ref('Model', 'model.sandbox-001'),
+    defaultSelection: { baseline: { id: 'submission.reference', revision: '1.0.0' }, candidate: { id: 'submission.candidate', revision: '1.0.0' } },
+  },
+  availableEvaluators: [],
   challenge: {
     record: { kind: 'Challenge', id: 'sandbox-001', revision: '1.0.0', title: 'Sandbox 001 deterministic weighted sum', problemStatement: 'Evaluate a finite weighted sum.', status: 'open' },
     availableChallenges: [{ id: 'sandbox-001', revision: '1.0.0', title: 'Sandbox 001 deterministic weighted sum' }],
@@ -95,10 +102,15 @@ describe('renderApp', () => {
     });
     const client = {
       loadWorkspace: async () => workspace,
+      loadChallenge: async () => workspace,
       createChallenge: async () => ({}),
       createSubmission: async () => ({}),
       evaluateSubmission: async () => ({} as never),
       exportReplay: async () => ({}),
+      exportEvidencePackage: async () => ({}),
+      validateEvidencePackage: async () => ({ ok: true }),
+      exportArchive: async () => ({}),
+      importArchive: async () => ({}),
     } as Phase1aClient;
     const { renderApp } = await import('./App');
     const root = new TestElement('div') as unknown as HTMLElement;
@@ -114,7 +126,9 @@ describe('renderApp', () => {
     expect(text).toContain('Independent reproduction remains open');
     expect(text).toContain('No professional approval');
     expect(text).toContain('Export REP replay package');
-    expect(text).toContain('Validate / import / run Submission');
+    expect(text).toContain('Create and evaluate Submission');
+    expect(text).toContain('Export portable evidence package');
+    expect(text).toContain('Export workspace archive');
     expect(text).toContain('Process-local canonical candidates');
     expect(text).toContain('Choose comparison pair');
     expect(text).toContain('Run selected comparison');

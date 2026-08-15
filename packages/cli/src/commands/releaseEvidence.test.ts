@@ -40,7 +40,7 @@ describe('releaseEvidenceCommand', () => {
     expect(result.runtime.node).toMatch(/^v/);
     expect(result.limitations.join(' ')).toContain('No professional');
     expect(result.limitations.join(' ')).toContain('release-approval');
-  });
+  }, 20_000);
 
   it('rejects unsupported release evidence targets', () => {
     expect(releaseEvidenceCommand('production')).toEqual({

@@ -1,14 +1,14 @@
 # GOSP Forge
 
-GOSP Forge is a problem-first, domain-neutral protocol foundation for reproducible STEM and engineering evaluation. This repository contains canonical contracts, REP v0.1, a deterministic synthetic benchmark, local evidence tooling, foundation services, a Clean Water vertical, and a minimal local Challenge → Submission → Evaluation → Evidence → Comparison application slice with selectable process-local submission pairs. It does not provide a complete product UI, CAD tool, marketplace, professional engineering workflow, potable-water validation, certification, production persistence, or production manufacturing approval.
+GOSP Forge is a problem-first, domain-neutral protocol foundation for reproducible STEM and engineering evaluation. This repository contains canonical contracts, REP v0.1, local evidence tooling, a registered-evaluator application service, durable local workspaces, a synthetic benchmark, a Clean Water educational vertical, portable evidence packages, and a local Challenge → Submission → Evaluation → Evidence → Comparison application. It does not provide a complete CAD product, marketplace, professional engineering workflow, potable-water validation, certification, production database, or production manufacturing approval.
 
 ## Current State
 
-Implemented in the current verified local technical lineage: the 18 canonical Engineering Program Graph object contracts, typed claims/proof obligations/evidence, separate fidelity and readiness metadata, domain-neutral Scenario and controlled comparison structures, REP v0.1, normative canonical JSON, `sandbox-001`, recorded replay, material/execution-evidence separation, truthful local verification commands, a Clean Water vertical adapter consuming generic core, and the minimal Phase-1A Challenge → Submission → Evaluation → Evidence → Comparison loop.
+Implemented in the current local technical lineage: the 18 canonical Engineering Program Graph object contracts, typed claims/proof obligations/evidence, separate fidelity and readiness metadata, domain-neutral Scenario and controlled comparison structures, REP v0.1, normative canonical JSON, registered sandbox and Clean Water evaluators, material/execution-evidence separation, durable local workspace envelopes, structured authoring, workspace backup/restore, and portable evidence-package replay validation.
 
 The protected Phase-0B `sandbox-001` material hash matches in native Windows/Node 22 and Docker Linux/Node 24. The Phase-1A checkpoint and its separately committed remediation descendant have been locally re-audited. The verified lineage is published to `canonical/verified-lineage` at exact commit `9db3839b8b4a0e5d222ef5e4c8edd1ef19086091`; exact local detached verification and remote post-publication checks passed. The repository default branch remains the legacy `main` branch while authority-transition review is in progress. Publication and the historical first-wave Phase-0C sends do not themselves increase engineering truth or imply external validation, deployment, certification, professional approval, production persistence, or production readiness. Further external outreach is closed by owner direction; work remains local and internal. See the [current canonical publication and Phase-0C status](docs/source-of-truth/GOSP_CANONICAL_PUBLICATION_AND_PHASE_0C_STATUS_2026-08-14.md).
 
-Not implemented yet: full editor UI, full CAD, professional-grade simulation, manufacturer verification workflows, public leaderboards, production storage, production deployment readiness, or imported legacy code.
+Not implemented: full CAD, professional-grade simulation, manufacturer verification workflows, public leaderboards, multi-user production storage, production deployment readiness, or imported legacy HouseSim code.
 
 ## Canonical Docs
 
@@ -43,6 +43,8 @@ pnpm install
 pnpm verify
 pnpm evidence:local
 ```
+
+`pnpm dev:phase1a` starts the loopback-only local application. Its ignored `.gosp/` workspace survives restarts; export an archive before moving or replacing that directory.
 
 The current policy is local-only. The GitHub Actions workflow has no automatic push or pull-request trigger.
 

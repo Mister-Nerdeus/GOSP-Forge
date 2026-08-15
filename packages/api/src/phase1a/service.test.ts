@@ -169,4 +169,71 @@ describe('Phase1aService canonical product loop', () => {
     ]);
     expect(view.limitations.join(' ')).toMatch(/No professional approval/);
   });
+
+  it('runs the vertical-owned Clean Water evaluator through the same domain-neutral workspace', async () => {
+    const service = new Phase1aService(undefined, () => '2026-08-14T20:00:00.000Z');
+    const initial = await service.getWorkspace();
+    const cleanWater = initial.availableEvaluators.find((item) =>
+      item.id.includes('clean-water'),
+    )!;
+    const workspace = await service.getWorkspace(undefined, {
+      id: cleanWater.challengeRef.id,
+      revision: cleanWater.challengeRef.revision,
+    });
+
+    expect(workspace.evaluator.id).toBe('evaluator.clean-water.educational-screening');
+    expect(
+      workspace.evaluations.map(
+        (item) =>
+          (item.evaluation.result as { flow: { cleanWaterLiters: number } }).flow
+            .cleanWaterLiters,
+      ),
+    ).toEqual([64, 72]);
+    expect(workspace.comparison.resultDeltas).toContainEqual(
+      expect.objectContaining({
+        resultPath: 'result.flow.cleanWaterLiters',
+        delta: 8,
+      }),
+    );
+    expect(workspace.evaluations[0]!.limitations.join(' ')).toMatch(/not potable-water/i);
+  });
+
+  it('exports and independently validates a material-hashed portable evidence package', async () => {
+    const service = new Phase1aService(undefined, () => '2026-08-14T20:00:00.000Z');
+    const evidencePackage = await service.exportEvidencePackage(
+      'submission.sandbox-001.reference',
+      '1.0.0',
+    );
+
+    await expect(service.validateEvidencePackage(evidencePackage)).resolves.toMatchObject({
+      ok: true,
+      evaluatorId: 'evaluator.sandbox-001',
+      materialPackageHashMatches: true,
+      inputHashMatches: true,
+      resultHashMatches: true,
+    });
+
+    const tampered = structuredClone(evidencePackage);
+    tampered.material.limitations[0] = 'Tampered limitation.';
+    await expect(service.validateEvidencePackage(tampered)).resolves.toMatchObject({
+      ok: false,
+      materialPackageHashMatches: false,
+    });
+  });
+
+  it('round-trips the canonical workspace archive through validated restore', async () => {
+    const source = new Phase1aService(undefined, () => '2026-08-14T20:00:00.000Z');
+    const archive = await source.exportWorkspaceArchive();
+    const restored = new Phase1aService();
+
+    await expect(restored.importWorkspaceArchive(archive)).resolves.toEqual({
+      challenges: 2,
+      submissions: 4,
+    });
+    await expect(restored.getWorkspace()).resolves.toMatchObject({
+      submissions: expect.arrayContaining([
+        expect.objectContaining({ id: 'submission.sandbox-001.reference' }),
+      ]),
+    });
+  });
 });

@@ -25,11 +25,18 @@ describe('createGospServer', () => {
     await withServer(async (baseUrl) => {
       const workspaceResponse = await fetch(`${baseUrl}/api/phase1a/workspace`);
       expect(workspaceResponse.status).toBe(200);
+      expect(workspaceResponse.headers.get('cache-control')).toBe('no-store');
+      expect(workspaceResponse.headers.get('x-content-type-options')).toBe('nosniff');
       const workspace = (await workspaceResponse.json()) as {
         persistence: { durable: boolean };
+        availableEvaluators: Array<{ id: string; challengeRef: { id: string; revision: string } }>;
         evaluations: Array<{ evaluation: { result: { value: number } } }>;
       };
       expect(workspace.persistence.durable).toBe(false);
+      expect(workspace.availableEvaluators.map((item) => item.id)).toEqual([
+        'evaluator.sandbox-001',
+        'evaluator.clean-water.educational-screening',
+      ]);
       expect(workspace.evaluations.map((item) => item.evaluation.result.value)).toEqual([53, 23]);
 
       const selectedResponse = await fetch(
@@ -61,6 +68,46 @@ describe('createGospServer', () => {
         expectedMaterialInputHash: expect.stringMatching(/^[a-f0-9]{64}$/),
         expectedMaterialResultHash: expect.stringMatching(/^[a-f0-9]{64}$/),
       });
+
+      const cleanWater = workspace.availableEvaluators[1]!;
+      const verticalResponse = await fetch(
+        `${baseUrl}/api/phase1a/workspace?challengeId=${encodeURIComponent(cleanWater.challengeRef.id)}&challengeRevision=${encodeURIComponent(cleanWater.challengeRef.revision)}`,
+      );
+      expect(verticalResponse.status).toBe(200);
+      await expect(verticalResponse.json()).resolves.toMatchObject({
+        evaluator: { id: 'evaluator.clean-water.educational-screening' },
+        evaluations: [
+          { evaluation: { result: { flow: { cleanWaterLiters: 64 } } } },
+          { evaluation: { result: { flow: { cleanWaterLiters: 72 } } } },
+        ],
+      });
+
+      const evidenceResponse = await fetch(
+        `${baseUrl}/api/phase1a/evidence-package?submissionId=submission.sandbox-001.reference&revision=1.0.0`,
+      );
+      expect(evidenceResponse.status).toBe(200);
+      const evidencePackage = await evidenceResponse.json();
+      const evidenceValidation = await fetch(
+        `${baseUrl}/api/phase1a/evidence-package/validate`,
+        {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(evidencePackage),
+        },
+      );
+      expect(evidenceValidation.status).toBe(200);
+      await expect(evidenceValidation.json()).resolves.toMatchObject({ ok: true });
+
+      const archiveResponse = await fetch(`${baseUrl}/api/phase1a/archive`);
+      expect(archiveResponse.status).toBe(200);
+      const archive = await archiveResponse.json();
+      const restoreResponse = await fetch(`${baseUrl}/api/phase1a/archive`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(archive),
+      });
+      expect(restoreResponse.status).toBe(200);
+      await expect(restoreResponse.json()).resolves.toEqual({ challenges: 2, submissions: 4 });
     });
   });
 

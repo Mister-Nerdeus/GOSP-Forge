@@ -6,10 +6,15 @@ import type {
 
 export type Phase1aClient = {
   loadWorkspace(selection?: Phase1aWorkspaceSelection): Promise<Phase1aWorkspace>;
+  loadChallenge(challengeId: string, revision: string): Promise<Phase1aWorkspace>;
   createChallenge(value: unknown): Promise<unknown>;
   createSubmission(value: unknown): Promise<unknown>;
   evaluateSubmission(submissionId: string, revision: string): Promise<Phase1aEvaluationView>;
   exportReplay(submissionId: string, revision: string): Promise<unknown>;
+  exportEvidencePackage(submissionId: string, revision: string): Promise<unknown>;
+  validateEvidencePackage(value: unknown): Promise<unknown>;
+  exportArchive(): Promise<unknown>;
+  importArchive(value: unknown): Promise<unknown>;
 };
 
 async function request(path: string, init?: RequestInit) {
@@ -44,6 +49,10 @@ export function createPhase1aClient(): Phase1aClient {
       const query = parameters.size ? `?${parameters.toString()}` : '';
       return request(`/api/phase1a/workspace${query}`) as Promise<Phase1aWorkspace>;
     },
+    loadChallenge: (challengeId, revision) => {
+      const parameters = new URLSearchParams({ challengeId, challengeRevision: revision });
+      return request(`/api/phase1a/workspace?${parameters.toString()}`) as Promise<Phase1aWorkspace>;
+    },
     createChallenge: (value) => request('/api/phase1a/challenges', jsonRequest(value)),
     createSubmission: (value) => request('/api/phase1a/submissions', jsonRequest(value)),
     evaluateSubmission: (submissionId, revision) =>
@@ -55,5 +64,13 @@ export function createPhase1aClient(): Phase1aClient {
       request(
         `/api/phase1a/export?submissionId=${encodeURIComponent(submissionId)}&revision=${encodeURIComponent(revision)}`,
       ),
+    exportEvidencePackage: (submissionId, revision) =>
+      request(
+        `/api/phase1a/evidence-package?submissionId=${encodeURIComponent(submissionId)}&revision=${encodeURIComponent(revision)}`,
+      ),
+    validateEvidencePackage: (value) =>
+      request('/api/phase1a/evidence-package/validate', jsonRequest(value)),
+    exportArchive: () => request('/api/phase1a/archive'),
+    importArchive: (value) => request('/api/phase1a/archive', jsonRequest(value)),
   };
 }

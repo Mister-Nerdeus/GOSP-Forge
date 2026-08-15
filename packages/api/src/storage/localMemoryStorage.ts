@@ -10,6 +10,15 @@ export class LocalMemoryStorage implements StorageAdapter {
   async set(key: string, value: unknown) {
     this.data.set(key, value);
   }
+
+  describe() {
+    return {
+      kind: 'process-local-memory' as const,
+      durable: false,
+      schemaVersion: '1' as const,
+      disclosure: 'Records exist only in this local API process and reset when it restarts.',
+    };
+  }
 }
 
 export function assertStorageAllowed(kind: StorageKind, environment: StorageEnvironment): void {

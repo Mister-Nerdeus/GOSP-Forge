@@ -2,7 +2,7 @@
 
 ## Scope
 
-The existing plain-DOM Vite app and local Node API implement the first application-facing slice:
+The existing plain-DOM Vite app and local Node API implement the application-facing slice:
 
 ```text
 Challenge -> Submission -> REP Evaluation -> Evidence -> Comparison
@@ -18,11 +18,11 @@ From the repository root:
 pnpm dev:phase1a
 ```
 
-The API listens on `127.0.0.1:3080`; Vite uses its normal local port and proxies `/api` to that API. Records are stored only in the API process's existing local-memory adapter. Restarting the process resets created/imported records.
+The API listens on `127.0.0.1:3080`; Vite uses its normal local port and proxies `/api` to that API. Direct local-server execution stores records under the ignored owner-controlled `.gosp/workspaces/default` directory using versioned envelopes and atomic file replacement. `GOSP_WORKSPACE_DIR` may select another local directory. Tests use the process-memory adapter. This is durable local storage, not production persistence.
 
 ## Implemented boundary
 
-- Select and inspect `sandbox-001`, its requirements, hard gate, objective, assumptions, Scenario, Model, solver, runner, and Workflow.
+- Select and inspect either registered evaluator workspace: `sandbox-001` or the Clean Water educational screening adapter.
 - Validate/create canonical Challenge JSON.
 - Validate/import canonical Submission JSON with exact Challenge and Scenario reference checks.
 - Evaluate two valid candidate Submissions through the existing REP runner.
@@ -33,12 +33,15 @@ The API listens on `127.0.0.1:3080`; Vite uses its normal local port and proxies
 - Compare changed/fixed material input paths, numeric result deltas, hard-gate changes, readiness, and proof obligations.
 - Display structured explanation, the real sandbox equation, variables, intermediate values, Model fidelity, numerical settings, and source-implementation identities.
 - Export a REP v0.1 replay record and show replay hash-match status.
+- Export and validate a portable material-hashed evidence package.
+- Export and restore a validated canonical workspace archive.
+- Author a new revision and narrative for a registered Challenge, plus Submission identity/material payload, through structured browser controls backed by canonical API validation.
 
 ## Limitations and non-claims
 
-- Only `sandbox-001` has a Phase-1A evaluator.
-- Storage is process-local and non-durable.
+- The evaluator catalog contains only the synthetic sandbox and Clean Water educational screening adapter.
+- Filesystem storage is single-owner local durability, not a transactional database or multi-user service.
 - The UI is not a source of engineering truth.
 - Local replay is not independent external reproduction.
 - The synthetic benchmark is not physical validation.
-- No professional approval, certification, regulatory approval, production authentication, tenancy, database durability, or deployment readiness is claimed.
+- No professional approval, certification, regulatory approval, production authentication, tenancy, production database durability, or deployment readiness is claimed.

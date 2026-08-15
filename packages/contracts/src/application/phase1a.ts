@@ -23,6 +23,15 @@ export type Phase1aWorkspaceSelection = {
   candidate: Phase1aSubmissionIdentity;
 };
 
+export type Phase1aEvaluatorSummary = {
+  id: string;
+  title: string;
+  description: string;
+  challengeRef: { kind: 'Challenge'; id: string; revision: string };
+  modelRef: { kind: 'Model'; id: string; revision: string };
+  defaultSelection: Phase1aWorkspaceSelection;
+};
+
 export type Phase1aHardGate = {
   constraint: CanonicalConstraint;
   resultPath: string;
@@ -87,10 +96,13 @@ export type Phase1aWorkspace = {
   milestone: 'Phase-1A — Minimal Challenge-Facing Product Loop';
   selection: Phase1aWorkspaceSelection;
   persistence: {
-    kind: 'process-local-memory';
-    durable: false;
+    kind: 'process-local-memory' | 'local-filesystem';
+    durable: boolean;
+    schemaVersion: '1';
     disclosure: string;
   };
+  evaluator: Phase1aEvaluatorSummary;
+  availableEvaluators: Phase1aEvaluatorSummary[];
   challenge: {
     record: Challenge;
     availableChallenges: Challenge[];

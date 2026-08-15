@@ -8,11 +8,12 @@ import { healthResponse } from './routes/health.js';
 import { validateProjectBody } from './routes/validate.js';
 import { versionResponse } from './routes/version.js';
 import { Phase1aService, Phase1aValidationError } from './phase1a/service.js';
+import { LocalFileSystemStorage } from './storage/localFileSystemStorage.js';
 
 export const PHASE1A_LOCAL_HOST = '127.0.0.1';
 
-export function createGospServer() {
-  const phase1a = new Phase1aService();
+export function createGospServer(options: { phase1a?: Phase1aService } = {}) {
+  const phase1a = options.phase1a ?? new Phase1aService();
   return createServer(async (req, res) => {
     try {
       const key = req.socket.remoteAddress ?? 'unknown';
@@ -49,7 +50,28 @@ export function createGospServer() {
               },
             }
           : undefined;
-        return sendJson(res, 200, await phase1a.getWorkspace(selection));
+        const challengeId = requestUrl.searchParams.get('challengeId');
+        const challengeRevision = requestUrl.searchParams.get('challengeRevision');
+        if ((challengeId === null) !== (challengeRevision === null)) {
+          throw new Phase1aValidationError(
+            'Challenge selection requires challengeId and challengeRevision together.',
+          );
+        }
+        if (selection && challengeId) {
+          throw new Phase1aValidationError(
+            'Choose either an exact Submission pair or a Challenge default selection, not both.',
+          );
+        }
+        return sendJson(
+          res,
+          200,
+          await phase1a.getWorkspace(
+            selection,
+            challengeId && challengeRevision
+              ? { id: challengeId, revision: challengeRevision }
+              : undefined,
+          ),
+        );
       }
       if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/challenges') {
         const body = await readJsonBody(req);
@@ -96,6 +118,29 @@ export function createGospServer() {
         const evaluation = await phase1a.evaluateSubmission(submissionId, revision);
         return sendJson(res, 200, evaluation.replayRecord);
       }
+      if (req.method === 'GET' && requestUrl.pathname === '/api/phase1a/evidence-package') {
+        const submissionId = requestUrl.searchParams.get('submissionId');
+        const revision = requestUrl.searchParams.get('revision');
+        if (!submissionId || !revision) {
+          throw new Phase1aValidationError(
+            'Evidence package export requires submissionId and revision query parameters.',
+          );
+        }
+        return sendJson(
+          res,
+          200,
+          await phase1a.exportEvidencePackage(submissionId, revision),
+        );
+      }
+      if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/evidence-package/validate') {
+        return sendJson(res, 200, await phase1a.validateEvidencePackage(await readJsonBody(req)));
+      }
+      if (req.method === 'GET' && requestUrl.pathname === '/api/phase1a/archive') {
+        return sendJson(res, 200, await phase1a.exportWorkspaceArchive());
+      }
+      if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/archive') {
+        return sendJson(res, 200, await phase1a.importWorkspaceArchive(await readJsonBody(req)));
+      }
       if (req.method === 'POST' && requestUrl.pathname === '/validate') {
         const body = await readJsonBody(req);
         const mode = requestUrl.searchParams.get('mode') === 'repo' ? 'repo' : 'schema-only';
@@ -117,7 +162,12 @@ const isDirectExecution =
 
 if (isDirectExecution) {
   const port = Number(process.env.PORT ?? 3080);
-  createGospServer().listen(port, PHASE1A_LOCAL_HOST, () =>
+  const repositoryRoot = path.resolve(fileURLToPath(new URL('../../../', import.meta.url)));
+  const workspaceDirectory = path.resolve(
+    process.env.GOSP_WORKSPACE_DIR ?? path.join(repositoryRoot, '.gosp/workspaces/default'),
+  );
+  const phase1a = new Phase1aService(new LocalFileSystemStorage(workspaceDirectory));
+  createGospServer({ phase1a }).listen(port, PHASE1A_LOCAL_HOST, () =>
     console.log(JSON.stringify({ ok: true, url: `http://${PHASE1A_LOCAL_HOST}:${port}` })),
   );
 }

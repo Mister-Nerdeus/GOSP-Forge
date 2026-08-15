@@ -63,6 +63,9 @@ importers:
       '@gosp/sim-core':
         specifier: workspace:*
         version: link:../sim-core
+      '@gosp/vertical-clean-water':
+        specifier: workspace:*
+        version: link:../vertical-clean-water
 
   packages/cli:
     dependencies:
