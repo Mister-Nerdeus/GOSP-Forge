@@ -8,7 +8,6 @@ import type {
   Submission,
   Workflow,
 } from '../canonical/executionModel.js';
-import type { StemSystemProjection } from '../education/stemSystemProjection.js';
 import type {
   RepExecutionEvidence,
   RepMaterialInput,
@@ -114,7 +113,6 @@ export type Phase1aWorkspace = {
     scenario: Scenario;
     workflow: Workflow;
   };
-  stemSystem: StemSystemProjection;
   submissions: Submission[];
   evaluations: Phase1aEvaluationView[];
   comparison: Phase1aComparison;
