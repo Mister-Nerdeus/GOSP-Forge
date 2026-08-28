@@ -13,7 +13,7 @@ import {
 export const SOLAR_DEPLOYMENT_REP_CONTRACT_DESCRIPTOR = {
   id: 'gosp.vertical.solar-deployment.rep-contract',
   revision: '0.1.0',
-  input: 'synthetic flexible-panel design plus a controlled environment and hazard threshold',
+  input: 'synthetic flexible-panel deployment design under controlled panel, environment, soiling, and hazard conditions',
   output: 'screened solar power, cleaning recovery, bend-radius margin, and storm-stow timing margin',
 } as const;
 
@@ -178,8 +178,8 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
     material: true,
   };
   const controlledScenarioAssumption = {
-    id: 'assumption.solar-deployment.controlled-environment',
-    statement: 'Candidate submissions must use the exact controlled environment and hazard threshold recorded in the Scenario; design variables may change only outside that fixed boundary.',
+    id: 'assumption.solar-deployment.controlled-boundary',
+    statement: 'Candidate submissions must use the exact panel specification, environment, soiling condition, and hazard threshold recorded in the controlled Scenario; only deployment, controller, and modeled cleaning-recovery design variables may vary in this benchmark.',
     material: true,
   };
 
@@ -192,7 +192,7 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
       provenance: syntheticProvenance,
       title: 'Synthetic retractable flexible-solar deployment challenge',
       problemStatement:
-        'Compare flexible-solar deployment concepts for modeled power, bend-radius margin, storm-stow timing, and cleaning recovery using synthetic educational inputs under one controlled environment.',
+        'Compare flexible-solar deployment concepts for modeled power, bend-radius margin, storm-stow timing, and cleaning recovery using synthetic educational inputs under one controlled panel and environment.',
       evaluationModelRef: canonicalRef('Model', modelId, SOLAR_DEPLOYMENT_SOLVER_DESCRIPTOR.revision),
       workflowRef: canonicalRef('Workflow', workflowId, SOLAR_DEPLOYMENT_REP_CONTRACT_DESCRIPTOR.revision),
       permittedScenarioRefs: [canonicalRef('Scenario', scenarioId)],
@@ -222,7 +222,10 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
         hazardWindThresholdMps: parsedPayload.control.hazardWindThresholdMps,
       },
       assumptions: [syntheticAssumption, reducedOrderAssumption, controlledScenarioAssumption],
-      parameters: {},
+      parameters: {
+        fixedPanel: parsedPayload.panel,
+        soilingLossFraction: parsedPayload.cleaning.soilingLossFraction,
+      },
       modelRef: canonicalRef('Model', modelId, SOLAR_DEPLOYMENT_SOLVER_DESCRIPTOR.revision),
       status: 'controlled',
     },
@@ -300,6 +303,14 @@ function assertControlledScenarioBoundary(input: RepMaterialInput, payload: Sola
   if (canonicalJson(scenarioEnvironment) !== canonicalJson(payload.environment)) {
     throw new Error('Submission environment does not match the controlled Scenario environment.');
   }
+  const fixedPanel = SolarPanelSchema.parse(input.compiledScenario.parameters.fixedPanel);
+  if (canonicalJson(fixedPanel) !== canonicalJson(payload.panel)) {
+    throw new Error('Submission panel specification does not match the controlled Scenario panel specification.');
+  }
+  const fixedSoilingLoss = input.compiledScenario.parameters.soilingLossFraction;
+  if (typeof fixedSoilingLoss !== 'number' || fixedSoilingLoss !== payload.cleaning.soilingLossFraction) {
+    throw new Error('Submission soiling condition does not match the controlled Scenario soiling condition.');
+  }
   const scenarioHazardThreshold = input.compiledScenario.operatingConditions.hazardWindThresholdMps;
   if (
     typeof scenarioHazardThreshold !== 'number' ||
@@ -357,7 +368,7 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
     },
     explainability: {
       explanation:
-        'This synthetic educational screening model estimates solar power from irradiance, incidence angle, temperature, soiling, and deployed fraction; separately checks roll-core bend-radius margin and a simplified storm-stow timing margin under the exact controlled Scenario environment.',
+        'This synthetic educational screening model estimates solar power from irradiance, incidence angle, temperature, soiling, and deployed fraction; separately checks roll-core bend-radius margin and a simplified storm-stow timing margin under the exact controlled Scenario panel and environment.',
       equations: [
         {
           id: 'solar.power',
@@ -365,13 +376,13 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
             'P = Prated * (irradiance / 1000) * max(0, cos(angle)) * [1 + tempCoeff * (cellTemp - referenceTemp)] * (1 - soilingLoss) * deployedFraction',
           description: 'Reduced analytical screening relationship for instantaneous panel power.',
           variables: {
-            Prated: 'Synthetic panel rated power.',
+            Prated: 'Controlled synthetic panel rated power.',
             irradiance: 'Synthetic controlled plane-of-array irradiance input.',
             angle: 'Synthetic controlled incidence angle.',
-            tempCoeff: 'Synthetic fractional temperature coefficient per degree C.',
+            tempCoeff: 'Controlled synthetic fractional temperature coefficient per degree C.',
             cellTemp: 'Synthetic controlled cell temperature.',
-            referenceTemp: 'Synthetic reference cell temperature.',
-            soilingLoss: 'Synthetic fractional soiling loss.',
+            referenceTemp: 'Controlled synthetic reference cell temperature.',
+            soilingLoss: 'Controlled synthetic fractional soiling loss.',
             deployedFraction: 'Candidate fraction of the panel considered deployed.',
           },
         },
@@ -381,7 +392,7 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
           description: 'Positive values satisfy the modeled minimum bend-radius check.',
           variables: {
             coreRadius: 'Candidate roll-core radius.',
-            minimumBendRadius: 'Synthetic minimum panel bend-radius input.',
+            minimumBendRadius: 'Controlled synthetic minimum panel bend-radius input.',
           },
         },
         {
@@ -433,7 +444,7 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
     ],
     sensitivity: [
       {
-        parameterPath: 'submission.materialPayload.panel.ratedPowerW',
+        parameterPath: 'compiledScenario.parameters.fixedPanel.ratedPowerW',
         resultPath: 'result.power.instantaneousPowerW',
         method: 'local-derivative',
         effect:
@@ -443,7 +454,7 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
           beforeCleaning.soilingFactor *
           payload.deployment.deployedFraction,
         rank: 1,
-        interpretation: 'At fixed controlled conditions, screened instantaneous power scales linearly with rated power.',
+        interpretation: 'At fixed controlled conditions, screened instantaneous power scales linearly with the controlled panel rated power.',
       },
       {
         parameterPath: 'submission.materialPayload.deployment.stowTimeSeconds',
