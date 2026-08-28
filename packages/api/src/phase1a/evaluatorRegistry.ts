@@ -15,6 +15,11 @@ import {
   createCleanWaterRepMaterialInput,
   evaluateCleanWaterRep,
 } from '@gosp/vertical-clean-water';
+import {
+  DEFAULT_SYNTHETIC_SOLAR_DEPLOYMENT_PAYLOAD,
+  createSyntheticSolarDeploymentRepMaterialInput,
+  evaluateSyntheticSolarDeploymentRep,
+} from '@gosp/vertical-solar-deployment';
 
 const provenance = { sources: [], method: 'authored' as const, notes: [] };
 
@@ -141,10 +146,127 @@ function cleanWaterDefinition(): Phase1aEvaluatorDefinition {
   };
 }
 
+function solarDeploymentDefinition(): Phase1aEvaluatorDefinition {
+  const referencePayload = structuredClone(DEFAULT_SYNTHETIC_SOLAR_DEPLOYMENT_PAYLOAD);
+  referencePayload.environment.modeledWindRiseRateMpsPerSecond = 0.75;
+  const template = createSyntheticSolarDeploymentRepMaterialInput(referencePayload);
+  const candidate = structuredClone(template.submission);
+  candidate.id = 'submission.solar-deployment.synthetic.tradeoff-candidate';
+  const payload = candidate.materialPayload as typeof referencePayload;
+  payload.environment.incidenceAngleDeg = 30;
+  payload.deployment.coreRadiusM = 0.12;
+  payload.deployment.deployTimeSeconds = 30;
+  payload.deployment.stowTimeSeconds = 12;
+  payload.cleaning.modeledCleaningRecoveryFraction = 0.1;
+  const parsedCandidate = SubmissionSchema.parse(candidate);
+
+  return {
+    id: 'evaluator.solar-deployment.synthetic-screening',
+    title: 'Retractable flexible-solar synthetic screening',
+    description:
+      'Synthetic educational evaluator for modeled solar power, roll bend margin, storm-stow timing, deployment speed, and cleaning recovery.',
+    template,
+    seedSubmissions: [template.submission, parsedCandidate],
+    objectives: [
+      {
+        id: 'instantaneous-power',
+        label: 'Modeled instantaneous solar power',
+        resultPath: 'result.power.instantaneousPowerW',
+        direction: 'maximize',
+        unit: 'W',
+      },
+      {
+        id: 'storm-stow-margin',
+        label: 'Storm-stow timing margin',
+        resultPath: 'result.storm.stowTimeMarginSeconds',
+        direction: 'maximize',
+        unit: 's',
+      },
+      {
+        id: 'bend-radius-margin',
+        label: 'Bend-radius margin',
+        resultPath: 'result.deployment.bendRadiusMarginM',
+        direction: 'maximize',
+        unit: 'm',
+      },
+      {
+        id: 'deployment-time',
+        label: 'Deployment time',
+        resultPath: 'result.deployment.deployTimeSeconds',
+        direction: 'minimize',
+        unit: 's',
+      },
+      {
+        id: 'stow-time',
+        label: 'Stow time',
+        resultPath: 'result.deployment.stowTimeSeconds',
+        direction: 'minimize',
+        unit: 's',
+      },
+      {
+        id: 'cleaning-recovery',
+        label: 'Modeled cleaning power recovery',
+        resultPath: 'result.power.cleaningRecoveredPowerW',
+        direction: 'maximize',
+        unit: 'W',
+      },
+    ],
+    gates: [
+      {
+        id: 'valid-completion',
+        statement: 'The Submission must pass canonical REP and registered evaluator validation and complete evaluation.',
+        resultPath: 'evaluation.status',
+        operator: 'eq',
+        expected: 'completed',
+      },
+      {
+        id: 'bend-radius',
+        statement: 'The modeled roll-core radius shall not be below the synthetic minimum bend-radius input.',
+        resultPath: 'evaluation.result.deployment.bendRadiusMarginM',
+        operator: 'gte',
+        expected: 0,
+        unit: 'm',
+      },
+      {
+        id: 'storm-stow-margin',
+        statement: 'The modeled storm-stow timing margin shall be nonnegative.',
+        resultPath: 'evaluation.result.storm.stowTimeMarginSeconds',
+        operator: 'gte',
+        expected: 0,
+        unit: 's',
+      },
+      {
+        id: 'positive-temperature-factor',
+        statement: 'The simplified temperature factor shall remain positive for this screening model.',
+        resultPath: 'evaluation.result.power.temperatureFactor',
+        operator: 'gt',
+        expected: 0,
+      },
+    ],
+    limitations: [
+      'All inputs are synthetic educational values; no manufacturer performance claim is verified.',
+      'No structural wind-load, fatigue, laminate, wiring-flex, actuator-force, hail, precipitation, or dynamic roll mechanics are modeled.',
+      'The solar power relationship is a reduced analytical screening model and is not an IEC/STC performance verification.',
+      'Storm-stow timing assumes a linear synthetic wind-speed rise and is not a weather forecast or safety certification.',
+      'Cleaning recovery is modeled from an assumed recovery fraction and is not measured cleaning performance.',
+      'Local replay is not independent external reproduction or physical validation.',
+    ],
+    evaluate: evaluateSyntheticSolarDeploymentRep,
+    claimStatement: (evaluation) => {
+      const result = evaluation.result as {
+        power: { instantaneousPowerW: number };
+        deployment: { bendRadiusMarginM: number };
+        storm: { stowTimeMarginSeconds: number };
+      };
+      return `Under the recorded synthetic educational inputs, modeled instantaneous power is ${result.power.instantaneousPowerW} W, bend-radius margin is ${result.deployment.bendRadiusMarginM} m, and storm-stow timing margin is ${result.storm.stowTimeMarginSeconds} s.`;
+    },
+  };
+}
+
 export class Phase1aEvaluatorRegistry {
   readonly definitions: Phase1aEvaluatorDefinition[];
 
-  constructor(definitions = [sandboxDefinition(), cleanWaterDefinition()]) {
+  constructor(definitions = [sandboxDefinition(), cleanWaterDefinition(), solarDeploymentDefinition()]) {
     this.definitions = definitions;
   }
 
