@@ -5,6 +5,7 @@
   "packages/api/src/http/readJsonBody.test.ts",
   "packages/api/src/phase1a/comparison.test.ts",
   "packages/api/src/phase1a/service.test.ts",
+  "packages/api/src/phase1a/stemSystemProjection.test.ts",
   "packages/api/src/routes/validate.test.ts",
   "packages/api/src/security/submissionSignature.test.ts",
   "packages/api/src/server.test.ts",
