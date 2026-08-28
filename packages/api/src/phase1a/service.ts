@@ -12,6 +12,7 @@ import {
   type Phase1aComparison,
   type Phase1aEvaluationView,
   type Phase1aHardGate,
+  type Phase1aObjective,
   type Phase1aWorkspaceArchive,
   type Phase1aWorkspace,
   type Phase1aWorkspaceSelection,
@@ -443,7 +444,7 @@ export class Phase1aService {
       status: replayed.ok ? 'supported' : 'contradicted',
     });
     const hardGates = this.evaluators
-      .constraintsFor(materialInput.challenge)
+      .constraintsFor(materialInput.challenge, definition)
       .map((constraint) => this.evaluateGate(constraint, evaluation));
     return {
       evaluation,
@@ -468,11 +469,18 @@ export class Phase1aService {
     constraint: Phase1aHardGate['constraint'],
     evaluation: Phase1aEvaluationView['evaluation'],
   ): Phase1aHardGate {
-    const actual = evaluation.status;
-    if (constraint.operator !== 'eq' || typeof constraint.value !== 'string') {
-      throw new Error('Phase-1A completion hard gate must be an exact evaluation-status constraint.');
+    if (!constraint.parameter || !constraint.operator || constraint.value === undefined) {
+      throw new Error('Phase-1A hard gates require a result path, operator, and expected value.');
     }
-    return { constraint, resultPath: 'evaluation.status', actual, passed: actual === constraint.value };
+    const actual = flatten(evaluation, 'evaluation').get(constraint.parameter);
+    const passed = evaluateComparisonOperator(actual, constraint.operator, constraint.value);
+    return {
+      constraint,
+      resultPath: constraint.parameter,
+      actual,
+      expected: constraint.value,
+      passed,
+    };
   }
 
   async compare(baseline: Phase1aEvaluationView, candidate: Phase1aEvaluationView) {
@@ -480,7 +488,7 @@ export class Phase1aService {
     return comparePhase1aEvaluations(
       baseline,
       candidate,
-      definition.objectiveResultPath,
+      definition.objectives,
       definition.limitations,
     );
   }
@@ -580,7 +588,7 @@ export class Phase1aService {
         record: challenge,
         availableChallenges,
         requirements: this.evaluators.requirementsFor(challenge, definition),
-        constraints: this.evaluators.constraintsFor(challenge),
+        constraints: this.evaluators.constraintsFor(challenge, definition),
         assumptions: base.materialAssumptions,
         model: base.model,
         scenario: base.compiledScenario,
@@ -591,7 +599,7 @@ export class Phase1aService {
       comparison: comparePhase1aEvaluations(
         evaluations[0]!,
         evaluations[1]!,
-        definition.objectiveResultPath,
+        definition.objectives,
         definition.limitations,
       ),
     };
@@ -612,6 +620,8 @@ export class Phase1aService {
         id: definition.template.model.id,
         revision: definition.template.model.revision,
       },
+      objectives: definition.objectives,
+      gateDefinitions: definition.gates,
       defaultSelection: {
         baseline: {
           id: definition.seedSubmissions[0]!.id,
@@ -717,6 +727,31 @@ function flatten(value: unknown, path = '', output = new Map<string, unknown>())
   return output;
 }
 
+function evaluateComparisonOperator(
+  actual: unknown,
+  operator: 'eq' | 'ne' | 'lt' | 'lte' | 'gt' | 'gte' | 'in',
+  expected: unknown,
+) {
+  switch (operator) {
+    case 'eq':
+      return canonicalJson(actual) === canonicalJson(expected);
+    case 'ne':
+      return canonicalJson(actual) !== canonicalJson(expected);
+    case 'lt':
+    case 'lte':
+    case 'gt':
+    case 'gte': {
+      if (typeof actual !== 'number' || typeof expected !== 'number') return false;
+      if (operator === 'lt') return actual < expected;
+      if (operator === 'lte') return actual <= expected;
+      if (operator === 'gt') return actual > expected;
+      return actual >= expected;
+    }
+    case 'in':
+      return Array.isArray(expected) && expected.some((item) => canonicalJson(item) === canonicalJson(actual));
+  }
+}
+
 function comparableIdentity(input: RepMaterialInput) {
   return {
     repVersion: input.repVersion,
@@ -743,7 +778,9 @@ function sameFlattenedValue(
 export function comparePhase1aEvaluations(
   baseline: Phase1aEvaluationView,
   candidate: Phase1aEvaluationView,
-  objectiveResultPath = 'result.value',
+  objectives: Phase1aObjective[] = [
+    { id: 'default-objective', label: 'Default objective', resultPath: 'result.value', direction: 'maximize' },
+  ],
   comparisonLimitations = [
     'Synthetic deterministic benchmark only; it does not establish physical validity.',
     'Local replay is not independent external reproduction.',
@@ -751,6 +788,9 @@ export function comparePhase1aEvaluations(
 ): Phase1aComparison {
   if (canonicalJson(comparableIdentity(baseline.materialInput)) !== canonicalJson(comparableIdentity(candidate.materialInput))) {
     throw new Phase1aValidationError('Evaluations are not comparable across their Challenge, Scenario, Model, solver, runner, contract, or dataset boundaries.');
+  }
+  if (objectives.length === 0) {
+    throw new Phase1aValidationError('A comparison requires at least one declared objective.');
   }
   const baselineInput = flatten(baseline.materialInput);
   const candidateInput = flatten(candidate.materialInput);
@@ -796,20 +836,68 @@ export function comparePhase1aEvaluations(
     changedInputPaths: changedInputs.map((change) => change.path),
     resultDeltas,
   });
-  const objectiveDelta =
-    resultDeltas.find((delta) => delta.resultPath === objectiveResultPath) ?? resultDeltas[0]!;
-  const better = objectiveDelta.delta > 0 ? 'candidate' : objectiveDelta.delta < 0 ? 'baseline' : 'neither';
+  const objectiveOutcomes = objectives.map((objective) => {
+    const delta = resultDeltas.find((item) => item.resultPath === objective.resultPath);
+    if (!delta) {
+      throw new Phase1aValidationError(
+        `Declared objective ${objective.id} does not resolve to a numeric result path ${objective.resultPath}.`,
+      );
+    }
+    const preferred =
+      delta.delta === 0
+        ? 'tie'
+        : objective.direction === 'maximize'
+          ? delta.delta > 0
+            ? 'candidate'
+            : 'baseline'
+          : delta.delta < 0
+            ? 'candidate'
+            : 'baseline';
+    return { ...objective, baseline: delta.baseline, candidate: delta.candidate, delta: delta.delta, preferred };
+  });
+  const baselineGateMap = new Map(baseline.hardGates.map((gate) => [gate.constraint.id, gate]));
+  const candidateGateMap = new Map(candidate.hardGates.map((gate) => [gate.constraint.id, gate]));
+  const gateIds = [...new Set([...baselineGateMap.keys(), ...candidateGateMap.keys()])].sort();
+  const hardGateChanges = gateIds.map((constraintId) => {
+    const baselinePassed = baselineGateMap.get(constraintId)?.passed ?? false;
+    const candidatePassed = candidateGateMap.get(constraintId)?.passed ?? false;
+    return {
+      constraintId,
+      baselinePassed,
+      candidatePassed,
+      changed: baselinePassed !== candidatePassed,
+    };
+  });
+  const baselinePasses = baseline.hardGates.length > 0 && baseline.hardGates.every((gate) => gate.passed);
+  const candidatePasses = candidate.hardGates.length > 0 && candidate.hardGates.every((gate) => gate.passed);
+  const candidateWins = objectiveOutcomes.some((outcome) => outcome.preferred === 'candidate');
+  const baselineWins = objectiveOutcomes.some((outcome) => outcome.preferred === 'baseline');
+  let dominance: Phase1aComparison['dominance'];
+  if (baselinePasses && !candidatePasses) dominance = 'baseline-dominates';
+  else if (candidatePasses && !baselinePasses) dominance = 'candidate-dominates';
+  else if (!baselinePasses && !candidatePasses) dominance = 'both-fail-gates';
+  else if (candidateWins && baselineWins) dominance = 'tradeoff';
+  else if (candidateWins) dominance = 'candidate-dominates';
+  else if (baselineWins) dominance = 'baseline-dominates';
+  else dominance = 'equivalent';
+  const summary =
+    dominance === 'candidate-dominates'
+      ? 'The candidate performed better across the declared objectives without losing a hard gate.'
+      : dominance === 'baseline-dominates'
+        ? 'The baseline performed better across the declared objectives without losing a hard gate.'
+        : dominance === 'tradeoff'
+          ? 'The comparison is a tradeoff: each design is better on at least one declared objective.'
+          : dominance === 'both-fail-gates'
+            ? 'Neither design is eligible to dominate because both fail one or more hard gates.'
+            : 'The designs are equivalent across the declared objectives and hard gates.';
   return {
     ...controlled,
     comparable: true,
+    dominance,
     changedInputs,
     resultDeltas,
-    hardGateChanges: baseline.hardGates.map((gate, index) => ({
-      constraintId: gate.constraint.id,
-      baselinePassed: gate.passed,
-      candidatePassed: candidate.hardGates[index]?.passed ?? false,
-      changed: gate.passed !== (candidate.hardGates[index]?.passed ?? false),
-    })),
+    objectiveOutcomes,
+    hardGateChanges,
     readinessDifferences: {
       evidenceReadiness: {
         baseline: baseline.claim.evidenceReadiness,
@@ -827,7 +915,7 @@ export function comparePhase1aEvaluations(
       candidate: candidate.claim.proofObligations.filter((item) => item.status === 'open'),
     },
     explanation: {
-      summary: `${better === 'neither' ? 'Neither candidate' : `The ${better}`} performed better on ${objectiveDelta.resultPath}; the candidate delta is ${objectiveDelta.delta}.`,
+      summary,
       primaryReasons: changedInputs
         .filter((change) => change.path.startsWith('submission.materialPayload'))
         .map((change) => `${change.path} changed from ${String(change.baseline)} to ${String(change.candidate)}.`),
