@@ -56,4 +56,13 @@ describe('synthetic retractable solar deployment REP evaluator', () => {
       /stow trigger must be below/i,
     );
   });
+
+  it('rejects a submission that changes the controlled Scenario environment', () => {
+    const input = createSyntheticSolarDeploymentRepMaterialInput(passingPayload());
+    const changed = structuredClone(input);
+    const payload = changed.submission.materialPayload as ReturnType<typeof passingPayload>;
+    payload.environment.incidenceAngleDeg = 35;
+
+    expect(() => evaluateSyntheticSolarDeploymentRep(changed)).toThrow(/controlled Scenario environment/i);
+  });
 });
