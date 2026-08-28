@@ -8,6 +8,7 @@ import { healthResponse } from './routes/health.js';
 import { validateProjectBody } from './routes/validate.js';
 import { versionResponse } from './routes/version.js';
 import { Phase1aService, Phase1aValidationError } from './phase1a/service.js';
+import { buildStemSystemProjection } from './phase1a/stemSystemProjection.js';
 import { LocalFileSystemStorage } from './storage/localFileSystemStorage.js';
 
 export const PHASE1A_LOCAL_HOST = '127.0.0.1';
@@ -71,6 +72,34 @@ export function createGospServer(options: { phase1a?: Phase1aService } = {}) {
               ? { id: challengeId, revision: challengeRevision }
               : undefined,
           ),
+        );
+      }
+      if (req.method === 'GET' && requestUrl.pathname === '/api/phase1a/stem-system') {
+        const challengeId = requestUrl.searchParams.get('challengeId');
+        const challengeRevision = requestUrl.searchParams.get('challengeRevision');
+        if ((challengeId === null) !== (challengeRevision === null)) {
+          throw new Phase1aValidationError(
+            'STEM system selection requires challengeId and challengeRevision together.',
+          );
+        }
+        const workspace = await phase1a.getWorkspace(
+          undefined,
+          challengeId && challengeRevision
+            ? { id: challengeId, revision: challengeRevision }
+            : undefined,
+        );
+        return sendJson(
+          res,
+          200,
+          buildStemSystemProjection({
+            challenge: workspace.challenge.record,
+            scenario: workspace.challenge.scenario,
+            model: workspace.challenge.model,
+            workflow: workspace.challenge.workflow,
+            requirements: workspace.challenge.requirements,
+            constraints: workspace.challenge.constraints,
+            referenceEvaluation: workspace.evaluations[0]!,
+          }),
         );
       }
       if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/challenges') {
