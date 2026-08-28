@@ -36,6 +36,7 @@ describe('createGospServer', () => {
       expect(workspace.availableEvaluators.map((item) => item.id)).toEqual([
         'evaluator.sandbox-001',
         'evaluator.clean-water.educational-screening',
+        'evaluator.solar-deployment.synthetic-screening',
       ]);
       expect(workspace.evaluations.map((item) => item.evaluation.result.value)).toEqual([53, 23]);
 
@@ -82,6 +83,16 @@ describe('createGospServer', () => {
         ],
       });
 
+      const solar = workspace.availableEvaluators[2]!;
+      const solarResponse = await fetch(
+        `${baseUrl}/api/phase1a/workspace?challengeId=${encodeURIComponent(solar.challengeRef.id)}&challengeRevision=${encodeURIComponent(solar.challengeRef.revision)}`,
+      );
+      expect(solarResponse.status).toBe(200);
+      await expect(solarResponse.json()).resolves.toMatchObject({
+        evaluator: { id: 'evaluator.solar-deployment.synthetic-screening' },
+        comparison: { dominance: 'tradeoff' },
+      });
+
       const evidenceResponse = await fetch(
         `${baseUrl}/api/phase1a/evidence-package?submissionId=submission.sandbox-001.reference&revision=1.0.0`,
       );
@@ -107,7 +118,7 @@ describe('createGospServer', () => {
         body: JSON.stringify(archive),
       });
       expect(restoreResponse.status).toBe(200);
-      await expect(restoreResponse.json()).resolves.toEqual({ challenges: 2, submissions: 4 });
+      await expect(restoreResponse.json()).resolves.toEqual({ challenges: 3, submissions: 6 });
     });
   });
 
