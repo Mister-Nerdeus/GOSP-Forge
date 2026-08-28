@@ -123,7 +123,7 @@ export const DEFAULT_SYNTHETIC_SOLAR_DEPLOYMENT_PAYLOAD: SolarDeploymentPayload 
     irradianceWm2: 900,
     cellTemperatureC: 45,
     incidenceAngleDeg: 20,
-    windSpeedMps: 12,
+    windSpeedMps: 8,
     modeledWindRiseRateMpsPerSecond: 1.5,
   },
   deployment: {
@@ -245,6 +245,7 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
           'Power uses a simplified incidence, temperature, soiling, and deployment-fraction relationship.',
           'Storm-stow timing uses a synthetic linear wind-rise assumption.',
           'Cleaning recovery is an assumed model input, not measured cleaning performance.',
+          'The screening model does not assign a cost or availability penalty to earlier stow-trigger choices.',
         ],
       },
       solver: solverIdentity,
@@ -335,8 +336,12 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
   );
   const bendRadiusMarginM =
     payload.deployment.coreRadiusM - payload.panel.minimumBendRadiusM;
+  const stowStartWindMps = Math.max(
+    payload.environment.windSpeedMps,
+    payload.control.windStowTriggerMps,
+  );
   const availableTimeSeconds =
-    (payload.control.hazardWindThresholdMps - payload.environment.windSpeedMps) /
+    (payload.control.hazardWindThresholdMps - stowStartWindMps) /
     payload.environment.modeledWindRiseRateMpsPerSecond;
   const requiredResponseTimeSeconds =
     payload.control.sensorLatencySeconds +
@@ -361,6 +366,7 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
         stowTimeSeconds: payload.deployment.stowTimeSeconds,
       },
       storm: {
+        stowStartWindMps,
         availableTimeSeconds,
         requiredResponseTimeSeconds,
         stowTimeMarginSeconds,
@@ -368,7 +374,7 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
     },
     explainability: {
       explanation:
-        'This synthetic educational screening model estimates solar power from irradiance, incidence angle, temperature, soiling, and deployed fraction; separately checks roll-core bend-radius margin and a simplified storm-stow timing margin under the exact controlled Scenario panel and environment.',
+        'This synthetic educational screening model estimates solar power from controlled irradiance, incidence angle, temperature, and soiling plus candidate deployed fraction; separately checks roll-core bend-radius margin and a simplified storm-stow timing margin under the exact controlled Scenario panel and environment.',
       equations: [
         {
           id: 'solar.power',
@@ -398,11 +404,12 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
         {
           id: 'solar.stow-margin',
           expression:
-            'stowTimeMargin = ((hazardWind - currentWind) / modeledWindRiseRate) - (sensorLatency + controllerLatency + stowTime)',
-          description: 'Simplified timing margin before the controlled synthetic rising-wind hazard threshold is reached.',
+            'stowStartWind = max(currentWind, triggerWind); stowTimeMargin = ((hazardWind - stowStartWind) / modeledWindRiseRate) - (sensorLatency + controllerLatency + stowTime)',
+          description: 'Simplified timing margin from the later of the current wind state or candidate trigger point to the controlled synthetic hazard threshold.',
           variables: {
             hazardWind: 'Controlled synthetic hazard threshold.',
             currentWind: 'Controlled synthetic current wind speed.',
+            triggerWind: 'Candidate modeled stow trigger.',
             modeledWindRiseRate: 'Controlled assumed linear wind-speed increase rate.',
             sensorLatency: 'Candidate modeled sensor latency.',
             controllerLatency: 'Candidate modeled control latency.',
@@ -416,6 +423,7 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
         { id: 'pre-clean-power', value: beforeCleaning.instantaneousPowerW, unit: 'W' },
         { id: 'post-clean-power', value: afterCleaning.instantaneousPowerW, unit: 'W' },
         { id: 'bend-radius-margin', value: bendRadiusMarginM, unit: 'm' },
+        { id: 'stow-start-wind', value: stowStartWindMps, unit: 'm/s' },
         { id: 'available-stow-time', value: availableTimeSeconds, unit: 's' },
         { id: 'required-response-time', value: requiredResponseTimeSeconds, unit: 's' },
         { id: 'stow-time-margin', value: stowTimeMarginSeconds, unit: 's' },
