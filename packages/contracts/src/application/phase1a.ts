@@ -23,12 +23,31 @@ export type Phase1aWorkspaceSelection = {
   candidate: Phase1aSubmissionIdentity;
 };
 
+export type Phase1aObjective = {
+  id: string;
+  label: string;
+  resultPath: string;
+  direction: 'maximize' | 'minimize';
+  unit?: string;
+};
+
+export type Phase1aGateDefinition = {
+  id: string;
+  statement: string;
+  resultPath: string;
+  operator: 'eq' | 'ne' | 'lt' | 'lte' | 'gt' | 'gte';
+  expected: string | number | boolean;
+  unit?: string;
+};
+
 export type Phase1aEvaluatorSummary = {
   id: string;
   title: string;
   description: string;
   challengeRef: { kind: 'Challenge'; id: string; revision: string };
   modelRef: { kind: 'Model'; id: string; revision: string };
+  objectives: Phase1aObjective[];
+  gateDefinitions: Phase1aGateDefinition[];
   defaultSelection: Phase1aWorkspaceSelection;
 };
 
@@ -36,6 +55,7 @@ export type Phase1aHardGate = {
   constraint: CanonicalConstraint;
   resultPath: string;
   actual: unknown;
+  expected: unknown;
   passed: boolean;
 };
 
@@ -57,10 +77,23 @@ export type Phase1aEvaluationView = {
   limitations: string[];
 };
 
+export type Phase1aObjectiveOutcome = Phase1aObjective & {
+  baseline: number;
+  candidate: number;
+  delta: number;
+  preferred: 'baseline' | 'candidate' | 'tie';
+};
+
 export type Phase1aComparison = {
   baselineEvaluationRef: { kind: 'Evaluation'; id: string; revision: string };
   candidateEvaluationRef: { kind: 'Evaluation'; id: string; revision: string };
   comparable: true;
+  dominance:
+    | 'baseline-dominates'
+    | 'candidate-dominates'
+    | 'tradeoff'
+    | 'equivalent'
+    | 'both-fail-gates';
   fixedInputPaths: string[];
   changedInputPaths: string[];
   changedInputs: Array<{ path: string; baseline: unknown; candidate: unknown }>;
@@ -71,6 +104,7 @@ export type Phase1aComparison = {
     delta: number;
     interpretation: string;
   }>;
+  objectiveOutcomes: Phase1aObjectiveOutcome[];
   hardGateChanges: Array<{
     constraintId: string;
     baselinePassed: boolean;
