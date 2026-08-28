@@ -202,6 +202,30 @@ describe('Phase1aService canonical product loop', () => {
     expect(workspace.evaluations[0]!.limitations.join(' ')).toMatch(/not potable-water/i);
   });
 
+  it('runs the synthetic retractable solar evaluator with multiple objectives and engineering hard gates', async () => {
+    const service = new Phase1aService(undefined, () => '2026-08-28T21:00:00.000Z');
+    const initial = await service.getWorkspace();
+    const solar = initial.availableEvaluators.find((item) => item.id.includes('solar-deployment'))!;
+    const workspace = await service.getWorkspace(undefined, {
+      id: solar.challengeRef.id,
+      revision: solar.challengeRef.revision,
+    });
+
+    expect(workspace.evaluator.id).toBe('evaluator.solar-deployment.synthetic-screening');
+    expect(workspace.evaluator.objectives).toHaveLength(6);
+    expect(workspace.evaluations.every((item) => item.hardGates.every((gate) => gate.passed))).toBe(true);
+    expect(workspace.comparison.dominance).toBe('tradeoff');
+    expect(workspace.comparison.objectiveOutcomes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'instantaneous-power', preferred: 'baseline' }),
+        expect.objectContaining({ id: 'storm-stow-margin', preferred: 'candidate' }),
+        expect.objectContaining({ id: 'deployment-time', preferred: 'baseline' }),
+        expect.objectContaining({ id: 'stow-time', preferred: 'candidate' }),
+      ]),
+    );
+    expect(workspace.evaluations[0]!.limitations.join(' ')).toMatch(/synthetic educational/i);
+  });
+
   it('exports and independently validates a material-hashed portable evidence package', async () => {
     const service = new Phase1aService(undefined, () => '2026-08-14T20:00:00.000Z');
     const evidencePackage = await service.exportEvidencePackage(
@@ -231,8 +255,8 @@ describe('Phase1aService canonical product loop', () => {
     const restored = new Phase1aService();
 
     await expect(restored.importWorkspaceArchive(archive)).resolves.toEqual({
-      challenges: 2,
-      submissions: 4,
+      challenges: 3,
+      submissions: 6,
     });
     await expect(restored.getWorkspace()).resolves.toMatchObject({
       submissions: expect.arrayContaining([
