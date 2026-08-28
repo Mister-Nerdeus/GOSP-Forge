@@ -4,7 +4,7 @@ Status: **Working educational challenge on `cipher/solar-multiobjective`; not ph
 
 ## Purpose
 
-This challenge turns the retractable flexible-solar concept into a reproducible GOSP Forge STEM exercise. Ten school teams may explore different deployment and control designs while the first digital benchmark holds the panel specification, weather/environment, soiling condition, and hazard threshold fixed.
+This challenge turns the retractable flexible-solar concept into a reproducible GOSP Forge STEM exercise. Ten school teams may explore different deployment and control designs while the first digital benchmark holds the panel specification, weather/environment, starting soiling condition, and hazard threshold fixed.
 
 The first digital round uses **synthetic educational values only**. It does not establish that any manufacturer panel can safely be rolled, that a mechanism is structurally safe, or that the modeled cleaning or storm behavior will occur in the real world.
 
@@ -14,7 +14,7 @@ The first digital round uses **synthetic educational values only**. It does not 
 
 ## Why the environment is controlled
 
-Teams must not improve a score by silently changing sunlight, wind, panel rating, bend specification, or starting soiling. Those belong to the controlled Scenario in v0.1.
+Teams must not improve a score by silently changing sunlight, wind, panel rating, bend specification, starting soiling, or the hazard threshold. Those belong to the controlled Scenario in v0.1.
 
 Teams may initially vary design choices such as:
 
@@ -38,7 +38,7 @@ A candidate cannot dominate if it fails a hard gate.
    `coreRadius - minimumBendRadius >= 0`.
 3. Modeled storm-stow timing margin is nonnegative.
 4. The simplified temperature factor remains positive.
-5. The submitted panel/environment/soiling/hazard boundary matches the controlled Scenario exactly.
+5. The submitted panel/environment/starting-soiling/hazard boundary matches the controlled Scenario exactly.
 
 Passing these gates does **not** mean a physical design is safe. It only means the candidate passes the current synthetic screening rules.
 
@@ -83,8 +83,10 @@ This checks only the stated geometric bend-radius condition. It does not model l
 ### Storm-stow timing
 
 ```text
+stowStartWind = max(currentWind, windStowTrigger)
+
 availableTime =
-  (hazardWindThreshold - currentWind)
+  (hazardWindThreshold - stowStartWind)
   / modeledWindRiseRate
 
 requiredResponseTime =
@@ -96,11 +98,13 @@ stowTimeMargin =
   availableTime - requiredResponseTime
 ```
 
-The wind-rise rate is synthetic in v0.1. This is a controls/timing exercise, not a weather forecast or safety certification.
+The trigger is a candidate design choice; the starting wind, wind-rise rate, and hazard threshold are controlled synthetic conditions. If the current wind is already above a proposed trigger, the model does not award extra time that has already passed.
+
+The wind-rise rate is synthetic in v0.1. The model also does not yet assign an energy-production or nuisance-stow penalty to choosing a more conservative trigger. This is a controls/timing exercise, not a weather forecast or safety certification.
 
 ### Cleaning recovery
 
-The model reduces the starting synthetic soiling loss by a submitted modeled cleaning-recovery fraction, bounded at zero soiling loss, then recomputes screened power.
+The model reduces the controlled starting synthetic soiling loss by a submitted modeled cleaning-recovery fraction, bounded at zero soiling loss, then recomputes screened power.
 
 This is an assumption to investigate. It is not measured cleaning effectiveness.
 
