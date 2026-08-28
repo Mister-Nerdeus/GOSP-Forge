@@ -19,7 +19,7 @@ describe('synthetic retractable solar deployment REP evaluator', () => {
     const result = first.evaluation.result as {
       power: { instantaneousPowerW: number; cleaningRecoveredPowerW: number };
       deployment: { bendRadiusMarginM: number };
-      storm: { stowTimeMarginSeconds: number };
+      storm: { stowStartWindMps: number; stowTimeMarginSeconds: number };
     };
 
     expect(first.materialInputHash).toBe(second.materialInputHash);
@@ -27,6 +27,7 @@ describe('synthetic retractable solar deployment REP evaluator', () => {
     expect(result.power.instantaneousPowerW).toBeGreaterThan(0);
     expect(result.power.cleaningRecoveredPowerW).toBeGreaterThan(0);
     expect(result.deployment.bendRadiusMarginM).toBeCloseTo(0.025, 8);
+    expect(result.storm.stowStartWindMps).toBe(12);
     expect(result.storm.stowTimeMarginSeconds).toBeCloseTo(6, 8);
     expect(first.evaluation.explainability.equations.map((equation) => equation.id)).toEqual(
       expect.arrayContaining(['solar.power', 'solar.bend-margin', 'solar.stow-margin']),
@@ -46,6 +47,37 @@ describe('synthetic retractable solar deployment REP evaluator', () => {
 
     expect(result.deployment.bendRadiusMarginM).toBeLessThan(0);
     expect(result.storm.stowTimeMarginSeconds).toBeLessThan(0);
+  });
+
+  it('uses the candidate stow trigger when it is above the controlled current wind', () => {
+    const baselinePayload = passingPayload();
+    const baseline = evaluateSyntheticSolarDeploymentRep(
+      createSyntheticSolarDeploymentRepMaterialInput(baselinePayload),
+    ).evaluation.result as { storm: { stowTimeMarginSeconds: number } };
+    const earlierTriggerInput = createSyntheticSolarDeploymentRepMaterialInput(baselinePayload);
+    const earlierTrigger = structuredClone(earlierTriggerInput);
+    const payload = earlierTrigger.submission.materialPayload as ReturnType<typeof passingPayload>;
+    payload.control.windStowTriggerMps = 10;
+    const candidate = evaluateSyntheticSolarDeploymentRep(earlierTrigger).evaluation.result as {
+      storm: { stowStartWindMps: number; stowTimeMarginSeconds: number };
+    };
+
+    expect(candidate.storm.stowStartWindMps).toBe(10);
+    expect(candidate.storm.stowTimeMarginSeconds).toBeGreaterThan(
+      baseline.storm.stowTimeMarginSeconds,
+    );
+  });
+
+  it('does not award time before the current wind state when the trigger is already behind it', () => {
+    const input = createSyntheticSolarDeploymentRepMaterialInput(passingPayload());
+    const changed = structuredClone(input);
+    const payload = changed.submission.materialPayload as ReturnType<typeof passingPayload>;
+    payload.control.windStowTriggerMps = 4;
+    const result = evaluateSyntheticSolarDeploymentRep(changed).evaluation.result as {
+      storm: { stowStartWindMps: number };
+    };
+
+    expect(result.storm.stowStartWindMps).toBe(8);
   });
 
   it('rejects a stow trigger at or above the synthetic hazard threshold', () => {
