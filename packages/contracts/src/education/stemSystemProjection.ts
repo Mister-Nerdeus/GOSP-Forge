@@ -48,9 +48,9 @@ export const StemSystemProjectionSchema = z.object({
     constraints: z.array(z.object({
       id: z.string().min(1),
       statement: z.string().min(1),
-      parameter: z.string().min(1),
-      operator: z.string().min(1),
-      value: CanonicalJsonValueSchema,
+      parameter: z.string().min(1).optional(),
+      operator: z.string().min(1).optional(),
+      value: CanonicalJsonValueSchema.optional(),
       unit: z.string().min(1).optional(),
     })).default([]),
   }),
