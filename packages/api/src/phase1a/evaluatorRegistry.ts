@@ -4,6 +4,8 @@ import {
   SubmissionSchema,
   type Challenge,
   type Evaluation,
+  type Phase1aGateDefinition,
+  type Phase1aObjective,
   type RepEvaluationResult,
   type RepMaterialInput,
   type Submission,
@@ -22,7 +24,8 @@ export type Phase1aEvaluatorDefinition = {
   description: string;
   template: RepMaterialInput;
   seedSubmissions: Submission[];
-  objectiveResultPath: string;
+  objectives: Phase1aObjective[];
+  gates: Phase1aGateDefinition[];
   limitations: string[];
   evaluate(input: RepMaterialInput): RepEvaluationResult;
   claimStatement(evaluation: Evaluation): string;
@@ -41,7 +44,23 @@ function sandboxDefinition(): Phase1aEvaluatorDefinition {
     description: 'Synthetic reference evaluator for deterministic REP and controlled comparison.',
     template,
     seedSubmissions: [template.submission, candidate],
-    objectiveResultPath: 'result.value',
+    objectives: [
+      {
+        id: 'weighted-sum',
+        label: 'Weighted sum',
+        resultPath: 'result.value',
+        direction: 'maximize',
+      },
+    ],
+    gates: [
+      {
+        id: 'valid-completion',
+        statement: 'The Submission must pass canonical REP and registered evaluator validation and complete evaluation.',
+        resultPath: 'evaluation.status',
+        operator: 'eq',
+        expected: 'completed',
+      },
+    ],
     limitations: [
       'Synthetic deterministic benchmark only; it does not establish physical validity.',
       'Local replay is not independent external reproduction.',
@@ -91,7 +110,24 @@ function cleanWaterDefinition(): Phase1aEvaluatorDefinition {
     description: 'Vertical-owned level-1 flow, power, and scorecard evaluator with explicit non-claims.',
     template,
     seedSubmissions: [template.submission, parsedCandidate],
-    objectiveResultPath: 'result.flow.cleanWaterLiters',
+    objectives: [
+      {
+        id: 'clean-water-volume',
+        label: 'Modeled clean-water volume',
+        resultPath: 'result.flow.cleanWaterLiters',
+        direction: 'maximize',
+        unit: 'L',
+      },
+    ],
+    gates: [
+      {
+        id: 'valid-completion',
+        statement: 'The Submission must pass canonical REP and registered evaluator validation and complete evaluation.',
+        resultPath: 'evaluation.status',
+        operator: 'eq',
+        expected: 'completed',
+      },
+    ],
     limitations: [
       'Educational level-1 screening only; inputs are synthetic and not field observations.',
       'The calculation is not potable-water, laboratory, professional, certification, or regulatory validation.',
@@ -132,54 +168,54 @@ export class Phase1aEvaluatorRegistry {
 
   requirementsFor(challenge: Challenge, definition: Phase1aEvaluatorDefinition) {
     const target = { kind: 'Challenge' as const, id: challenge.id, revision: challenge.revision };
-    return [
-      {
-        record: RequirementSchema.parse({
-          kind: 'Requirement',
-          id: `requirement.${challenge.id}.valid-input`,
-          revision: challenge.revision,
-          provenance,
-          relationships: [{ type: 'applies-to', target, description: 'Input validity requirement.' }],
-          statement: 'A Submission shall pass canonical validation and its registered evaluator input checks.',
-          obligation: 'shall',
-          status: 'accepted',
-          verificationMethod: 'analysis',
-        }),
-        role: 'hard-gate' as const,
-      },
-      {
-        record: RequirementSchema.parse({
-          kind: 'Requirement',
-          id: `requirement.${challenge.id}.objective`,
-          revision: challenge.revision,
-          provenance,
-          relationships: [{ type: 'applies-to', target, description: 'Controlled comparison objective.' }],
-          statement: `A candidate should improve ${definition.objectiveResultPath} within fixed comparison boundaries.`,
-          obligation: 'should',
-          status: 'accepted',
-          verificationMethod: 'analysis',
-        }),
-        role: 'objective' as const,
-      },
-    ];
-  }
-
-  constraintsFor(challenge: Challenge) {
-    const target = { kind: 'Challenge' as const, id: challenge.id, revision: challenge.revision };
-    return [
-      CanonicalConstraintSchema.parse({
-        kind: 'Constraint',
-        id: `constraint.${challenge.id}.valid-completion`,
+    const validityRequirement = {
+      record: RequirementSchema.parse({
+        kind: 'Requirement',
+        id: `requirement.${challenge.id}.valid-input`,
         revision: challenge.revision,
         provenance,
-        relationships: [{ type: 'applies-to', target, description: 'Canonical evaluation hard gate.' }],
-        statement: 'The Submission must pass canonical REP and registered evaluator validation and complete evaluation.',
-        constraintType: 'logical',
-        parameter: 'evaluation.status',
-        operator: 'eq',
-        value: 'completed',
+        relationships: [{ type: 'applies-to', target, description: 'Input validity requirement.' }],
+        statement: 'A Submission shall pass canonical validation and its registered evaluator input checks.',
+        obligation: 'shall',
+        status: 'accepted',
+        verificationMethod: 'analysis',
+      }),
+      role: 'hard-gate' as const,
+    };
+    const objectives = definition.objectives.map((objective) => ({
+      record: RequirementSchema.parse({
+        kind: 'Requirement',
+        id: `requirement.${challenge.id}.objective.${objective.id}`,
+        revision: challenge.revision,
+        provenance,
+        relationships: [{ type: 'applies-to', target, description: 'Controlled comparison objective.' }],
+        statement: `A candidate should ${objective.direction} ${objective.resultPath} within fixed comparison boundaries.`,
+        obligation: 'should',
+        status: 'accepted',
+        verificationMethod: 'analysis',
+      }),
+      role: 'objective' as const,
+    }));
+    return [validityRequirement, ...objectives];
+  }
+
+  constraintsFor(challenge: Challenge, definition: Phase1aEvaluatorDefinition) {
+    const target = { kind: 'Challenge' as const, id: challenge.id, revision: challenge.revision };
+    return definition.gates.map((gate) =>
+      CanonicalConstraintSchema.parse({
+        kind: 'Constraint',
+        id: `constraint.${challenge.id}.${gate.id}`,
+        revision: challenge.revision,
+        provenance,
+        relationships: [{ type: 'applies-to', target, description: 'Registered evaluator hard gate.' }],
+        statement: gate.statement,
+        constraintType: typeof gate.expected === 'number' ? 'numeric' : 'logical',
+        parameter: gate.resultPath,
+        operator: gate.operator,
+        value: gate.expected,
+        unit: gate.unit,
         status: 'active',
       }),
-    ];
+    );
   }
 }
