@@ -153,7 +153,7 @@ function solarDeploymentDefinition(): Phase1aEvaluatorDefinition {
   const candidate = structuredClone(template.submission);
   candidate.id = 'submission.solar-deployment.synthetic.tradeoff-candidate';
   const payload = candidate.materialPayload as typeof referencePayload;
-  payload.environment.incidenceAngleDeg = 30;
+  payload.deployment.deployedFraction = 0.9;
   payload.deployment.coreRadiusM = 0.12;
   payload.deployment.deployTimeSeconds = 30;
   payload.deployment.stowTimeSeconds = 12;
