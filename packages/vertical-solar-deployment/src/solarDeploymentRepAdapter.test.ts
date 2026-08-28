@@ -65,4 +65,35 @@ describe('synthetic retractable solar deployment REP evaluator', () => {
 
     expect(() => evaluateSyntheticSolarDeploymentRep(changed)).toThrow(/controlled Scenario environment/i);
   });
+
+  it('rejects a submission that changes the controlled panel specification', () => {
+    const input = createSyntheticSolarDeploymentRepMaterialInput(passingPayload());
+    const changed = structuredClone(input);
+    const payload = changed.submission.materialPayload as ReturnType<typeof passingPayload>;
+    payload.panel.ratedPowerW = 250;
+
+    expect(() => evaluateSyntheticSolarDeploymentRep(changed)).toThrow(/controlled Scenario panel specification/i);
+  });
+
+  it('rejects a submission that changes the controlled starting soiling condition', () => {
+    const input = createSyntheticSolarDeploymentRepMaterialInput(passingPayload());
+    const changed = structuredClone(input);
+    const payload = changed.submission.materialPayload as ReturnType<typeof passingPayload>;
+    payload.cleaning.soilingLossFraction = 0.05;
+
+    expect(() => evaluateSyntheticSolarDeploymentRep(changed)).toThrow(/controlled Scenario soiling condition/i);
+  });
+
+  it('permits candidate deployment and controller choices inside the controlled boundary', () => {
+    const input = createSyntheticSolarDeploymentRepMaterialInput(passingPayload());
+    const changed = structuredClone(input);
+    const payload = changed.submission.materialPayload as ReturnType<typeof passingPayload>;
+    payload.deployment.coreRadiusM = 0.12;
+    payload.deployment.deployedFraction = 0.9;
+    payload.deployment.stowTimeSeconds = 12;
+    payload.control.sensorLatencySeconds = 0.5;
+    payload.cleaning.modeledCleaningRecoveryFraction = 0.1;
+
+    expect(() => evaluateSyntheticSolarDeploymentRep(changed)).not.toThrow();
+  });
 });
