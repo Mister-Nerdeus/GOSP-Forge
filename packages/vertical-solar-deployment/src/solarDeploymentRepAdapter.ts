@@ -13,7 +13,7 @@ import {
 export const SOLAR_DEPLOYMENT_REP_CONTRACT_DESCRIPTOR = {
   id: 'gosp.vertical.solar-deployment.rep-contract',
   revision: '0.1.0',
-  input: 'synthetic flexible-panel, environment, deployment, control, and cleaning parameters',
+  input: 'synthetic flexible-panel design plus a controlled environment and hazard threshold',
   output: 'screened solar power, cleaning recovery, bend-radius margin, and storm-stow timing margin',
 } as const;
 
@@ -41,38 +41,48 @@ const solarDeploymentSolverSourceSpec = {
 export const solarDeploymentSolverSourceManifest = () =>
   loadSourceImplementationManifest(solarDeploymentSolverSourceSpec);
 
+export const SolarPanelSchema = z.object({
+  ratedPowerW: z.number().finite().positive(),
+  minimumBendRadiusM: z.number().finite().nonnegative(),
+  massKg: z.number().finite().positive(),
+  temperatureCoefficientPerC: z.number().finite(),
+  referenceCellTemperatureC: z.number().finite(),
+});
+
+export const SolarEnvironmentSchema = z.object({
+  irradianceWm2: z.number().finite().nonnegative(),
+  cellTemperatureC: z.number().finite(),
+  incidenceAngleDeg: z.number().finite().min(0).max(180),
+  windSpeedMps: z.number().finite().nonnegative(),
+  modeledWindRiseRateMpsPerSecond: z.number().finite().positive(),
+});
+
+export const SolarDeploymentDesignSchema = z.object({
+  coreRadiusM: z.number().finite().nonnegative(),
+  deployedFraction: z.number().finite().min(0).max(1),
+  deployTimeSeconds: z.number().finite().positive(),
+  stowTimeSeconds: z.number().finite().positive(),
+});
+
+export const SolarControlDesignSchema = z.object({
+  windStowTriggerMps: z.number().finite().nonnegative(),
+  hazardWindThresholdMps: z.number().finite().nonnegative(),
+  sensorLatencySeconds: z.number().finite().nonnegative(),
+  controllerLatencySeconds: z.number().finite().nonnegative(),
+});
+
+export const SolarCleaningDesignSchema = z.object({
+  soilingLossFraction: z.number().finite().min(0).max(1),
+  modeledCleaningRecoveryFraction: z.number().finite().min(0).max(1),
+});
+
 export const SolarDeploymentPayloadSchema = z
   .object({
-    panel: z.object({
-      ratedPowerW: z.number().finite().positive(),
-      minimumBendRadiusM: z.number().finite().nonnegative(),
-      massKg: z.number().finite().positive(),
-      temperatureCoefficientPerC: z.number().finite(),
-      referenceCellTemperatureC: z.number().finite(),
-    }),
-    environment: z.object({
-      irradianceWm2: z.number().finite().nonnegative(),
-      cellTemperatureC: z.number().finite(),
-      incidenceAngleDeg: z.number().finite().min(0).max(180),
-      windSpeedMps: z.number().finite().nonnegative(),
-      modeledWindRiseRateMpsPerSecond: z.number().finite().positive(),
-    }),
-    deployment: z.object({
-      coreRadiusM: z.number().finite().nonnegative(),
-      deployedFraction: z.number().finite().min(0).max(1),
-      deployTimeSeconds: z.number().finite().positive(),
-      stowTimeSeconds: z.number().finite().positive(),
-    }),
-    control: z.object({
-      windStowTriggerMps: z.number().finite().nonnegative(),
-      hazardWindThresholdMps: z.number().finite().nonnegative(),
-      sensorLatencySeconds: z.number().finite().nonnegative(),
-      controllerLatencySeconds: z.number().finite().nonnegative(),
-    }),
-    cleaning: z.object({
-      soilingLossFraction: z.number().finite().min(0).max(1),
-      modeledCleaningRecoveryFraction: z.number().finite().min(0).max(1),
-    }),
+    panel: SolarPanelSchema,
+    environment: SolarEnvironmentSchema,
+    deployment: SolarDeploymentDesignSchema,
+    control: SolarControlDesignSchema,
+    cleaning: SolarCleaningDesignSchema,
   })
   .superRefine((value, context) => {
     if (value.control.windStowTriggerMps >= value.control.hazardWindThresholdMps) {
@@ -167,6 +177,11 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
     statement: 'The power, bend-radius, and storm-stow relationships are simplified screening models, not full structural or electrical validation.',
     material: true,
   };
+  const controlledScenarioAssumption = {
+    id: 'assumption.solar-deployment.controlled-environment',
+    statement: 'Candidate submissions must use the exact controlled environment and hazard threshold recorded in the Scenario; design variables may change only outside that fixed boundary.',
+    material: true,
+  };
 
   return RepMaterialInputSchema.parse({
     repVersion: '0.1.0',
@@ -177,7 +192,7 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
       provenance: syntheticProvenance,
       title: 'Synthetic retractable flexible-solar deployment challenge',
       problemStatement:
-        'Compare flexible-solar deployment concepts for modeled power, bend-radius margin, storm-stow timing, and cleaning recovery using synthetic educational inputs.',
+        'Compare flexible-solar deployment concepts for modeled power, bend-radius margin, storm-stow timing, and cleaning recovery using synthetic educational inputs under one controlled environment.',
       evaluationModelRef: canonicalRef('Model', modelId, SOLAR_DEPLOYMENT_SOLVER_DESCRIPTOR.revision),
       workflowRef: canonicalRef('Workflow', workflowId, SOLAR_DEPLOYMENT_REP_CONTRACT_DESCRIPTOR.revision),
       permittedScenarioRefs: [canonicalRef('Scenario', scenarioId)],
@@ -204,16 +219,10 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
       environment: parsedPayload.environment,
       componentData: [componentIdentity],
       operatingConditions: {
-        windStowTriggerMps: parsedPayload.control.windStowTriggerMps,
         hazardWindThresholdMps: parsedPayload.control.hazardWindThresholdMps,
       },
-      assumptions: [syntheticAssumption, reducedOrderAssumption],
-      parameters: {
-        panel: parsedPayload.panel,
-        deployment: parsedPayload.deployment,
-        control: parsedPayload.control,
-        cleaning: parsedPayload.cleaning,
-      },
+      assumptions: [syntheticAssumption, reducedOrderAssumption, controlledScenarioAssumption],
+      parameters: {},
       modelRef: canonicalRef('Model', modelId, SOLAR_DEPLOYMENT_SOLVER_DESCRIPTOR.revision),
       status: 'controlled',
     },
@@ -237,7 +246,7 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
       },
       solver: solverIdentity,
       contractIdentities: [contractIdentity],
-      assumptions: [syntheticAssumption, reducedOrderAssumption],
+      assumptions: [syntheticAssumption, reducedOrderAssumption, controlledScenarioAssumption],
       status: 'active',
     },
     workflow: {
@@ -247,7 +256,7 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
       provenance: syntheticProvenance,
       name: 'Synthetic solar deployment screening workflow',
       steps: [
-        { id: 'validate-inputs', name: 'Validate synthetic inputs', action: 'inspect' },
+        { id: 'validate-inputs', name: 'Validate synthetic inputs and Scenario boundary', action: 'inspect' },
         { id: 'power', name: 'Calculate modeled solar power', action: 'execute' },
         { id: 'bend', name: 'Calculate bend-radius margin', action: 'execute' },
         { id: 'stow', name: 'Calculate storm-stow timing margin', action: 'execute' },
@@ -259,7 +268,7 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
     runner: referenceRunnerIdentity(),
     contractIdentities: [contractIdentity],
     componentData: [componentIdentity],
-    materialAssumptions: [syntheticAssumption, reducedOrderAssumption],
+    materialAssumptions: [syntheticAssumption, reducedOrderAssumption, controlledScenarioAssumption],
     materialParameters: {
       vertical: 'solar-deployment',
       adapterRevision: SOLAR_DEPLOYMENT_REP_CONTRACT_DESCRIPTOR.revision,
@@ -286,8 +295,23 @@ function powerAtSoilingLoss(payload: SolarDeploymentPayload, soilingLossFraction
   return { incidenceFactor, temperatureFactor, soilingFactor, instantaneousPowerW };
 }
 
+function assertControlledScenarioBoundary(input: RepMaterialInput, payload: SolarDeploymentPayload) {
+  const scenarioEnvironment = SolarEnvironmentSchema.parse(input.compiledScenario.environment);
+  if (canonicalJson(scenarioEnvironment) !== canonicalJson(payload.environment)) {
+    throw new Error('Submission environment does not match the controlled Scenario environment.');
+  }
+  const scenarioHazardThreshold = input.compiledScenario.operatingConditions.hazardWindThresholdMps;
+  if (
+    typeof scenarioHazardThreshold !== 'number' ||
+    scenarioHazardThreshold !== payload.control.hazardWindThresholdMps
+  ) {
+    throw new Error('Submission hazard threshold does not match the controlled Scenario hazard threshold.');
+  }
+}
+
 function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluatorOutput {
   const payload = SolarDeploymentPayloadSchema.parse(input.submission.materialPayload);
+  assertControlledScenarioBoundary(input, payload);
   const beforeCleaning = powerAtSoilingLoss(payload, payload.cleaning.soilingLossFraction);
   const postCleaningSoilingLoss = Math.max(
     0,
@@ -333,7 +357,7 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
     },
     explainability: {
       explanation:
-        'This synthetic educational screening model estimates solar power from irradiance, incidence angle, temperature, soiling, and deployed fraction; separately checks roll-core bend-radius margin and a simplified storm-stow timing margin.',
+        'This synthetic educational screening model estimates solar power from irradiance, incidence angle, temperature, soiling, and deployed fraction; separately checks roll-core bend-radius margin and a simplified storm-stow timing margin under the exact controlled Scenario environment.',
       equations: [
         {
           id: 'solar.power',
@@ -342,13 +366,13 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
           description: 'Reduced analytical screening relationship for instantaneous panel power.',
           variables: {
             Prated: 'Synthetic panel rated power.',
-            irradiance: 'Synthetic plane-of-array irradiance input.',
-            angle: 'Synthetic incidence angle.',
+            irradiance: 'Synthetic controlled plane-of-array irradiance input.',
+            angle: 'Synthetic controlled incidence angle.',
             tempCoeff: 'Synthetic fractional temperature coefficient per degree C.',
-            cellTemp: 'Synthetic cell temperature.',
+            cellTemp: 'Synthetic controlled cell temperature.',
             referenceTemp: 'Synthetic reference cell temperature.',
             soilingLoss: 'Synthetic fractional soiling loss.',
-            deployedFraction: 'Fraction of the panel considered deployed.',
+            deployedFraction: 'Candidate fraction of the panel considered deployed.',
           },
         },
         {
@@ -356,7 +380,7 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
           expression: 'bendRadiusMargin = coreRadius - minimumBendRadius',
           description: 'Positive values satisfy the modeled minimum bend-radius check.',
           variables: {
-            coreRadius: 'Modeled roll-core radius.',
+            coreRadius: 'Candidate roll-core radius.',
             minimumBendRadius: 'Synthetic minimum panel bend-radius input.',
           },
         },
@@ -364,14 +388,14 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
           id: 'solar.stow-margin',
           expression:
             'stowTimeMargin = ((hazardWind - currentWind) / modeledWindRiseRate) - (sensorLatency + controllerLatency + stowTime)',
-          description: 'Simplified timing margin before a synthetic rising-wind hazard threshold is reached.',
+          description: 'Simplified timing margin before the controlled synthetic rising-wind hazard threshold is reached.',
           variables: {
-            hazardWind: 'Synthetic hazard threshold.',
-            currentWind: 'Synthetic current wind speed.',
-            modeledWindRiseRate: 'Assumed linear wind-speed increase rate.',
-            sensorLatency: 'Modeled sensor latency.',
-            controllerLatency: 'Modeled control latency.',
-            stowTime: 'Modeled mechanical stow duration.',
+            hazardWind: 'Controlled synthetic hazard threshold.',
+            currentWind: 'Controlled synthetic current wind speed.',
+            modeledWindRiseRate: 'Controlled assumed linear wind-speed increase rate.',
+            sensorLatency: 'Candidate modeled sensor latency.',
+            controllerLatency: 'Candidate modeled control latency.',
+            stowTime: 'Candidate modeled mechanical stow duration.',
           },
         },
       ],
@@ -398,18 +422,18 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
       {
         parameterPath: 'compiledScenario.environment.modeledWindRiseRateMpsPerSecond',
         method: 'qualitative',
-        rationale: 'The linear wind-rise rate is a synthetic educational assumption and can dominate stow timing.',
+        rationale: 'The linear wind-rise rate is a synthetic controlled assumption and can dominate stow timing.',
         unit: 'm/s^2',
       },
       {
-        parameterPath: 'compiledScenario.parameters.cleaning.modeledCleaningRecoveryFraction',
+        parameterPath: 'submission.materialPayload.cleaning.modeledCleaningRecoveryFraction',
         method: 'qualitative',
-        rationale: 'Cleaning recovery is assumed and has not been physically measured.',
+        rationale: 'Cleaning recovery is a candidate assumption and has not been physically measured.',
       },
     ],
     sensitivity: [
       {
-        parameterPath: 'compiledScenario.parameters.panel.ratedPowerW',
+        parameterPath: 'submission.materialPayload.panel.ratedPowerW',
         resultPath: 'result.power.instantaneousPowerW',
         method: 'local-derivative',
         effect:
@@ -419,15 +443,15 @@ function evaluateSyntheticSolarDeployment(input: RepMaterialInput): RepEvaluator
           beforeCleaning.soilingFactor *
           payload.deployment.deployedFraction,
         rank: 1,
-        interpretation: 'At fixed conditions, screened instantaneous power scales linearly with rated power.',
+        interpretation: 'At fixed controlled conditions, screened instantaneous power scales linearly with rated power.',
       },
       {
-        parameterPath: 'compiledScenario.parameters.deployment.stowTimeSeconds',
+        parameterPath: 'submission.materialPayload.deployment.stowTimeSeconds',
         resultPath: 'result.storm.stowTimeMarginSeconds',
         method: 'local-derivative',
         effect: -1,
         rank: 1,
-        interpretation: 'Each additional second of modeled stow time reduces the storm-stow margin by one second.',
+        interpretation: 'Each additional second of candidate stow time reduces the storm-stow margin by one second.',
       },
     ],
   };
