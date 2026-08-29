@@ -3,7 +3,7 @@
 Date: 2026-08-28
 Branch: `cipher/stem-foundation`
 Issue: #4
-Status: **Working implementation; local verification not yet executed**
+Status: **A1 implemented and locally verified; A2 remains required for the complete Show-the-System gate**
 
 ## Purpose
 
@@ -32,6 +32,8 @@ The first projection carries:
 - an explicit disclosure that the view is a projection of canonical GOSP records.
 
 The learning depth is initially fixed to `explore`. Later slices will project the same canonical system through `measure`, `model`, `solve`, `verify`, and `research-professional` views.
+
+This implemented seam is now named **A1**. It does not close all of Phase A. **A2** must resolve learner-readable system elements, declared interactions/interfaces/flows, inputs and outputs, and a browser System Map. Connections that are absent from canonical records must remain explicitly undeclared rather than being inferred by the projection.
 
 ### API projection
 
@@ -77,23 +79,30 @@ Those remain later slices under Issue #4.
 
 ## Verification status
 
-No local command was executed by this chat environment. No claim is made that build, typecheck, tests, `pnpm verify`, browser smoke, or evidence generation has passed.
+Executed locally on 2026-08-28 in an isolated worktree at branch tip `f062a1c638ecad1ae4d1616bb694b0420b57521f`:
 
-No GitHub Actions workflow should be triggered for this work.
+- Node `v22.16.0`;
+- pnpm `9.15.5`;
+- `pnpm install --frozen-lockfile` — pass;
+- `pnpm verify` — pass;
+- intended test discovery — 33 intended, 33 discovered;
+- tests — 149 passed;
+- REP replay — input hash and result hash matched;
+- Clean Water validation, simulation, and estimate — completed;
+- foundation audit — 23 pass, 0 warn, 0 fail.
 
-Recommended local verification:
+The first attempt to execute only `pnpm --filter @gosp/api test -- stemSystemProjection.test.ts` occurred before dependencies were installed/built and did not run tests because `@gosp/contracts` could not be resolved. That precondition failure is not counted as a test result. The repository's official `pnpm verify` sequence subsequently built workspace packages and passed all API tests, including the STEM projection tests.
 
-```powershell
-git fetch origin
-git switch cipher/stem-foundation
-pnpm install --frozen-lockfile
-pnpm verify
-pnpm --filter @gosp/api test
-pnpm evidence:local
-```
+No browser System Map exists yet, so no Slice A browser acceptance is claimed. No local evidence artifact was generated. No GitHub Actions workflow was triggered. No canonical merge is authorized or performed.
 
-After local verification, inspect the endpoint for both Sandbox and Clean Water and confirm the projection contains only canonical data already represented by the selected workspace/evaluation.
+The full initiative roadmap and recurring verification gate are recorded in:
+
+- `docs/program/STEM_FOUNDATION_EXECUTION_PLAN_2026-08-28.md`;
+- `docs/program/STEM_FOUNDATION_VERIFICATION_CHECKLIST.md`.
 
 ## Next slice
 
-**Slice B — Show the Math foundation** should add a domain-neutral quantity/equation explanation contract that can expose expression, variables, units, current values, intermediate values, assumptions, provenance/status, and dependency links without replacing the canonical model or solver.
+Proceed with two coordinated work packages:
+
+1. **A2 — Complete Show the System** with resolved elements, declared interactions/flows, and a learner-facing System Map.
+2. **B — Show the Math foundation** with domain-neutral quantities, equations, units, substitutions, provenance/status, intermediate values, and dependency links without replacing the canonical model or solver.
