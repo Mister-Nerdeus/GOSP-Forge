@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createGospServer, PHASE1A_LOCAL_HOST } from '../server.js';
 import { Phase1aService } from './service.js';
 import { buildStemSystemProjection } from './stemSystemProjection.js';
+import { createSandboxStemMathDefinition } from '@gosp/sim-core';
 
 async function withServer<T>(run: (baseUrl: string) => Promise<T>) {
   const server = createGospServer();
@@ -31,6 +32,7 @@ describe('STEM system projection', () => {
       interfaces: workspace.challenge.interfaces,
       referenceEvaluation: workspace.evaluations[0]!,
       comparison: workspace.comparison,
+      mathDefinition: createSandboxStemMathDefinition(),
     });
 
     expect(projection.problem.title).toBe('Sandbox 001 deterministic weighted sum');
@@ -64,6 +66,20 @@ describe('STEM system projection', () => {
       ]),
     );
     expect(projection.variableRoles.measurementStatus).toBe('not-declared');
+    expect(projection.math.quantities).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: 'sandbox.offset', value: 7, availability: 'available' }),
+      expect.objectContaining({ id: 'sandbox.result', value: 53, resultPath: 'evaluation.result.value' }),
+    ]));
+    expect(projection.math.equations[0]).toMatchObject({
+      id: 'sandbox-001.weighted-sum',
+      dimensionalStatus: 'not-applicable',
+      outputQuantityId: 'sandbox.result',
+    });
+    expect(projection.math.dependencies).toContainEqual({
+      fromQuantityId: 'sandbox.weighted-sum',
+      toQuantityId: 'sandbox.result',
+      equationId: 'sandbox-001.weighted-sum',
+    });
     expect(projection.disclosure).toMatch(/projection of canonical GOSP records/i);
   });
 
@@ -117,8 +133,62 @@ describe('STEM system projection', () => {
           measurementStatus: 'not-declared',
           measuredOutputs: [],
         },
+        math: {
+          quantities: expect.arrayContaining([
+            { id: 'clean-water.source-liters', label: 'Available source water', symbol: 'sourceLiters', value: 100, unit: 'L', role: 'input', status: 'submitted', sourcePath: 'submission.materialPayload.compiledInput.water.sourceLiters', availability: 'available' },
+            { id: 'clean-water.clean-water-liters', label: 'Calculated clean-water volume', symbol: 'cleanWaterLiters', value: 64, unit: 'L', role: 'output', status: 'calculated', sourcePath: 'result.flow.cleanWaterLiters', resultPath: 'evaluation.result.flow.cleanWaterLiters', availability: 'available' },
+          ]),
+          equations: [expect.objectContaining({
+            id: 'clean-water.flow-screen',
+            dimensionalStatus: 'not-checked',
+            outputQuantityId: 'clean-water.clean-water-liters',
+          })],
+        },
       });
     });
+  });
+
+  it('marks a declared but absent source value unavailable instead of inventing it', async () => {
+    const workspace = await new Phase1aService().getWorkspace();
+    const mathDefinition = createSandboxStemMathDefinition();
+    mathDefinition.quantities[0]!.sourcePath = 'submission.materialPayload.notDeclared';
+    const projection = buildStemSystemProjection({
+      challenge: workspace.challenge.record,
+      scenario: workspace.challenge.scenario,
+      model: workspace.challenge.model,
+      workflow: workspace.challenge.workflow,
+      requirements: workspace.challenge.requirements,
+      constraints: workspace.challenge.constraints,
+      systemElements: workspace.challenge.systemElements,
+      interfaces: workspace.challenge.interfaces,
+      referenceEvaluation: workspace.evaluations[0]!,
+      comparison: workspace.comparison,
+      mathDefinition,
+    });
+    expect(projection.math.quantities[0]).toMatchObject({
+      id: 'sandbox.values',
+      availability: 'unavailable',
+    });
+    expect(projection.math.quantities[0]).not.toHaveProperty('value');
+  });
+
+  it('rejects math bindings that contradict the recorded equation variables', async () => {
+    const workspace = await new Phase1aService().getWorkspace();
+    const mathDefinition = createSandboxStemMathDefinition();
+    delete mathDefinition.equations[0]!.variableBindings.values;
+    expect(() => buildStemSystemProjection({
+      challenge: workspace.challenge.record,
+      scenario: workspace.challenge.scenario,
+      model: workspace.challenge.model,
+      workflow: workspace.challenge.workflow,
+      requirements: workspace.challenge.requirements,
+      constraints: workspace.challenge.constraints,
+      systemElements: workspace.challenge.systemElements,
+      interfaces: workspace.challenge.interfaces,
+      referenceEvaluation: workspace.evaluations[0]!,
+      comparison: workspace.comparison,
+      mathDefinition,
+    })).toThrow(/must exactly match the recorded equation variables/i);
   });
 
   it('rejects an incomplete STEM challenge selection', async () => {

@@ -28,6 +28,7 @@ export * from './safety/safetyValidation.js';
 export * from './education/educationProfile.js';
 export * from './education/educationValidation.js';
 export * from './education/stemSystemProjection.js';
+export * from './education/stemMathProjection.js';
 export * from './products/productBinding.js';
 export * from './products/productSpec.js';
 export * from './products/productProvenance.js';

@@ -34,6 +34,7 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     hero(workspace),
     challengePanel(workspace, client, root),
     systemMapPanel(workspace),
+    mathPanel(workspace),
     submissionPanel(workspace),
     comparisonSelectionPanel(workspace, client, root),
     resultPanel(workspace),
@@ -44,6 +45,57 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     importPanel(workspace, client, root),
   );
   return app;
+}
+
+function displayRecordedValue(value: unknown) {
+  if (value === undefined) return 'unavailable';
+  if (value !== null && typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+}
+
+function mathPanel(workspace: Phase1aWorkspace) {
+  const math = workspace.stemSystem.math;
+  return panel('Show the Math', [
+    element(
+      'p',
+      'claim',
+      'Recorded quantities → declared relationship → recorded intermediate → canonical result',
+    ),
+    subheading('Quantities and units'),
+    cardList(math.quantities.map((quantity) => ({
+      title: `${quantity.symbol} = ${displayRecordedValue(quantity.value)} ${quantity.unit ?? '(unitless)'}`,
+      meta: `${quantity.role.toUpperCase()} · ${quantity.status} · ${quantity.availability}`,
+      body: `${quantity.label} · ${quantity.sourcePath}${quantity.resultPath ? ` · ${quantity.resultPath}` : ''}`,
+    }))),
+    ...math.equations.map((equation) => layer(`Relationship · ${equation.id}`, [
+      keyValues([
+        ['Expression', equation.expression],
+        ['Description', equation.description],
+        ['Dimensional consistency', equation.dimensionalStatus],
+        ['Output quantity', equation.outputQuantityId],
+      ]),
+      subheading('Recorded substitutions'),
+      bullets(equation.substitutions.map((substitution) =>
+        `${substitution.symbol} = ${displayRecordedValue(substitution.value)} ${substitution.unit ?? '(unitless)'} · ${substitution.availability}`,
+      )),
+      subheading('Assumptions'),
+      bullets(equation.assumptions.length ? equation.assumptions : ['none declared']),
+      subheading('Limitations'),
+      bullets(equation.limitations),
+    ])),
+    details(
+      'Input-to-result dependency links',
+      bullets(math.dependencies.map((dependency) =>
+        `${dependency.fromQuantityId} → ${dependency.toQuantityId} · ${dependency.equationId}`,
+      )),
+    ),
+    element('p', 'muted', math.disclosure),
+    element(
+      'p',
+      'muted',
+      'Displaying an equation does not establish scientific completeness, calibration, dimensional correctness unless checked, or physical validity.',
+    ),
+  ], 'wide');
 }
 
 function systemMapPanel(workspace: Phase1aWorkspace) {
@@ -319,22 +371,6 @@ function explainabilityPanel(workspace: Phase1aWorkspace) {
     layer('1 · Explain', [
       element('p', '', workspace.comparison.explanation.summary),
       bullets(workspace.comparison.explanation.primaryReasons),
-    ]),
-    layer('2 · Show the Math', [
-      ...explanation.equations.map((equation) =>
-        keyValues([
-          ['Relationship', equation.id],
-          ['Expression', equation.expression],
-          ['Description', equation.description],
-          ['Variables', Object.entries(equation.variables).map(([key, value]) => `${key}: ${value}`).join(' · ')],
-        ]),
-      ),
-      cardList(
-        explanation.intermediateValues.map((value) => ({
-          title: value.id,
-          meta: `${String(value.value)} ${value.unit ?? '(unitless)'}`,
-        })),
-      ),
     ]),
     layer('3 · Inspect the Model', [
       keyValues([

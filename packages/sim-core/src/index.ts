@@ -8,3 +8,4 @@ export * from './rep/sandbox001Fixture.js';
 export * from './rep/reproducibilityComparison.js';
 export * from './rep/sourceImplementationIdentity.js';
 export * from './logic/ruleEngine.js';
+export * from './education/stemMathDefinition.js';

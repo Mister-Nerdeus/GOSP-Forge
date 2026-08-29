@@ -581,6 +581,7 @@ export class Phase1aService {
       interfaces: definition.interfaces,
       referenceEvaluation: evaluations[0]!,
       comparison,
+      mathDefinition: definition.mathDefinition,
     });
     return {
       milestone: 'Phase-1A — Minimal Challenge-Facing Product Loop',

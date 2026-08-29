@@ -1,5 +1,6 @@
 import {
   StemSystemProjectionSchema,
+  StemMathDefinitionSchema,
   type CanonicalConstraint,
   type Challenge,
   type Interface,
@@ -9,6 +10,7 @@ import {
   type Requirement,
   type Scenario,
   type StemSystemProjection,
+  type StemMathDefinition,
   type SystemElement,
   type Workflow,
 } from '@gosp/contracts';
@@ -35,6 +37,119 @@ function leaves(
   return output;
 }
 
+function valueAtPath(root: unknown, path: string): unknown {
+  const segments = path.replace(/\[(\d+)\]/g, '.$1').split('.').filter(Boolean);
+  return segments.reduce<unknown>((value, segment) => {
+    if (value === null || typeof value !== 'object') return undefined;
+    return (value as Record<string, unknown>)[segment];
+  }, root);
+}
+
+function buildMathProjection(
+  definitionInput: StemMathDefinition,
+  referenceEvaluation: Phase1aEvaluationView,
+) {
+  const definition = StemMathDefinitionSchema.parse(definitionInput);
+  const explanation = referenceEvaluation.evaluation.explainability;
+  const quantities = definition.quantities.map((declaration) => {
+    let value: unknown;
+    if (declaration.source === 'material-input') {
+      value = valueAtPath(referenceEvaluation.materialInput, declaration.sourcePath);
+    } else if (declaration.source === 'evaluation-result') {
+      value = valueAtPath(referenceEvaluation.evaluation, declaration.sourcePath);
+    } else {
+      value = explanation.intermediateValues.find(
+        (item) => item.id === declaration.sourcePath,
+      )?.value;
+    }
+    return {
+      id: declaration.id,
+      label: declaration.label,
+      symbol: declaration.symbol,
+      ...(value === undefined ? {} : { value }),
+      unit: declaration.unit,
+      role: declaration.role,
+      status: declaration.status,
+      sourcePath: declaration.sourcePath,
+      resultPath: declaration.resultPath,
+      availability: value === undefined ? ('unavailable' as const) : ('available' as const),
+    };
+  });
+  const quantityById = new Map(quantities.map((quantity) => [quantity.id, quantity]));
+  const equations = definition.equations.map((declaration) => {
+    const recorded = explanation.equations.find(
+      (equation) => equation.id === declaration.equationId,
+    );
+    if (!recorded) {
+      throw new Error(
+        `STEM math definition references missing recorded equation ${declaration.equationId}.`,
+      );
+    }
+    const recordedSymbols = Object.keys(recorded.variables).sort();
+    const declaredSymbols = Object.keys(declaration.variableBindings).sort();
+    if (JSON.stringify(recordedSymbols) !== JSON.stringify(declaredSymbols)) {
+      throw new Error(
+        `STEM math bindings for ${declaration.equationId} must exactly match the recorded equation variables.`,
+      );
+    }
+    const variableBindings = Object.entries(declaration.variableBindings).map(
+      ([symbol, quantityId]) => ({ symbol, quantityId }),
+    );
+    return {
+      id: recorded.id,
+      expression: recorded.expression,
+      description: recorded.description,
+      variableBindings,
+      substitutions: variableBindings.map(({ symbol, quantityId }) => {
+        const quantity = quantityById.get(quantityId)!;
+        return {
+          quantityId,
+          symbol,
+          ...(quantity.value === undefined ? {} : { value: quantity.value }),
+          unit: quantity.unit,
+          availability: quantity.availability,
+        };
+      }),
+      intermediateQuantityIds: declaration.intermediateQuantityIds,
+      outputQuantityId: declaration.outputQuantityId,
+      dimensionalStatus: declaration.dimensionalStatus,
+      assumptions: declaration.assumptions,
+      limitations: declaration.limitations,
+    };
+  });
+  const dependencies = definition.equations.flatMap((equation) => {
+    const inputs = Object.values(equation.variableBindings);
+    if (!equation.intermediateQuantityIds.length) {
+      return inputs.map((quantityId) => ({
+        fromQuantityId: quantityId,
+        toQuantityId: equation.outputQuantityId,
+        equationId: equation.equationId,
+      }));
+    }
+    return [
+      ...inputs.flatMap((quantityId) =>
+        equation.intermediateQuantityIds.map((intermediateId) => ({
+          fromQuantityId: quantityId,
+          toQuantityId: intermediateId,
+          equationId: equation.equationId,
+        })),
+      ),
+      ...equation.intermediateQuantityIds.map((intermediateId) => ({
+        fromQuantityId: intermediateId,
+        toQuantityId: equation.outputQuantityId,
+        equationId: equation.equationId,
+      })),
+    ];
+  });
+  return {
+    quantities,
+    equations,
+    dependencies,
+    disclosure:
+      'Values are resolved from the recorded REP material input, explainability intermediates, and canonical Evaluation result. The browser does not recalculate the result. Dimensional status is explicit and is not inferred from displayed units.',
+  };
+}
+
 export function buildStemSystemProjection(input: {
   challenge: Challenge;
   scenario: Scenario;
@@ -46,6 +161,7 @@ export function buildStemSystemProjection(input: {
   interfaces: Interface[];
   referenceEvaluation: Phase1aEvaluationView;
   comparison: Phase1aComparison;
+  mathDefinition: StemMathDefinition;
 }): StemSystemProjection {
   const {
     challenge,
@@ -58,6 +174,7 @@ export function buildStemSystemProjection(input: {
     interfaces,
     referenceEvaluation,
     comparison,
+    mathDefinition,
   } = input;
   const openProofObligations = referenceEvaluation.claim.proofObligations.filter(
     (item) => item.status === 'open',
@@ -167,6 +284,7 @@ export function buildStemSystemProjection(input: {
       measurementStatus: 'not-declared',
       measuredOutputs: [],
     },
+    math: buildMathProjection(mathDefinition, referenceEvaluation),
     controlledConditions: {
       environment: scenario.environment,
       operatingConditions: scenario.operatingConditions,

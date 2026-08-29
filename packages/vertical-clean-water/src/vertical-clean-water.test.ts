@@ -7,6 +7,7 @@ import {
   compareCleanWaterBaselines,
   createCleanWaterImpactReport,
   createCleanWaterStemSystemDefinition,
+  createCleanWaterStemMathDefinition,
   generateModuleScorecards,
   generateSystemScorecard,
   runWaterWarningController,
@@ -336,5 +337,18 @@ describe('Clean Water vertical foundation', () => {
     expect(definition.systemElements.every((item) => item.provenance.method === 'authored')).toBe(
       true,
     );
+  });
+
+  it('declares Clean Water math bindings without claiming dimensional verification', () => {
+    const definition = createCleanWaterStemMathDefinition();
+
+    expect(definition.quantities.map((item) => item.id)).toContain(
+      'clean-water.clean-water-liters',
+    );
+    expect(definition.equations[0]).toMatchObject({
+      equationId: 'clean-water.flow-screen',
+      outputQuantityId: 'clean-water.clean-water-liters',
+      dimensionalStatus: 'not-checked',
+    });
   });
 });

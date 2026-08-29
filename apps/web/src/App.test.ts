@@ -91,6 +91,21 @@ const workspace = {
       outputs: [{ path: 'evaluation.result.value', value: 53, status: 'calculated' }],
       measurementStatus: 'not-declared', measuredOutputs: [],
     },
+    math: {
+      quantities: [
+        { id: 'sandbox.offset', label: 'Offset', symbol: 'offset', value: 7, role: 'input', status: 'submitted', sourcePath: 'submission.materialPayload.offset', availability: 'available' },
+        { id: 'sandbox.result', label: 'Recorded result', symbol: 'result', value: 53, role: 'output', status: 'calculated', sourcePath: 'result.value', resultPath: 'evaluation.result.value', availability: 'available' },
+      ],
+      equations: [{
+        id: 'sandbox-001.weighted-sum', expression: 'result = offset + scale * sum(values[i] * weights[i])', description: 'Deterministic weighted sum.',
+        variableBindings: [{ symbol: 'offset', quantityId: 'sandbox.offset' }],
+        substitutions: [{ quantityId: 'sandbox.offset', symbol: 'offset', value: 7, availability: 'available' }],
+        intermediateQuantityIds: [], outputQuantityId: 'sandbox.result', dimensionalStatus: 'not-applicable',
+        assumptions: ['Unitless benchmark.'], limitations: ['Not a physical model.'],
+      }],
+      dependencies: [{ fromQuantityId: 'sandbox.offset', toQuantityId: 'sandbox.result', equationId: 'sandbox-001.weighted-sum' }],
+      disclosure: 'The browser does not recalculate the result.',
+    },
     controlledConditions: { environment: {}, operatingConditions: {}, parameters: { scale: 2 } },
     assumptions: [], engineering: { requirements: [], constraints: [] },
     model: { name: 'Sandbox analytical model', modelType: 'analytical', fidelityLevel: 'analytical', calibrationStatus: 'not-applicable', solver: { id: 'solver.sandbox-001', revision: '1.0.0' }, limitations: ['Synthetic only.'] },
@@ -170,5 +185,9 @@ describe('renderApp', () => {
     expect(text).toContain('not-declared canonical system declaration');
     expect(text).toContain('no connections are inferred');
     expect(text).toContain('Measured outputs not-declared');
+    expect(text).toContain('Recorded quantities → declared relationship');
+    expect(text).toContain('offset = 7 (unitless)');
+    expect(text).toContain('Dimensional consistency not-applicable');
+    expect(text).toContain('browser does not recalculate');
   });
 });

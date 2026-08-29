@@ -6,12 +6,21 @@ import { createSandbox001MaterialInput, createSandbox001ReplayRecord } from './s
 import { replayRep } from './replay.js';
 import { runSandbox001 } from './sandbox001.js';
 import { compareRepEnvironmentReports } from './reproducibilityComparison.js';
+import { createSandboxStemMathDefinition } from '../education/stemMathDefinition.js';
 import {
   referenceRunnerSourceManifest,
   sourceImplementationContentHash,
 } from './sourceImplementationIdentity.js';
 
 describe('REP v0.1 reference runner', () => {
+  it('declares the Sandbox math path as a unitless protocol benchmark', () => {
+    const definition = createSandboxStemMathDefinition();
+    expect(definition.equations[0]).toMatchObject({
+      equationId: 'sandbox-001.weighted-sum',
+      outputQuantityId: 'sandbox.result',
+      dimensionalStatus: 'not-applicable',
+    });
+  });
   it('uses Unicode code-point ordering and rejects non-JSON values', () => {
     expect(canonicalJson({ '\u{1F600}': 2, '\uE000': 1 })).toBe('{"":1,"😀":2}');
     expect(canonicalJson({ b: 1, a: 2 })).toBe(canonicalJson({ a: 2, b: 1 }));
