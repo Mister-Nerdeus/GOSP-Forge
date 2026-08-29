@@ -141,6 +141,8 @@ Dependencies: B.
 Acceptance: the learner can distinguish nature, representation, approximation, and observation.
 Non-claims: a declared principle is not proof that a model implements it adequately.
 
+Status: implemented and locally verified on 2026-08-29 at implementation SHA `93979ea9415bb20a80c799e544995216889253e6`. See `docs/program/STEM_FOUNDATION_SLICE_C_2026-08-29.md`.
+
 ### D — Show Engineering
 
 Deliver:
@@ -343,4 +345,4 @@ A package is not done because code exists. It is done only when:
 
 ## Current next action
 
-Begin C as Issue #7. C links governing principles, model equations, engineering approximations, empirical relationships, assumptions, and observations to the stable equation/quantity identifiers established by B. A2 and B are complete dependencies.
+Begin D as Issue #8. D combines the system and math projections with requirements, gates, objectives, design variables, margins, hazards, comparisons, and unresolved proof obligations. A2, B, and C are complete dependencies.
