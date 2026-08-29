@@ -2,6 +2,11 @@
 
 Use this checklist for every implementation slice under Issue #4. A checked item must name executed evidence in the issue or handoff; do not infer a pass from implementation.
 
+Completed checkpoint records:
+
+- Slice A1: `docs/program/STEM_FOUNDATION_SLICE_A_2026-08-28.md`
+- Slice A2 / Issue #5: `docs/program/STEM_FOUNDATION_SLICE_A2_2026-08-29.md`
+
 ## Scope and authority
 
 - [ ] Work is on `cipher/stem-foundation` or an explicitly authorized descendant.

@@ -63,9 +63,7 @@ The first attempt to run the API test alone did not execute because the fresh wo
 
 ### A2 — Resolve and render the system map
 
-A2 remains required because A1 currently returns system-element references but does not resolve learner-readable element definitions, interactions, interfaces, flows, input/output roles, or a browser System Map.
-
-A2 is complete only when Sandbox and Clean Water can render a system boundary and connected elements from canonical records, with missing relationships disclosed rather than inferred.
+A2 was implemented and locally verified on 2026-08-29. Clean Water resolves vertical-owned canonical system declarations; Sandbox preserves the canonical absence of declarations as `not-declared`. The API owns resolution and role extraction, while the browser only renders the projection. The complete checkpoint is recorded in `docs/program/STEM_FOUNDATION_SLICE_A2_2026-08-29.md`.
 
 ## Delivery sequence
 
@@ -343,4 +341,4 @@ A package is not done because code exists. It is done only when:
 
 ## Current next action
 
-Begin A2 and B as separate, coordinated work packages. A2 completes the system boundary and interaction view. B establishes quantity/equation dependency identifiers that later science, engineering, traceability, learning-depth, and dynamic views consume.
+Begin B as Issue #6. B establishes quantity/equation dependency identifiers that later science, engineering, traceability, learning-depth, and dynamic views consume. A2 is complete and is the stable system/variable-role dependency for B.
