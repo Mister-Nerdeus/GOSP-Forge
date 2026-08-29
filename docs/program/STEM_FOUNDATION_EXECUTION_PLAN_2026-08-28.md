@@ -186,6 +186,8 @@ Dependencies: A1 and B; existing REP and truth contracts.
 Acceptance: one consequential Sandbox and Clean Water result can be traced end to end.
 Non-claims: local replay is not independent reproduction; fidelity is not evidence readiness.
 
+Status: implemented and locally verified on 2026-08-29 at implementation SHA `566687e21dfcfb5ef89ae8da73c3068aea024a8b`. See `docs/program/STEM_FOUNDATION_SLICES_F_G_2026-08-29.md`.
+
 ### H — Learning-depth projection
 
 Deliver:
@@ -349,4 +351,4 @@ A package is not done because code exists. It is done only when:
 
 ## Current next action
 
-Begin F/G as Issue #10. Trace consequential results through the existing system, math, science, engineering, technology, REP, and truth records while keeping model fidelity separate from evidence strength. A2 through E are complete dependencies.
+Begin H as Issue #11. Project the same exact evaluation across learning depths without changing material input, result, or identity. A2 through F/G are complete dependencies.
