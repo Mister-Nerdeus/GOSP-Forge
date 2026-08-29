@@ -23,6 +23,7 @@
   "packages/contracts/src/education/stemMathProjection.test.ts",
     "packages/contracts/src/education/stemEngineeringProjection.test.ts",
     "packages/contracts/src/education/stemTechnologyProjection.test.ts",
+    "packages/contracts/src/education/stemHowWeKnowTrace.test.ts",
   "packages/contracts/src/education/stemScienceProjection.test.ts",
   "packages/contracts/src/contracts.test.ts",
   "packages/contracts/src/imports/specImportDraft.test.ts",

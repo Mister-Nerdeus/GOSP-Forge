@@ -21,6 +21,7 @@ import {
   StemTechnologyDefinitionSchema,
   StemTechnologyProjectionSchema,
   type StemTechnologyDefinition,
+  StemHowWeKnowTraceSchema,
   type SystemElement,
   type Workflow,
 } from '@gosp/contracts';
@@ -435,6 +436,153 @@ function buildTechnologyProjection(input: {
   });
 }
 
+function buildHowWeKnowTrace(input: {
+  model: Model;
+  math: StemMathProjection;
+  evaluationView: Phase1aEvaluationView;
+}) {
+  const { model, math, evaluationView } = input;
+  const { evaluation, claim, evidence, contradictions, materialInput, executionEvidence } = evaluationView;
+  const output = math.quantities.find((quantity) => quantity.role === 'output' && quantity.resultPath);
+  if (!output || output.value === undefined || !output.resultPath) {
+    throw new Error('How-do-we-know trace requires one recorded consequential output quantity.');
+  }
+
+  const nodes: Array<{
+    id: string;
+    category: 'result' | 'equation' | 'model' | 'material-input' | 'source' | 'assumption' | 'implementation' | 'execution' | 'claim' | 'evidence' | 'contradiction' | 'readiness' | 'proof-obligation';
+    label: string;
+    status: 'resolved' | 'unavailable' | 'broken' | 'not-declared';
+    detail: string;
+  }> = [];
+  const edges: Array<{ from: string; to: string; relationship: string; status: 'resolved' | 'broken' }> = [];
+  const addNode = (node: typeof nodes[number]) => {
+    if (!nodes.some((item) => item.id === node.id)) nodes.push(node);
+  };
+  const addEdge = (from: string, to: string, relationship: string, status: 'resolved' | 'broken' = 'resolved') =>
+    edges.push({ from, to, relationship, status });
+
+  addNode({ id: 'trace.result', category: 'result', label: output.label, status: 'resolved', detail: `${output.resultPath} = ${String(output.value)}${output.unit ? ` ${output.unit}` : ''}.` });
+  addNode({ id: 'trace.model', category: 'model', label: model.name, status: 'resolved', detail: `${model.modelType}; fidelity ${model.fidelity.level}; calibration ${model.fidelity.calibrationStatus}.` });
+  addNode({ id: 'trace.claim', category: 'claim', label: claim.statement, status: 'resolved', detail: `${claim.id}@${claim.revision}.` });
+  addEdge('trace.claim', 'trace.result', 'asserts');
+
+  for (const equation of math.equations.filter((item) => item.outputQuantityId === output.id)) {
+    const equationId = `trace.equation.${equation.id}`;
+    addNode({ id: equationId, category: 'equation', label: equation.expression, status: 'resolved', detail: `${equation.id}; dimensional status ${equation.dimensionalStatus}.` });
+    addEdge('trace.result', equationId, 'calculated-by');
+    addEdge(equationId, 'trace.model', 'represented-by');
+    for (const binding of equation.variableBindings) {
+      const quantity = math.quantities.find((item) => item.id === binding.quantityId);
+      const inputId = `trace.input.${binding.quantityId}`;
+      addNode({
+        id: inputId,
+        category: 'material-input',
+        label: quantity?.label ?? binding.quantityId,
+        status: quantity?.availability === 'available' ? 'resolved' : 'unavailable',
+        detail: quantity ? `${quantity.sourcePath}; ${quantity.availability}.` : 'Referenced quantity is unavailable.',
+      });
+      addEdge(equationId, inputId, 'uses', quantity ? 'resolved' : 'broken');
+    }
+  }
+
+  const assumptions = [
+    ...materialInput.materialAssumptions,
+    ...materialInput.compiledScenario.assumptions,
+    ...materialInput.model.assumptions,
+  ].filter((item, index, all) => all.findIndex((candidate) => candidate.id === item.id) === index);
+  const sourceRefs = new Set<string>();
+  for (const assumption of assumptions) {
+    const assumptionId = `trace.assumption.${assumption.id}`;
+    addNode({ id: assumptionId, category: 'assumption', label: assumption.statement, status: 'resolved', detail: assumption.material ? 'Material assumption.' : 'Non-material assumption.' });
+    addEdge('trace.model', assumptionId, 'assumes');
+    for (const sourceRef of assumption.sourceRefs) {
+      sourceRefs.add(sourceRef);
+      const sourceId = `trace.source.${sourceRef}`;
+      addNode({ id: sourceId, category: 'source', label: sourceRef, status: 'unavailable', detail: 'Source identity is referenced, but no source record is available in this local trace.' });
+      addEdge(assumptionId, sourceId, 'cites', 'broken');
+    }
+  }
+  if (!sourceRefs.size) {
+    addNode({ id: 'trace.source.not-declared', category: 'source', label: 'Authoritative source', status: 'not-declared', detail: 'No authoritative source record is declared for this traced result.' });
+    addEdge('trace.model', 'trace.source.not-declared', 'source-status');
+  }
+
+  addNode({ id: 'trace.implementation.runner', category: 'implementation', label: evaluation.runner.id, status: 'resolved', detail: `${evaluation.runner.revision} · ${evaluation.runner.contentHash}.` });
+  addNode({ id: 'trace.implementation.solver', category: 'implementation', label: model.solver.id, status: 'resolved', detail: `${model.solver.revision} · ${model.solver.contentHash}.` });
+  addNode({ id: 'trace.execution', category: 'execution', label: executionEvidence.executionId, status: evaluationView.replay.ok ? 'resolved' : 'broken', detail: `${executionEvidence.environment.os} · ${executionEvidence.environment.runtime} · exit ${executionEvidence.exitStatus}.` });
+  addEdge('trace.model', 'trace.implementation.solver', 'implemented-by');
+  addEdge('trace.implementation.solver', 'trace.implementation.runner', 'executed-by');
+  addEdge('trace.implementation.runner', 'trace.execution', 'recorded-in', evaluationView.replay.ok ? 'resolved' : 'broken');
+
+  const knownEvidence = new Set(evidence.map((item) => `${item.id}@${item.revision}`));
+  for (const item of evidence) {
+    const evidenceId = `trace.evidence.${item.id}@${item.revision}`;
+    addNode({ id: evidenceId, category: 'evidence', label: item.title, status: item.status === 'accepted' ? 'resolved' : 'unavailable', detail: `${item.evidenceType}; ${item.readiness}; ${item.status}.` });
+    addEdge(evidenceId, 'trace.claim', 'supports', item.supports.some((ref) => ref.id === claim.id && ref.revision === claim.revision) ? 'resolved' : 'broken');
+  }
+  for (const item of contradictions) {
+    const contradictionId = `trace.contradiction.${item.id}@${item.revision}`;
+    addNode({ id: contradictionId, category: 'contradiction', label: item.title, status: 'resolved', detail: `${item.evidenceType}; ${item.status}.` });
+    addEdge(contradictionId, 'trace.claim', 'contradicts');
+  }
+  if (!contradictions.length) {
+    addNode({ id: 'trace.contradiction.not-declared', category: 'contradiction', label: 'Contradicting evidence', status: 'not-declared', detail: 'No contradicting evidence is recorded for this claim.' });
+    addEdge('trace.claim', 'trace.contradiction.not-declared', 'contradiction-status');
+  }
+
+  for (const obligation of claim.proofObligations) {
+    const obligationId = `trace.obligation.${obligation.id}`;
+    addNode({ id: obligationId, category: 'proof-obligation', label: obligation.description, status: obligation.status === 'open' ? 'unavailable' : 'resolved', detail: `${obligation.status}; requires ${obligation.requiredEvidenceTypes.join(', ')}.` });
+    addEdge('trace.claim', obligationId, 'requires-proof');
+    for (const ref of obligation.evidenceRefs) {
+      const evidenceKey = `${ref.id}@${ref.revision}`;
+      const evidenceId = `trace.evidence.${evidenceKey}`;
+      if (!knownEvidence.has(evidenceKey)) {
+        addNode({ id: evidenceId, category: 'evidence', label: evidenceKey, status: 'broken', detail: 'Referenced evidence record is absent from the evaluation view.' });
+      }
+      addEdge(obligationId, evidenceId, 'satisfied-by', knownEvidence.has(evidenceKey) ? 'resolved' : 'broken');
+    }
+  }
+
+  addNode({ id: 'trace.readiness.evidence', category: 'readiness', label: `Evidence readiness: ${claim.evidenceReadiness}`, status: 'resolved', detail: 'Evidence readiness is assessed independently from model fidelity.' });
+  addNode({ id: 'trace.readiness.deployment', category: 'readiness', label: `Deployment readiness: ${claim.deploymentReadiness}`, status: 'resolved', detail: 'Deployment readiness is a separate disposition.' });
+  addNode({ id: 'trace.readiness.professional', category: 'readiness', label: `Professional disposition: ${claim.professionalDisposition.status}`, status: 'resolved', detail: 'Professional disposition is not inferred from a computation.' });
+  addEdge('trace.claim', 'trace.readiness.evidence', 'has-evidence-readiness');
+  addEdge('trace.claim', 'trace.readiness.deployment', 'has-deployment-readiness');
+  addEdge('trace.claim', 'trace.readiness.professional', 'has-professional-disposition');
+
+  return StemHowWeKnowTraceSchema.parse({
+    consequentialResult: { resultPath: output.resultPath.replace(/^evaluation\./, ''), value: output.value, quantityId: output.id, claimId: claim.id },
+    modelEvidenceLadder: {
+      modelRepresentation: { modelId: model.id, fidelityLevel: model.fidelity.level, calibrationStatus: model.fidelity.calibrationStatus },
+      evidenceStrength: { evidenceReadiness: claim.evidenceReadiness, acceptedEvidenceCount: evidence.filter((item) => item.status === 'accepted').length, contradictionCount: contradictions.length },
+      deploymentReadiness: claim.deploymentReadiness,
+      professionalDisposition: claim.professionalDisposition.status,
+      independenceDisclosure: 'Local replay verifies recorded hashes in this environment; it is not independent external reproduction.',
+    },
+    materialIdentity: {
+      inputHash: evaluation.materialInputHash,
+      resultHash: evaluation.materialResultHash,
+      contractIdentities: evaluation.contractIdentities.map(({ id, revision, contentHash }) => ({ id, revision, contentHash })),
+      datasetIdentities: evaluation.datasetIdentities.map(({ id, revision, contentHash }) => ({ id, revision, contentHash })),
+    },
+    executionIdentity: {
+      runner: { id: evaluation.runner.id, revision: evaluation.runner.revision, contentHash: evaluation.runner.contentHash },
+      solver: { id: model.solver.id, revision: model.solver.revision, contentHash: model.solver.contentHash },
+      environment: { os: executionEvidence.environment.os, runtime: executionEvidence.environment.runtime },
+      replayStatus: evaluationView.replay.reproductionStatus,
+    },
+    nodes,
+    edges,
+    disclosures: [
+      'Higher model fidelity is not stronger evidence, physical validation, deployment readiness, or professional approval.',
+      'Local replay is not independent reproduction.',
+      'Unavailable, not-declared, and broken trace states are preserved; they are not treated as resolved evidence.',
+    ],
+  });
+}
+
 export function buildStemSystemProjection(input: {
   challenge: Challenge;
   scenario: Scenario;
@@ -544,6 +692,20 @@ export function buildStemSystemProjection(input: {
     'evaluation.result',
   ).map((item) => ({ ...item, status: 'calculated' as const }));
   const math = buildMathProjection(mathDefinition, referenceEvaluation);
+  const engineeringDecision = buildEngineeringProjection({
+    definitionInput: engineeringDefinition,
+    requirements,
+    baseline: referenceEvaluation,
+    candidate: candidateEvaluation,
+    comparison,
+    math,
+  });
+  const technology = buildTechnologyProjection({
+    definitionInput: technologyDefinition,
+    systemElements,
+    requirements,
+    math,
+  });
 
   return StemSystemProjectionSchema.parse({
     projectionVersion: '0.1.0',
@@ -580,20 +742,9 @@ export function buildStemSystemProjection(input: {
     },
     math,
     science: buildScienceProjection(scienceDefinition, model, math),
-    engineeringDecision: buildEngineeringProjection({
-      definitionInput: engineeringDefinition,
-      requirements,
-      baseline: referenceEvaluation,
-      candidate: candidateEvaluation,
-      comparison,
-      math,
-    }),
-    technology: buildTechnologyProjection({
-      definitionInput: technologyDefinition,
-      systemElements,
-      requirements,
-      math,
-    }),
+    engineeringDecision,
+    technology,
+    howWeKnow: buildHowWeKnowTrace({ model, math, evaluationView: referenceEvaluation }),
     controlledConditions: {
       environment: scenario.environment,
       operatingConditions: scenario.operatingConditions,

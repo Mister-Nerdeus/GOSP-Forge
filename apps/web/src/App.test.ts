@@ -157,6 +157,28 @@ const workspace = {
       }],
       disclosures: ['Listing a technology does not establish availability, compatibility, safety, endorsement, or verification.'],
     },
+    howWeKnow: {
+      consequentialResult: { resultPath: 'result.value', value: 53, quantityId: 'sandbox.result', claimId: 'claim.submission.reference' },
+      modelEvidenceLadder: {
+        modelRepresentation: { modelId: 'model.sandbox-001', fidelityLevel: 'analytical', calibrationStatus: 'not-applicable' },
+        evidenceStrength: { evidenceReadiness: 'computationally-reproduced', acceptedEvidenceCount: 1, contradictionCount: 0 },
+        deploymentReadiness: 'concept-only', professionalDisposition: 'not-assessed',
+        independenceDisclosure: 'Local replay verifies recorded hashes in this environment; it is not independent external reproduction.',
+      },
+      materialIdentity: { inputHash: hashA, resultHash: hashB, contractIdentities: [], datasetIdentities: [] },
+      executionIdentity: {
+        runner: { id: 'gosp.rep.reference-runner', revision: '0.1.0', contentHash: hashA },
+        solver: { id: 'solver.sandbox-001', revision: '1.0.0', contentHash: hashA },
+        environment: { os: 'win32', runtime: 'v22.16.0' }, replayStatus: 'verified-local-replay',
+      },
+      nodes: [
+        { id: 'trace.result', category: 'result', label: 'Recorded result', status: 'resolved', detail: 'result.value = 53.' },
+        { id: 'trace.source.not-declared', category: 'source', label: 'Authoritative source', status: 'not-declared', detail: 'No authoritative source record is declared.' },
+        { id: 'trace.obligation.proof.physical-validation', category: 'proof-obligation', label: 'Physical validation remains open.', status: 'unavailable', detail: 'open; requires physical-test.' },
+      ],
+      edges: [{ from: 'trace.result', to: 'trace.source.not-declared', relationship: 'source-status', status: 'resolved' }],
+      disclosures: ['Higher model fidelity is not stronger evidence, physical validation, deployment readiness, or professional approval.', 'Local replay is not independent reproduction.'],
+    },
     controlledConditions: { environment: {}, operatingConditions: {}, parameters: { scale: 2 } },
     assumptions: [], engineering: { requirements: [], constraints: [] },
     model: { name: 'Sandbox analytical model', modelType: 'analytical', fidelityLevel: 'analytical', calibrationStatus: 'not-applicable', solver: { id: 'solver.sandbox-001', revision: '1.0.0' }, limitations: ['Synthetic only.'] },
@@ -257,5 +279,11 @@ describe('renderApp', () => {
     expect(text).toContain('Product provenance not-applicable');
     expect(text).toContain('Availability not-checked');
     expect(text).toContain('Listing a technology does not establish availability');
+    expect(text).toContain('Model Fidelity & How Do We Know?');
+    expect(text).toContain('Model representation — not evidence strength');
+    expect(text).toContain('Execution identity — separate from material identity');
+    expect(text).toContain('Authoritative source not-declared');
+    expect(text).toContain('Physical validation remains open');
+    expect(text).toContain('Higher model fidelity is not stronger evidence');
   });
 });

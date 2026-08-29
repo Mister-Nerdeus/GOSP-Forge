@@ -110,6 +110,24 @@ describe('STEM system projection', () => {
       systemElementResolution: 'not-declared',
       productProvenanceStatus: 'not-applicable',
     });
+    expect(projection.howWeKnow).toMatchObject({
+      consequentialResult: { resultPath: 'result.value', value: 53, quantityId: 'sandbox.result' },
+      modelEvidenceLadder: {
+        modelRepresentation: { fidelityLevel: 'analytical' },
+        evidenceStrength: { evidenceReadiness: 'computationally-reproduced' },
+        deploymentReadiness: 'concept-only',
+        professionalDisposition: 'not-assessed',
+      },
+      materialIdentity: {
+        inputHash: workspace.evaluations[0]!.evaluation.materialInputHash,
+        resultHash: workspace.evaluations[0]!.evaluation.materialResultHash,
+      },
+      executionIdentity: { replayStatus: 'verified-local-replay' },
+    });
+    expect(projection.howWeKnow.nodes).toEqual(expect.arrayContaining([
+      expect.objectContaining({ category: 'source', status: 'not-declared' }),
+      expect.objectContaining({ category: 'proof-obligation', status: 'unavailable' }),
+    ]));
     expect(projection.disclosure).toMatch(/projection of canonical GOSP records/i);
   });
 
@@ -208,6 +226,16 @@ describe('STEM system projection', () => {
             expect.objectContaining({ category: 'sensor', declarationStatus: 'conceptual', purposeLinks: [expect.objectContaining({ resolutionStatus: 'not-declared' })] }),
             expect.objectContaining({ category: 'solver', productProvenanceStatus: 'not-applicable' }),
           ]),
+        },
+        howWeKnow: {
+          consequentialResult: { resultPath: 'result.flow.cleanWaterLiters', value: 64, quantityId: 'clean-water.clean-water-liters' },
+          modelEvidenceLadder: {
+            modelRepresentation: { fidelityLevel: 'rule-check' },
+            evidenceStrength: { evidenceReadiness: 'computationally-reproduced' },
+            deploymentReadiness: 'concept-only',
+            professionalDisposition: 'not-assessed',
+          },
+          executionIdentity: { replayStatus: 'verified-local-replay' },
         },
       });
     });
@@ -314,6 +342,37 @@ describe('STEM system projection', () => {
       changed: true,
     });
     expect(projection.engineeringDecision.unresolvedProofObligations.candidate.length).toBeGreaterThan(0);
+  });
+
+  it('preserves a missing referenced evidence record as an explicit broken trace link', async () => {
+    const workspace = await new Phase1aService().getWorkspace();
+    const referenceEvaluation = structuredClone(workspace.evaluations[0]!);
+    referenceEvaluation.claim.proofObligations[0]!.evidenceRefs.push({
+      kind: 'Evidence', id: 'evidence.missing', revision: '1.0.0',
+    });
+    const projection = buildStemSystemProjection({
+      challenge: workspace.challenge.record,
+      scenario: workspace.challenge.scenario,
+      model: workspace.challenge.model,
+      workflow: workspace.challenge.workflow,
+      requirements: workspace.challenge.requirements,
+      constraints: workspace.challenge.constraints,
+      systemElements: workspace.challenge.systemElements,
+      interfaces: workspace.challenge.interfaces,
+      referenceEvaluation,
+      candidateEvaluation: workspace.evaluations[1]!,
+      comparison: workspace.comparison,
+      mathDefinition: createSandboxStemMathDefinition(),
+      scienceDefinition: createSandboxStemScienceDefinition(),
+      engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      technologyDefinition: createSandboxStemTechnologyDefinition(),
+    });
+    expect(projection.howWeKnow.nodes).toContainEqual(expect.objectContaining({
+      id: 'trace.evidence.evidence.missing@1.0.0', status: 'broken',
+    }));
+    expect(projection.howWeKnow.edges).toContainEqual(expect.objectContaining({
+      to: 'trace.evidence.evidence.missing@1.0.0', status: 'broken', relationship: 'satisfied-by',
+    }));
   });
 
   it('rejects an incomplete STEM challenge selection', async () => {

@@ -32,6 +32,7 @@ export * from './education/stemMathProjection.js';
 export * from './education/stemScienceProjection.js';
 export * from './education/stemEngineeringProjection.js';
 export * from './education/stemTechnologyProjection.js';
+export * from './education/stemHowWeKnowTrace.js';
 export * from './products/productBinding.js';
 export * from './products/productSpec.js';
 export * from './products/productProvenance.js';

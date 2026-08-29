@@ -38,6 +38,7 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     sciencePanel(workspace),
     engineeringPanel(workspace),
     technologyPanel(workspace),
+    howWeKnowPanel(workspace),
     submissionPanel(workspace),
     comparisonSelectionPanel(workspace, client, root),
     resultPanel(workspace),
@@ -145,6 +146,55 @@ function technologyPanel(workspace: Phase1aWorkspace) {
         : element('p', 'muted', 'No represented product property or supporting source is declared.'),
     ])),
     bullets(technology.disclosures),
+  ], 'wide');
+}
+
+function howWeKnowPanel(workspace: Phase1aWorkspace) {
+  const trace = workspace.stemSystem.howWeKnow;
+  const ladder = trace.modelEvidenceLadder;
+  return panel('Model Fidelity & How Do We Know?', [
+    element('p', 'claim', `${trace.consequentialResult.resultPath} = ${displayRecordedValue(trace.consequentialResult.value)}`),
+    subheading('Model representation — not evidence strength'),
+    keyValues([
+      ['Model', ladder.modelRepresentation.modelId],
+      ['Fidelity', ladder.modelRepresentation.fidelityLevel],
+      ['Calibration', ladder.modelRepresentation.calibrationStatus],
+    ]),
+    subheading('Evidence, deployment, and professional dispositions'),
+    keyValues([
+      ['Evidence readiness', ladder.evidenceStrength.evidenceReadiness],
+      ['Accepted evidence', String(ladder.evidenceStrength.acceptedEvidenceCount)],
+      ['Contradictions', String(ladder.evidenceStrength.contradictionCount)],
+      ['Deployment readiness', ladder.deploymentReadiness],
+      ['Professional disposition', ladder.professionalDisposition],
+    ]),
+    element('p', 'muted', ladder.independenceDisclosure),
+    subheading('Material identity'),
+    keyValues([
+      ['Input hash', trace.materialIdentity.inputHash],
+      ['Result hash', trace.materialIdentity.resultHash],
+      ['Contracts', trace.materialIdentity.contractIdentities.length ? trace.materialIdentity.contractIdentities.map((item) => `${item.id}@${item.revision}`).join(', ') : 'none'],
+      ['Datasets', trace.materialIdentity.datasetIdentities.length ? trace.materialIdentity.datasetIdentities.map((item) => `${item.id}@${item.revision}`).join(', ') : 'none'],
+    ]),
+    subheading('Execution identity — separate from material identity'),
+    keyValues([
+      ['Runner', `${trace.executionIdentity.runner.id}@${trace.executionIdentity.runner.revision}`],
+      ['Solver', `${trace.executionIdentity.solver.id}@${trace.executionIdentity.solver.revision}`],
+      ['Environment', `${trace.executionIdentity.environment.os} · ${trace.executionIdentity.environment.runtime}`],
+      ['Replay', trace.executionIdentity.replayStatus],
+    ]),
+    subheading('Result-to-proof trace'),
+    cardList(trace.nodes.map((node) => ({
+      title: `${node.category.replaceAll('-', ' ')} · ${node.label}`,
+      meta: `${node.status} · ${node.id}`,
+      body: node.detail,
+    }))),
+    subheading('Trace links'),
+    cardList(trace.edges.map((edge) => ({
+      title: `${edge.from} → ${edge.to}`,
+      meta: `${edge.relationship} · ${edge.status}`,
+    }))),
+    bullets(trace.disclosures),
   ], 'wide');
 }
 
