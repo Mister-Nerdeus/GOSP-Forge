@@ -15,6 +15,7 @@ import {
   type Phase1aWorkspaceArchive,
   type Phase1aWorkspace,
   type Phase1aWorkspaceSelection,
+  type StemLearningDepth,
   type RepExecutionEvidence,
   type RepMaterialInput,
   type Submission,
@@ -489,6 +490,7 @@ export class Phase1aService {
   async getWorkspace(
     selection?: Phase1aWorkspaceSelection,
     challengeIdentity?: { id: string; revision: string },
+    learningDepth: StemLearningDepth = 'explore',
   ): Promise<Phase1aWorkspace> {
     await this.ensureSeeded();
     const challengeRefs = await this.refs('Challenge');
@@ -586,6 +588,7 @@ export class Phase1aService {
       engineeringDefinition: definition.engineeringDefinition,
       technologyDefinition: definition.technologyDefinition,
       candidateEvaluation: evaluations[1]!,
+      learningDepth,
     });
     return {
       milestone: 'Phase-1A — Minimal Challenge-Facing Product Loop',

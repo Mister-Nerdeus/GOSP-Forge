@@ -241,6 +241,29 @@ describe('STEM system projection', () => {
     });
   });
 
+  it('changes learning inclusion without changing the canonical evaluation identity', async () => {
+    await withServer(async (baseUrl) => {
+      const explore = await fetch(`${baseUrl}/api/phase1a/stem-system?learningDepth=explore`).then((response) => response.json()) as {
+        learningProjection: { selectedManifest: { includedSections: string[] }; canonicalIdentity: unknown };
+        howWeKnow: { consequentialResult: unknown; materialIdentity: unknown };
+      };
+      const verify = await fetch(`${baseUrl}/api/phase1a/stem-system?learningDepth=verify`).then((response) => response.json()) as typeof explore;
+      expect(explore.learningProjection.selectedManifest.includedSections).toEqual(['system-map']);
+      expect(verify.learningProjection.selectedManifest.includedSections).toContain('how-we-know');
+      expect(verify.learningProjection.canonicalIdentity).toEqual(explore.learningProjection.canonicalIdentity);
+      expect(verify.howWeKnow.consequentialResult).toEqual(explore.howWeKnow.consequentialResult);
+      expect(verify.howWeKnow.materialIdentity).toEqual(explore.howWeKnow.materialIdentity);
+    });
+  });
+
+  it('rejects an unknown learning depth', async () => {
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/api/phase1a/stem-system?learningDepth=expert`);
+      expect(response.status).toBe(422);
+      await expect(response.json()).resolves.toMatchObject({ error: expect.stringMatching(/unknown STEM learning depth/i) });
+    });
+  });
+
   it('marks a declared but absent source value unavailable instead of inventing it', async () => {
     const workspace = await new Phase1aService().getWorkspace();
     const mathDefinition = createSandboxStemMathDefinition();

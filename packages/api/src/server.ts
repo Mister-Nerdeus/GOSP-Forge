@@ -62,6 +62,11 @@ export function createGospServer(options: { phase1a?: Phase1aService } = {}) {
             'Choose either an exact Submission pair or a Challenge default selection, not both.',
           );
         }
+        const learningDepth = requestUrl.searchParams.get('learningDepth');
+        const validDepths = ['explore', 'measure', 'model', 'solve', 'verify', 'research-professional'] as const;
+        if (learningDepth !== null && !validDepths.includes(learningDepth as typeof validDepths[number])) {
+          throw new Phase1aValidationError(`Unknown STEM learning depth ${learningDepth}.`);
+        }
         return sendJson(
           res,
           200,
@@ -70,6 +75,7 @@ export function createGospServer(options: { phase1a?: Phase1aService } = {}) {
             challengeId && challengeRevision
               ? { id: challengeId, revision: challengeRevision }
               : undefined,
+            (learningDepth ?? 'explore') as typeof validDepths[number],
           ),
         );
       }
@@ -81,11 +87,17 @@ export function createGospServer(options: { phase1a?: Phase1aService } = {}) {
             'STEM system selection requires challengeId and challengeRevision together.',
           );
         }
+        const learningDepth = requestUrl.searchParams.get('learningDepth');
+        const validDepths = ['explore', 'measure', 'model', 'solve', 'verify', 'research-professional'] as const;
+        if (learningDepth !== null && !validDepths.includes(learningDepth as typeof validDepths[number])) {
+          throw new Phase1aValidationError(`Unknown STEM learning depth ${learningDepth}.`);
+        }
         const workspace = await phase1a.getWorkspace(
           undefined,
           challengeId && challengeRevision
             ? { id: challengeId, revision: challengeRevision }
             : undefined,
+          (learningDepth ?? 'explore') as typeof validDepths[number],
         );
         return sendJson(
           res,

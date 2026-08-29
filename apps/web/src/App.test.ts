@@ -68,7 +68,22 @@ const workspace = {
   },
   availableEvaluators: [],
   stemSystem: {
-    projectionVersion: '0.1.0', learningDepth: 'explore',
+    projectionVersion: '0.1.0', learningDepth: 'research-professional',
+    learningProjection: {
+      selectedDepth: 'research-professional',
+      canonicalIdentity: { evaluationId: 'evaluation.submission.reference', evaluationRevision: '0.1.0', materialInputHash: hashA, materialResultHash: hashB },
+      selectedManifest: { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
+      availableManifests: [
+        { depth: 'explore', label: 'Explore', detailLevel: 'introductory', includedSections: ['system-map'], redactedSections: ['math', 'science', 'engineering', 'technology', 'how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'measure', label: 'Measure', detailLevel: 'guided', includedSections: ['system-map', 'math'], redactedSections: ['science', 'engineering', 'technology', 'how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'model', label: 'Model', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science'], redactedSections: ['engineering', 'technology', 'how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'solve', label: 'Solve', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology'], redactedSections: ['how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'verify', label: 'Verify', detailLevel: 'verification', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
+        { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
+      ],
+      identityInvariant: true,
+      disclosures: ['Learning depth changes presentation, not canonical inputs, material results, hashes, evidence, or readiness.', 'A depth label is not grade alignment, curriculum accreditation, accessibility certification, or evidence of learner mastery.'],
+    },
     problem: { title: 'Sandbox 001 deterministic weighted sum', statement: 'Evaluate a finite weighted sum.' },
     boundary: {
       challenge: { id: 'sandbox-001', revision: '1.0.0' },
@@ -237,6 +252,9 @@ describe('renderApp', () => {
 
     const text = (root as unknown as TestElement).innerText;
     expect(text).toContain('Challenge → Submission → REP Evaluation → Evidence → Comparison');
+    expect(text).toContain('Learning Depth');
+    expect(text).toContain('Learning depth changes presentation, not canonical inputs');
+    expect(text).toContain('A depth label is not grade alignment');
     expect(text).toContain('Sandbox 001 deterministic weighted sum');
     expect(text).toContain('HARD GATE');
     expect(text).toContain('OBJECTIVE');

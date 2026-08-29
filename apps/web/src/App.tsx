@@ -2,6 +2,7 @@ import type {
   Phase1aEvaluationView,
   Phase1aWorkspace,
   Phase1aWorkspaceSelection,
+  StemLearningDepth,
   Submission,
 } from '@gosp/contracts';
 import { createPhase1aClient, type Phase1aClient } from './phase1a/client';
@@ -30,15 +31,17 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
   const app = document.createElement('main');
   app.className = 'app-shell';
 
+  const included = new Set(workspace.stemSystem.learningProjection.selectedManifest.includedSections);
   app.append(
     hero(workspace),
     challengePanel(workspace, client, root),
-    systemMapPanel(workspace),
-    mathPanel(workspace),
-    sciencePanel(workspace),
-    engineeringPanel(workspace),
-    technologyPanel(workspace),
-    howWeKnowPanel(workspace),
+    learningDepthPanel(workspace, client, root),
+    ...(included.has('system-map') ? [systemMapPanel(workspace)] : []),
+    ...(included.has('math') ? [mathPanel(workspace)] : []),
+    ...(included.has('science') ? [sciencePanel(workspace)] : []),
+    ...(included.has('engineering') ? [engineeringPanel(workspace)] : []),
+    ...(included.has('technology') ? [technologyPanel(workspace)] : []),
+    ...(included.has('how-we-know') ? [howWeKnowPanel(workspace)] : []),
     submissionPanel(workspace),
     comparisonSelectionPanel(workspace, client, root),
     resultPanel(workspace),
@@ -49,6 +52,41 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     importPanel(workspace, client, root),
   );
   return app;
+}
+
+function learningDepthPanel(workspace: Phase1aWorkspace, client: Phase1aClient, root: HTMLElement) {
+  const learning = workspace.stemSystem.learningProjection;
+  const selector = document.createElement('select');
+  selector.className = 'select-control';
+  for (const manifest of learning.availableManifests) {
+    const option = document.createElement('option');
+    option.value = manifest.depth;
+    option.textContent = `${manifest.label} · ${manifest.detailLevel}`;
+    option.selected = manifest.depth === learning.selectedDepth;
+    selector.append(option);
+  }
+  const status = element('p', 'form-status', learning.selectedManifest.disclosure);
+  selector.addEventListener('change', () => {
+    status.textContent = 'Loading learning-depth projection…';
+    void client.loadWorkspace(workspace.selection, selector.value as StemLearningDepth)
+      .then((next) => root.replaceChildren(createShell(next, client, root)))
+      .catch((error) => {
+        status.className = 'form-status error';
+        status.textContent = error instanceof Error ? error.message : String(error);
+      });
+  });
+  return panel('Learning Depth', [
+    selector,
+    status,
+    keyValues([
+      ['Evaluation', `${learning.canonicalIdentity.evaluationId}@${learning.canonicalIdentity.evaluationRevision}`],
+      ['Material input hash', learning.canonicalIdentity.materialInputHash],
+      ['Material result hash', learning.canonicalIdentity.materialResultHash],
+      ['Included STEM sections', learning.selectedManifest.includedSections.join(', ') || 'none'],
+      ['Redacted STEM sections', learning.selectedManifest.redactedSections.join(', ') || 'none'],
+    ]),
+    bullets(learning.disclosures),
+  ], 'wide');
 }
 
 function engineeringPanel(workspace: Phase1aWorkspace) {
@@ -380,7 +418,7 @@ function challengePanel(
     if (!id || !revision) return;
     switchStatus.textContent = 'Loading evaluator workspace…';
     void client
-      .loadChallenge(id, revision)
+      .loadChallenge(id, revision, workspace.stemSystem.learningDepth)
       .then((next) => root.replaceChildren(createShell(next, client, root)))
       .catch((error) => {
         switchStatus.className = 'form-status error';
@@ -458,7 +496,7 @@ function comparisonSelectionPanel(
       ) {
         throw new Error('Select two different submissions.');
       }
-      await refreshWorkspace(root, client, selection);
+      await refreshWorkspace(root, client, selection, workspace.stemSystem.learningDepth);
     }, 'Comparison updated.');
   });
   return panel('Choose comparison pair', [
@@ -694,9 +732,9 @@ function importPanel(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
         await refreshWorkspace(root, client, {
           baseline: workspace.selection.baseline,
           candidate: { id: value.id, revision: value.revision },
-        });
+        }, workspace.stemSystem.learningDepth);
       } else if (authoredSubmissionRefs.length >= 2) {
-        const next = await client.loadChallenge(authoredChallenge.id, authoredChallenge.revision);
+        const next = await client.loadChallenge(authoredChallenge.id, authoredChallenge.revision, workspace.stemSystem.learningDepth);
         root.replaceChildren(createShell(next, client, root));
       } else {
         submissionId.value = submissionId.value.replace(/\d+$/, '2');
@@ -749,8 +787,9 @@ async function refreshWorkspace(
   root: HTMLElement,
   client: Phase1aClient,
   selection: Phase1aWorkspaceSelection,
+  learningDepth?: StemLearningDepth,
 ) {
-  const workspace = await client.loadWorkspace(selection);
+  const workspace = await client.loadWorkspace(selection, learningDepth);
   root.replaceChildren(createShell(workspace, client, root));
 }
 

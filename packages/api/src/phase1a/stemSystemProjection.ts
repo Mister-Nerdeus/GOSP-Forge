@@ -22,6 +22,8 @@ import {
   StemTechnologyProjectionSchema,
   type StemTechnologyDefinition,
   StemHowWeKnowTraceSchema,
+  StemLearningProjectionSchema,
+  type StemLearningDepth,
   type SystemElement,
   type Workflow,
 } from '@gosp/contracts';
@@ -583,6 +585,46 @@ function buildHowWeKnowTrace(input: {
   });
 }
 
+const learningSections = ['system-map', 'math', 'science', 'engineering', 'technology', 'how-we-know'] as const;
+
+function buildLearningProjection(depth: StemLearningDepth, evaluationView: Phase1aEvaluationView) {
+  const definitions: Array<{
+    depth: StemLearningDepth;
+    label: string;
+    detailLevel: 'introductory' | 'guided' | 'technical' | 'verification' | 'full';
+    includedSections: Array<typeof learningSections[number]>;
+  }> = [
+    { depth: 'explore', label: 'Explore', detailLevel: 'introductory', includedSections: ['system-map'] },
+    { depth: 'measure', label: 'Measure', detailLevel: 'guided', includedSections: ['system-map', 'math'] },
+    { depth: 'model', label: 'Model', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science'] },
+    { depth: 'solve', label: 'Solve', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology'] },
+    { depth: 'verify', label: 'Verify', detailLevel: 'verification', includedSections: [...learningSections] },
+    { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: [...learningSections] },
+  ];
+  const manifests = definitions.map((definition) => ({
+    ...definition,
+    redactedSections: learningSections.filter((section) => !definition.includedSections.includes(section)),
+    disclosure: `The ${definition.label} view changes explanatory inclusion only; it does not alter the canonical evaluation or its identities.`,
+  }));
+  const selectedManifest = manifests.find((manifest) => manifest.depth === depth)!;
+  return StemLearningProjectionSchema.parse({
+    selectedDepth: depth,
+    canonicalIdentity: {
+      evaluationId: evaluationView.evaluation.id,
+      evaluationRevision: evaluationView.evaluation.revision,
+      materialInputHash: evaluationView.evaluation.materialInputHash,
+      materialResultHash: evaluationView.evaluation.materialResultHash,
+    },
+    selectedManifest,
+    availableManifests: manifests,
+    identityInvariant: true,
+    disclosures: [
+      'Learning depth changes presentation, not canonical inputs, material results, hashes, evidence, or readiness.',
+      'A depth label is not grade alignment, curriculum accreditation, accessibility certification, or evidence of learner mastery.',
+    ],
+  });
+}
+
 export function buildStemSystemProjection(input: {
   challenge: Challenge;
   scenario: Scenario;
@@ -599,6 +641,7 @@ export function buildStemSystemProjection(input: {
   engineeringDefinition: StemEngineeringDefinition;
   technologyDefinition: StemTechnologyDefinition;
   candidateEvaluation: Phase1aEvaluationView;
+  learningDepth?: StemLearningDepth;
 }): StemSystemProjection {
   const {
     challenge,
@@ -616,6 +659,7 @@ export function buildStemSystemProjection(input: {
     engineeringDefinition,
     technologyDefinition,
     candidateEvaluation,
+    learningDepth = 'explore',
   } = input;
   const openProofObligations = referenceEvaluation.claim.proofObligations.filter(
     (item) => item.status === 'open',
@@ -709,7 +753,8 @@ export function buildStemSystemProjection(input: {
 
   return StemSystemProjectionSchema.parse({
     projectionVersion: '0.1.0',
-    learningDepth: 'explore',
+    learningDepth,
+    learningProjection: buildLearningProjection(learningDepth, referenceEvaluation),
     problem: {
       title: challenge.title,
       statement: challenge.problemStatement,

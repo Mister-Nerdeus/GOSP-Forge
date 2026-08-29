@@ -5,19 +5,13 @@ import { StemScienceProjectionSchema } from './stemScienceProjection.js';
 import { StemEngineeringProjectionSchema } from './stemEngineeringProjection.js';
 import { StemTechnologyProjectionSchema } from './stemTechnologyProjection.js';
 import { StemHowWeKnowTraceSchema } from './stemHowWeKnowTrace.js';
-
-export const StemLearningDepthSchema = z.enum([
-  'explore',
-  'measure',
-  'model',
-  'solve',
-  'verify',
-  'research-professional',
-]);
+import { StemLearningProjectionSchema } from './stemLearningProjection.js';
+import { StemLearningDepthSchema } from './stemLearningProjection.js';
 
 export const StemSystemProjectionSchema = z.object({
   projectionVersion: z.literal('0.1.0'),
   learningDepth: StemLearningDepthSchema,
+  learningProjection: StemLearningProjectionSchema,
   problem: z.object({
     title: z.string().min(1),
     statement: z.string().min(1),
@@ -162,5 +156,4 @@ export const StemSystemProjectionSchema = z.object({
   disclosure: z.string().min(1),
 });
 
-export type StemLearningDepth = z.infer<typeof StemLearningDepthSchema>;
 export type StemSystemProjection = z.infer<typeof StemSystemProjectionSchema>;
