@@ -9,6 +9,7 @@ Completed checkpoint records:
 - Slice B / Issue #6: `docs/program/STEM_FOUNDATION_SLICE_B_2026-08-29.md`
 - Slice C / Issue #7: `docs/program/STEM_FOUNDATION_SLICE_C_2026-08-29.md`
 - Slice D / Issue #8: `docs/program/STEM_FOUNDATION_SLICE_D_2026-08-29.md`
+- Slice E / Issue #9: `docs/program/STEM_FOUNDATION_SLICE_E_2026-08-29.md`
 
 ## Scope and authority
 
