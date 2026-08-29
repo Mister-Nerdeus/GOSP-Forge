@@ -42,6 +42,7 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     ...(included.has('engineering') ? [engineeringPanel(workspace)] : []),
     ...(included.has('technology') ? [technologyPanel(workspace)] : []),
     ...(included.has('dynamic') ? [dynamicStemPanel(workspace, client, root)] : []),
+    ...(included.has('experiment') ? [experimentPanel(workspace)] : []),
     ...(included.has('how-we-know') ? [howWeKnowPanel(workspace)] : []),
     submissionPanel(workspace),
     comparisonSelectionPanel(workspace, client, root),
@@ -234,6 +235,47 @@ function howWeKnowPanel(workspace: Phase1aWorkspace) {
       meta: `${edge.relationship} · ${edge.status}`,
     }))),
     bullets(trace.disclosures),
+  ], 'wide');
+}
+
+function experimentPanel(workspace: Phase1aWorkspace) {
+  const experiment = workspace.stemSystem.experiment;
+  const observation = experiment.observation;
+  const discrepancy = experiment.discrepancy;
+  return panel('Simulation to Experiment', [
+    element('p', 'claim', `${experiment.title} · ${discrepancy.failureState.replaceAll('-', ' ').toUpperCase()}`),
+    subheading('Test plan'),
+    keyValues([
+      ['Plan status', experiment.testPlan.status],
+      ['Repetitions', `${experiment.testPlan.repetitions.completed} completed / ${experiment.testPlan.repetitions.planned} planned`],
+      ['Uncertainty', experiment.testPlan.uncertainty.status === 'declared' ? `±${experiment.testPlan.uncertainty.value} ${experiment.testPlan.uncertainty.unit}` : 'not declared'],
+      ['Acceptance', `absolute discrepancy ≤ ${experiment.testPlan.acceptanceCriterion.threshold} ${experiment.testPlan.acceptanceCriterion.unit}`],
+    ]),
+    subheading('Controls'),
+    bullets(experiment.testPlan.controls),
+    subheading('Instruments'),
+    cardList(experiment.testPlan.instruments.map((instrument) => ({ title: instrument.name, meta: `${instrument.status} · ${instrument.measurementKind} · ${instrument.id}` }))),
+    subheading('Procedure'),
+    bullets(experiment.testPlan.procedure),
+    subheading('Prediction versus observation'),
+    keyValues([
+      ['Prediction', experiment.prediction.status === 'available' ? `${experiment.prediction.value} ${experiment.prediction.unit ?? ''}` : 'unavailable'],
+      ['Observation', observation.status === 'available' ? `${observation.value} ${observation.unit ?? ''} · ${observation.classification}` : 'not declared'],
+      ['Observation uncertainty', observation.uncertainty === undefined ? 'not declared' : `±${observation.uncertainty} ${observation.unit ?? ''}`],
+      ['Signed discrepancy', discrepancy.signed === undefined ? 'not assessed' : `${discrepancy.signed} ${discrepancy.unit ?? ''}`],
+      ['Criterion outcome', discrepancy.criterionOutcome],
+      ['Failure state', discrepancy.failureState],
+    ]),
+    element('p', 'comparison-summary', experiment.testPlan.acceptanceCriterion.falsificationStatement),
+    subheading('Canonical truth boundary'),
+    keyValues([
+      ['Evaluation status', experiment.canonicalTruthBoundary.evaluationStatus],
+      ['Preserved failure', experiment.canonicalTruthBoundary.preservedFailureState],
+      ['Contradictions', experiment.canonicalTruthBoundary.contradictionIds.length ? experiment.canonicalTruthBoundary.contradictionIds.join(', ') : 'none declared'],
+      ['Evidence readiness', `${experiment.canonicalTruthBoundary.evidenceReadinessBefore} → ${experiment.canonicalTruthBoundary.evidenceReadinessAfter}`],
+      ['Readiness update', experiment.canonicalTruthBoundary.readinessUpdate],
+    ]),
+    bullets(experiment.disclosures),
   ], 'wide');
 }
 

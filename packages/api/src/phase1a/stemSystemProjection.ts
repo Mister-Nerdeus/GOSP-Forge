@@ -25,6 +25,9 @@ import {
   StemLearningProjectionSchema,
   type StemLearningDepth,
   StemDynamicProjectionSchema,
+  StemExperimentDefinitionSchema,
+  StemExperimentProjectionSchema,
+  type StemExperimentDefinition,
   type SystemElement,
   type Workflow,
 } from '@gosp/contracts';
@@ -586,7 +589,7 @@ function buildHowWeKnowTrace(input: {
   });
 }
 
-const learningSections = ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know'] as const;
+const learningSections = ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'] as const;
 
 function buildLearningProjection(depth: StemLearningDepth, evaluationView: Phase1aEvaluationView) {
   const definitions: Array<{
@@ -640,6 +643,72 @@ function firstTimeSeries(value: unknown): unknown[] | undefined {
     }
   }
   return undefined;
+}
+
+function buildExperimentProjection(input: {
+  definitionInput: StemExperimentDefinition;
+  math: StemMathProjection;
+  evaluationView: Phase1aEvaluationView;
+}) {
+  const definition = StemExperimentDefinitionSchema.parse(input.definitionInput);
+  const quantity = input.math.quantities.find((item) => item.id === definition.predictionQuantityId);
+  const predictionValue = typeof quantity?.value === 'number' ? quantity.value : undefined;
+  const observation = definition.observations[0];
+  const unitsMatch = observation && quantity?.unit === observation.unit
+    && definition.testPlan.acceptanceCriterion.unit === observation.unit;
+  const canCompare = predictionValue !== undefined && observation !== undefined && unitsMatch;
+  const signed = canCompare ? observation.value - predictionValue : undefined;
+  const absolute = signed === undefined ? undefined : Math.abs(signed);
+  const criterionOutcome = absolute === undefined
+    ? ('not-assessed' as const)
+    : absolute <= definition.testPlan.acceptanceCriterion.threshold
+      ? ('pass' as const)
+      : ('fail' as const);
+  const contradictionIds = input.evaluationView.contradictions.map((item) => `${item.id}@${item.revision}`);
+  const preservesFailure = input.evaluationView.evaluation.status === 'failed'
+    || contradictionIds.length > 0
+    || criterionOutcome === 'fail';
+  const readiness = input.evaluationView.claim.evidenceReadiness;
+
+  return StemExperimentProjectionSchema.parse({
+    definitionId: definition.id,
+    title: definition.title,
+    testPlan: definition.testPlan,
+    prediction: {
+      status: predictionValue === undefined ? 'unavailable' : 'available',
+      quantityId: definition.predictionQuantityId,
+      ...(predictionValue === undefined ? {} : { value: predictionValue }),
+      ...(quantity?.unit ? { unit: quantity.unit } : {}),
+      source: 'canonical-evaluation',
+    },
+    observation: observation
+      ? { status: 'available', ...observation }
+      : { status: 'not-declared' },
+    discrepancy: canCompare
+      ? {
+          status: 'available',
+          signed,
+          absolute,
+          ...(predictionValue === 0 ? {} : { relativePercent: (signed! / Math.abs(predictionValue)) * 100 }),
+          unit: observation!.unit,
+          criterionOutcome,
+          failureState: criterionOutcome === 'fail' ? 'negative-result' : 'none',
+        }
+      : { status: 'not-assessed', criterionOutcome: 'not-assessed', failureState: 'not-assessed' },
+    canonicalTruthBoundary: {
+      evaluationStatus: input.evaluationView.evaluation.status,
+      contradictionIds,
+      preservedFailureState: preservesFailure ? 'preserved' : 'none-declared',
+      evidenceReadinessBefore: readiness,
+      evidenceReadinessAfter: readiness,
+      readinessUpdate: 'not-applied',
+    },
+    disclosures: [
+      ...definition.nonClaims,
+      'Failed criteria, failed evaluations, and contradictions remain visible; this projection does not discard or repair them.',
+      'Evidence and readiness change only through canonical Claim, Evidence, Review, and proof-obligation rules.',
+    ],
+  });
 }
 
 function buildDynamicProjection(input: {
@@ -724,6 +793,7 @@ export function buildStemSystemProjection(input: {
   scienceDefinition: StemScienceDefinition;
   engineeringDefinition: StemEngineeringDefinition;
   technologyDefinition: StemTechnologyDefinition;
+  experimentDefinition?: StemExperimentDefinition;
   candidateEvaluation: Phase1aEvaluationView;
   learningDepth?: StemLearningDepth;
 }): StemSystemProjection {
@@ -742,6 +812,7 @@ export function buildStemSystemProjection(input: {
     scienceDefinition,
     engineeringDefinition,
     technologyDefinition,
+    experimentDefinition,
     candidateEvaluation,
     learningDepth = 'explore',
   } = input;
@@ -834,6 +905,26 @@ export function buildStemSystemProjection(input: {
     requirements,
     math,
   });
+  const experiment = buildExperimentProjection({
+    definitionInput: experimentDefinition ?? {
+      id: 'experiment.not-declared',
+      title: 'Experiment not declared',
+      predictionQuantityId: math.quantities.find((item) => item.role === 'output')?.id ?? math.quantities[0]!.id,
+      testPlan: {
+        status: 'planned',
+        controls: ['No experiment controls are declared.'],
+        instruments: [{ id: 'instrument.not-declared', name: 'Instrument not declared', status: 'not-declared', measurementKind: 'not declared' }],
+        procedure: ['Declare a test plan before recording observations.'],
+        repetitions: { planned: 1, completed: 0 },
+        uncertainty: { status: 'not-declared', basis: 'No observation uncertainty is declared.' },
+        acceptanceCriterion: { kind: 'absolute-discrepancy-at-most', threshold: 0, unit: 'not-declared', falsificationStatement: 'No falsification criterion is declared.' },
+      },
+      observations: [],
+      nonClaims: ['A test plan is not a completed test.', 'An undeclared observation is not a measurement.', 'One observation is not validation.'],
+    },
+    math,
+    evaluationView: referenceEvaluation,
+  });
 
   return StemSystemProjectionSchema.parse({
     projectionVersion: '0.1.0',
@@ -866,8 +957,10 @@ export function buildStemSystemProjection(input: {
         path.startsWith('submission.materialPayload'),
       ),
       outputs,
-      measurementStatus: 'not-declared',
-      measuredOutputs: [],
+      measurementStatus: experiment.observation.classification === 'measured' ? 'declared' : 'not-declared',
+      measuredOutputs: experiment.observation.classification === 'measured' && experiment.observation.value !== undefined
+        ? [{ path: `experiment.observation.${experiment.observation.id}`, value: experiment.observation.value, status: 'measured' }]
+        : [],
     },
     math,
     science: buildScienceProjection(scienceDefinition, model, math),
@@ -881,6 +974,7 @@ export function buildStemSystemProjection(input: {
       evaluationView: referenceEvaluation,
       comparison,
     }),
+    experiment,
     controlledConditions: {
       environment: scenario.environment,
       operatingConditions: scenario.operatingConditions,

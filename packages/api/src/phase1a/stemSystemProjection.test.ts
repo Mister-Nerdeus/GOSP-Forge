@@ -252,6 +252,20 @@ describe('STEM system projection', () => {
         expect.objectContaining({ kind: 'sensitivity', status: 'available', provenance: 'evaluation-result' }),
       ]));
       expect(selectedProjection.dynamic.timePlayback).toMatchObject({ status: 'unavailable', provenance: 'not-declared', frameCount: 0, explanation: expect.stringMatching(/disabled/i) });
+      expect(selectedProjection.experiment).toMatchObject({
+        testPlan: { status: 'planned', repetitions: { planned: 3, completed: 0 } },
+        prediction: { status: 'available', quantityId: 'clean-water.clean-water-liters', value: 64, unit: 'L' },
+        observation: { status: 'available', classification: 'synthetic', value: 58, uncertainty: 2, unit: 'L' },
+        discrepancy: { status: 'available', signed: -6, absolute: 6, criterionOutcome: 'fail', failureState: 'negative-result' },
+        canonicalTruthBoundary: {
+          preservedFailureState: 'preserved',
+          evidenceReadinessBefore: 'computationally-reproduced',
+          evidenceReadinessAfter: 'computationally-reproduced',
+          readinessUpdate: 'not-applied',
+        },
+      });
+      expect(selectedProjection.variableRoles).toMatchObject({ measurementStatus: 'not-declared', measuredOutputs: [] });
+      expect(selectedProjection.experiment.disclosures.join(' ')).toMatch(/synthetic observation is not a measurement.*one observation is not validation/i);
     });
   });
 
@@ -428,6 +442,38 @@ describe('STEM system projection', () => {
       changed: true,
     });
     expect(projection.engineeringDecision.unresolvedProofObligations.candidate.length).toBeGreaterThan(0);
+  });
+
+  it('preserves failed evaluations and contradictions without changing readiness', async () => {
+    const workspace = await new Phase1aService().getWorkspace();
+    const referenceEvaluation = structuredClone(workspace.evaluations[0]!);
+    referenceEvaluation.evaluation.status = 'failed';
+    referenceEvaluation.contradictions = [referenceEvaluation.evidence[0]!];
+    const projection = buildStemSystemProjection({
+      challenge: workspace.challenge.record,
+      scenario: workspace.challenge.scenario,
+      model: workspace.challenge.model,
+      workflow: workspace.challenge.workflow,
+      requirements: workspace.challenge.requirements,
+      constraints: workspace.challenge.constraints,
+      systemElements: workspace.challenge.systemElements,
+      interfaces: workspace.challenge.interfaces,
+      referenceEvaluation,
+      candidateEvaluation: workspace.evaluations[1]!,
+      comparison: workspace.comparison,
+      mathDefinition: createSandboxStemMathDefinition(),
+      scienceDefinition: createSandboxStemScienceDefinition(),
+      engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      technologyDefinition: createSandboxStemTechnologyDefinition(),
+    });
+    expect(projection.experiment.canonicalTruthBoundary).toMatchObject({
+      evaluationStatus: 'failed',
+      contradictionIds: [`${referenceEvaluation.evidence[0]!.id}@${referenceEvaluation.evidence[0]!.revision}`],
+      preservedFailureState: 'preserved',
+      evidenceReadinessBefore: referenceEvaluation.claim.evidenceReadiness,
+      evidenceReadinessAfter: referenceEvaluation.claim.evidenceReadiness,
+      readinessUpdate: 'not-applied',
+    });
   });
 
   it('preserves a missing referenced evidence record as an explicit broken trace link', async () => {

@@ -35,6 +35,7 @@ export * from './education/stemTechnologyProjection.js';
 export * from './education/stemHowWeKnowTrace.js';
 export * from './education/stemLearningProjection.js';
 export * from './education/stemDynamicProjection.js';
+export * from './education/stemExperimentProjection.js';
 export * from './products/productBinding.js';
 export * from './products/productSpec.js';
 export * from './products/productProvenance.js';

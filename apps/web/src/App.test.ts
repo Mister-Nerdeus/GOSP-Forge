@@ -72,14 +72,14 @@ const workspace = {
     learningProjection: {
       selectedDepth: 'research-professional',
       canonicalIdentity: { evaluationId: 'evaluation.submission.reference', evaluationRevision: '0.1.0', materialInputHash: hashA, materialResultHash: hashB },
-      selectedManifest: { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
+      selectedManifest: { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
       availableManifests: [
-        { depth: 'explore', label: 'Explore', detailLevel: 'introductory', includedSections: ['system-map'], redactedSections: ['math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know'], disclosure: 'Presentation only.' },
-        { depth: 'measure', label: 'Measure', detailLevel: 'guided', includedSections: ['system-map', 'math'], redactedSections: ['science', 'engineering', 'technology', 'dynamic', 'how-we-know'], disclosure: 'Presentation only.' },
-        { depth: 'model', label: 'Model', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science'], redactedSections: ['engineering', 'technology', 'dynamic', 'how-we-know'], disclosure: 'Presentation only.' },
-        { depth: 'solve', label: 'Solve', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic'], redactedSections: ['how-we-know'], disclosure: 'Presentation only.' },
-        { depth: 'verify', label: 'Verify', detailLevel: 'verification', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
-        { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
+        { depth: 'explore', label: 'Explore', detailLevel: 'introductory', includedSections: ['system-map'], redactedSections: ['math', 'science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'measure', label: 'Measure', detailLevel: 'guided', includedSections: ['system-map', 'math'], redactedSections: ['science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'model', label: 'Model', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science'], redactedSections: ['engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'solve', label: 'Solve', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic'], redactedSections: ['experiment', 'how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'verify', label: 'Verify', detailLevel: 'verification', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
+        { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
       ],
       identityInvariant: true,
       disclosures: ['Learning depth changes presentation, not canonical inputs, material results, hashes, evidence, or readiness.', 'A depth label is not grade alignment, curriculum accreditation, accessibility certification, or evidence of learner mastery.'],
@@ -209,6 +209,21 @@ const workspace = {
       timePlayback: { status: 'unavailable', provenance: 'not-declared', frameCount: 0, explanation: 'Playback disabled.' },
       disclosures: ['Animation is not measurement. Smooth motion is not solver fidelity. A browser transition is not an engineering calculation.'],
     },
+    experiment: {
+      definitionId: 'experiment.sandbox.fixture', title: 'Teaching experiment fixture',
+      testPlan: {
+        status: 'planned', controls: ['Hold inputs fixed.'],
+        instruments: [{ id: 'instrument.fixture', name: 'Fixture instrument', status: 'not-declared', measurementKind: 'synthetic output' }],
+        procedure: ['Record the prediction.', 'Preserve the outcome.'], repetitions: { planned: 1, completed: 0 },
+        uncertainty: { status: 'declared', value: 1, unit: 'unitless', basis: 'Teaching allowance.' },
+        acceptanceCriterion: { kind: 'absolute-discrepancy-at-most', threshold: 2, unit: 'unitless', falsificationStatement: 'A discrepancy greater than 2 fails.' },
+      },
+      prediction: { status: 'available', quantityId: 'sandbox.result', value: 53, unit: 'unitless', source: 'canonical-evaluation' },
+      observation: { status: 'available', id: 'observation.fixture', classification: 'synthetic', value: 50, unit: 'unitless', uncertainty: 1, repetitions: 1, source: 'Teaching fixture.' },
+      discrepancy: { status: 'available', signed: -3, absolute: 3, relativePercent: -5.66, unit: 'unitless', criterionOutcome: 'fail', failureState: 'negative-result' },
+      canonicalTruthBoundary: { evaluationStatus: 'completed', contradictionIds: [], preservedFailureState: 'preserved', evidenceReadinessBefore: 'computationally-reproduced', evidenceReadinessAfter: 'computationally-reproduced', readinessUpdate: 'not-applied' },
+      disclosures: ['A test plan is not a completed test.', 'Synthetic observations are not measurements.', 'One observation is not validation.'],
+    },
     controlledConditions: { environment: {}, operatingConditions: {}, parameters: { scale: 2 } },
     assumptions: [], engineering: { requirements: [], constraints: [] },
     model: { name: 'Sandbox analytical model', modelType: 'analytical', fidelityLevel: 'analytical', calibrationStatus: 'not-applicable', solver: { id: 'solver.sandbox-001', revision: '1.0.0' }, limitations: ['Synthetic only.'] },
@@ -323,6 +338,11 @@ describe('renderApp', () => {
     expect(text).toContain('Allowed parameter · Offset');
     expect(text).toContain('sensitivity · available');
     expect(text).toContain('time series · unavailable');
+    expect(text).toContain('Simulation to Experiment');
+    expect(text).toContain('NEGATIVE RESULT');
+    expect(text).toContain('synthetic');
+    expect(text).toContain('Evidence readiness computationally-reproduced → computationally-reproduced');
+    expect(text).toContain('Synthetic observations are not measurements');
     expect(text).toContain('Animation is not measurement');
   });
 });

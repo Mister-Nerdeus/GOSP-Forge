@@ -11,6 +11,7 @@ import {
   type StemScienceDefinition,
   type StemEngineeringDefinition,
   type StemTechnologyDefinition,
+  type StemExperimentDefinition,
   type Submission,
   type SystemElement,
 } from '@gosp/contracts';
@@ -20,6 +21,7 @@ import {
   createSandboxStemScienceDefinition,
   createSandboxStemEngineeringDefinition,
   createSandboxStemTechnologyDefinition,
+  createSandboxStemExperimentDefinition,
   runSandbox001,
 } from '@gosp/sim-core';
 import {
@@ -29,6 +31,7 @@ import {
   createCleanWaterStemEngineeringDefinition,
   createCleanWaterStemTechnologyDefinition,
   createCleanWaterStemSystemDefinition,
+  createCleanWaterStemExperimentDefinition,
   evaluateCleanWaterRep,
 } from '@gosp/vertical-clean-water';
 
@@ -48,6 +51,7 @@ export type Phase1aEvaluatorDefinition = {
   scienceDefinition: StemScienceDefinition;
   engineeringDefinition: StemEngineeringDefinition;
   technologyDefinition: StemTechnologyDefinition;
+  experimentDefinition: StemExperimentDefinition;
   evaluate(input: RepMaterialInput): RepEvaluationResult;
   claimStatement(evaluation: Evaluation): string;
 };
@@ -77,6 +81,7 @@ function sandboxDefinition(): Phase1aEvaluatorDefinition {
     scienceDefinition: createSandboxStemScienceDefinition(),
     engineeringDefinition: createSandboxStemEngineeringDefinition(),
     technologyDefinition: createSandboxStemTechnologyDefinition(),
+    experimentDefinition: createSandboxStemExperimentDefinition(),
     evaluate: runSandbox001,
     claimStatement: (evaluation) =>
       `Under the recorded synthetic inputs, result.value is ${(evaluation.result as { value: number }).value}.`,
@@ -133,6 +138,7 @@ function cleanWaterDefinition(): Phase1aEvaluatorDefinition {
     scienceDefinition: createCleanWaterStemScienceDefinition(),
     engineeringDefinition: createCleanWaterStemEngineeringDefinition(template.challenge.revision),
     technologyDefinition: createCleanWaterStemTechnologyDefinition(),
+    experimentDefinition: createCleanWaterStemExperimentDefinition(),
     evaluate: evaluateCleanWaterRep,
     claimStatement: (evaluation) => {
       const result = evaluation.result as { flow: { cleanWaterLiters: number } };
