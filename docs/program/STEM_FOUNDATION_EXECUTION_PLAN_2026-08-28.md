@@ -156,6 +156,8 @@ Dependencies: A2 and B.
 Acceptance: a learner can explain what may change, what must not fail, and why one revision differs.
 Non-claims: passing modeled gates is not safety approval or deployment readiness.
 
+Status: implemented and locally verified on 2026-08-29 at implementation SHA `dc87f884e8a766273f2b76ca5a906b9c68e8dd86`. See `docs/program/STEM_FOUNDATION_SLICE_D_2026-08-29.md`.
+
 ### E — Show Technology
 
 Deliver:
@@ -345,4 +347,4 @@ A package is not done because code exists. It is done only when:
 
 ## Current next action
 
-Begin D as Issue #8. D combines the system and math projections with requirements, gates, objectives, design variables, margins, hazards, comparisons, and unresolved proof obligations. A2, B, and C are complete dependencies.
+Begin E as Issue #9. E projects the technologies that serve the verified system, math, science, and engineering views, while keeping product and vertical declarations outside the domain-neutral core. A2 through D are complete dependencies.
