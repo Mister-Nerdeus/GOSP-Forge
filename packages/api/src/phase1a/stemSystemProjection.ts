@@ -1,6 +1,8 @@
 import {
   StemSystemProjectionSchema,
   StemMathDefinitionSchema,
+  StemMathProjectionSchema,
+  StemScienceDefinitionSchema,
   type CanonicalConstraint,
   type Challenge,
   type Interface,
@@ -11,6 +13,8 @@ import {
   type Scenario,
   type StemSystemProjection,
   type StemMathDefinition,
+  type StemMathProjection,
+  type StemScienceDefinition,
   type SystemElement,
   type Workflow,
 } from '@gosp/contracts';
@@ -141,12 +145,45 @@ function buildMathProjection(
       })),
     ];
   });
-  return {
+  return StemMathProjectionSchema.parse({
     quantities,
     equations,
     dependencies,
     disclosure:
       'Values are resolved from the recorded REP material input, explainability intermediates, and canonical Evaluation result. The browser does not recalculate the result. Dimensional status is explicit and is not inferred from displayed units.',
+  });
+}
+
+function buildScienceProjection(
+  definitionInput: StemScienceDefinition,
+  model: Model,
+  math: StemMathProjection,
+) {
+  const definition = StemScienceDefinitionSchema.parse(definitionInput);
+  const equationIds = new Set(math.equations.map((equation) => equation.id));
+  const quantityIds = new Set(math.quantities.map((quantity) => quantity.id));
+  for (const item of definition.items) {
+    for (const equationId of item.equationIds) {
+      if (!equationIds.has(equationId)) {
+        throw new Error(
+          `STEM science item ${item.id} references unknown equation ${equationId}.`,
+        );
+      }
+    }
+    for (const quantityId of item.quantityIds) {
+      if (!quantityIds.has(quantityId)) {
+        throw new Error(
+          `STEM science item ${item.id} references unknown quantity ${quantityId}.`,
+        );
+      }
+    }
+  }
+  return {
+    treatment: definition.treatment,
+    modelRef: { id: model.id, revision: model.revision },
+    fidelityLevel: model.fidelity.level,
+    items: definition.items,
+    disclosures: definition.disclosures,
   };
 }
 
@@ -162,6 +199,7 @@ export function buildStemSystemProjection(input: {
   referenceEvaluation: Phase1aEvaluationView;
   comparison: Phase1aComparison;
   mathDefinition: StemMathDefinition;
+  scienceDefinition: StemScienceDefinition;
 }): StemSystemProjection {
   const {
     challenge,
@@ -175,6 +213,7 @@ export function buildStemSystemProjection(input: {
     referenceEvaluation,
     comparison,
     mathDefinition,
+    scienceDefinition,
   } = input;
   const openProofObligations = referenceEvaluation.claim.proofObligations.filter(
     (item) => item.status === 'open',
@@ -250,6 +289,7 @@ export function buildStemSystemProjection(input: {
     referenceEvaluation.evaluation.result,
     'evaluation.result',
   ).map((item) => ({ ...item, status: 'calculated' as const }));
+  const math = buildMathProjection(mathDefinition, referenceEvaluation);
 
   return StemSystemProjectionSchema.parse({
     projectionVersion: '0.1.0',
@@ -284,7 +324,8 @@ export function buildStemSystemProjection(input: {
       measurementStatus: 'not-declared',
       measuredOutputs: [],
     },
-    math: buildMathProjection(mathDefinition, referenceEvaluation),
+    math,
+    science: buildScienceProjection(scienceDefinition, model, math),
     controlledConditions: {
       environment: scenario.environment,
       operatingConditions: scenario.operatingConditions,

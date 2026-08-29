@@ -8,17 +8,20 @@ import {
   type RepEvaluationResult,
   type RepMaterialInput,
   type StemMathDefinition,
+  type StemScienceDefinition,
   type Submission,
   type SystemElement,
 } from '@gosp/contracts';
 import {
   createSandbox001MaterialInput,
   createSandboxStemMathDefinition,
+  createSandboxStemScienceDefinition,
   runSandbox001,
 } from '@gosp/sim-core';
 import {
   createCleanWaterRepMaterialInput,
   createCleanWaterStemMathDefinition,
+  createCleanWaterStemScienceDefinition,
   createCleanWaterStemSystemDefinition,
   evaluateCleanWaterRep,
 } from '@gosp/vertical-clean-water';
@@ -36,6 +39,7 @@ export type Phase1aEvaluatorDefinition = {
   systemElements: SystemElement[];
   interfaces: Interface[];
   mathDefinition: StemMathDefinition;
+  scienceDefinition: StemScienceDefinition;
   evaluate(input: RepMaterialInput): RepEvaluationResult;
   claimStatement(evaluation: Evaluation): string;
 };
@@ -62,6 +66,7 @@ function sandboxDefinition(): Phase1aEvaluatorDefinition {
     systemElements: [],
     interfaces: [],
     mathDefinition: createSandboxStemMathDefinition(),
+    scienceDefinition: createSandboxStemScienceDefinition(),
     evaluate: runSandbox001,
     claimStatement: (evaluation) =>
       `Under the recorded synthetic inputs, result.value is ${(evaluation.result as { value: number }).value}.`,
@@ -115,6 +120,7 @@ function cleanWaterDefinition(): Phase1aEvaluatorDefinition {
     ],
     ...systemDefinition,
     mathDefinition: createCleanWaterStemMathDefinition(),
+    scienceDefinition: createCleanWaterStemScienceDefinition(),
     evaluate: evaluateCleanWaterRep,
     claimStatement: (evaluation) => {
       const result = evaluation.result as { flow: { cleanWaterLiters: number } };

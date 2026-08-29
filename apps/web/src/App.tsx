@@ -35,6 +35,7 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     challengePanel(workspace, client, root),
     systemMapPanel(workspace),
     mathPanel(workspace),
+    sciencePanel(workspace),
     submissionPanel(workspace),
     comparisonSelectionPanel(workspace, client, root),
     resultPanel(workspace),
@@ -45,6 +46,38 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     importPanel(workspace, client, root),
   );
   return app;
+}
+
+function sciencePanel(workspace: Phase1aWorkspace) {
+  const science = workspace.stemSystem.science;
+  return panel('Show the Science', [
+    keyValues([
+      ['Treatment', science.treatment],
+      ['Model', `${science.modelRef.id}@${science.modelRef.revision}`],
+      ['Model fidelity', science.fidelityLevel],
+    ]),
+    ...science.items.map((item) => layer(
+      `${item.classification.replaceAll('-', ' ')} · ${item.title}`,
+      [
+        element('p', '', item.statement),
+        keyValues([
+          ['Applicability', `${item.applicability.status} · ${item.applicability.description}`],
+          ['Source status', item.sourceStatus],
+          ['Evidence status', item.evidenceStatus],
+          ['Equation links', item.equationIds.length ? item.equationIds.join(', ') : 'none declared'],
+          ['Quantity links', item.quantityIds.length ? item.quantityIds.join(', ') : 'none declared'],
+        ]),
+        subheading('Limitations'),
+        bullets(item.limitations),
+      ],
+    )),
+    bullets(science.disclosures),
+    element(
+      'p',
+      'muted',
+      'Declaring a scientific principle does not prove that the model represents it adequately or that the result is physically validated.',
+    ),
+  ], 'wide');
 }
 
 function displayRecordedValue(value: unknown) {

@@ -7,6 +7,7 @@ import { replayRep } from './replay.js';
 import { runSandbox001 } from './sandbox001.js';
 import { compareRepEnvironmentReports } from './reproducibilityComparison.js';
 import { createSandboxStemMathDefinition } from '../education/stemMathDefinition.js';
+import { createSandboxStemScienceDefinition } from '../education/stemScienceDefinition.js';
 import {
   referenceRunnerSourceManifest,
   sourceImplementationContentHash,
@@ -20,6 +21,14 @@ describe('REP v0.1 reference runner', () => {
       outputQuantityId: 'sandbox.result',
       dimensionalStatus: 'not-applicable',
     });
+  });
+
+  it('keeps Sandbox science treatment explicitly synthetic and non-physical', () => {
+    const definition = createSandboxStemScienceDefinition();
+    expect(definition.treatment).toBe('synthetic-benchmark');
+    expect(definition.disclosures.join(' ')).toMatch(
+      /no natural governing principle.*physical observation/i,
+    );
   });
   it('uses Unicode code-point ordering and rejects non-JSON values', () => {
     expect(canonicalJson({ '\u{1F600}': 2, '\uE000': 1 })).toBe('{"":1,"😀":2}');

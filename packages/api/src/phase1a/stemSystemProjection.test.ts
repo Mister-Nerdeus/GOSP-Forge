@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { createGospServer, PHASE1A_LOCAL_HOST } from '../server.js';
 import { Phase1aService } from './service.js';
 import { buildStemSystemProjection } from './stemSystemProjection.js';
-import { createSandboxStemMathDefinition } from '@gosp/sim-core';
+import {
+  createSandboxStemMathDefinition,
+  createSandboxStemScienceDefinition,
+} from '@gosp/sim-core';
 
 async function withServer<T>(run: (baseUrl: string) => Promise<T>) {
   const server = createGospServer();
@@ -33,6 +36,7 @@ describe('STEM system projection', () => {
       referenceEvaluation: workspace.evaluations[0]!,
       comparison: workspace.comparison,
       mathDefinition: createSandboxStemMathDefinition(),
+      scienceDefinition: createSandboxStemScienceDefinition(),
     });
 
     expect(projection.problem.title).toBe('Sandbox 001 deterministic weighted sum');
@@ -80,6 +84,13 @@ describe('STEM system projection', () => {
       toQuantityId: 'sandbox.result',
       equationId: 'sandbox-001.weighted-sum',
     });
+    expect(projection.science).toMatchObject({
+      treatment: 'synthetic-benchmark',
+      fidelityLevel: 'analytical',
+    });
+    expect(projection.science.disclosures.join(' ')).toMatch(
+      /no natural governing principle.*physical observation/i,
+    );
     expect(projection.disclosure).toMatch(/projection of canonical GOSP records/i);
   });
 
@@ -144,6 +155,18 @@ describe('STEM system projection', () => {
             outputQuantityId: 'clean-water.clean-water-liters',
           })],
         },
+        science: {
+          treatment: 'physical-domain',
+          fidelityLevel: 'rule-check',
+          items: expect.arrayContaining([
+            expect.objectContaining({ classification: 'principle', sourceStatus: 'unavailable' }),
+            expect.objectContaining({ classification: 'model-equation', sourceStatus: 'model-declared' }),
+            expect.objectContaining({ classification: 'engineering-approximation', applicability: expect.objectContaining({ status: 'unknown' }) }),
+            expect.objectContaining({ classification: 'empirical-relationship', evidenceStatus: 'unavailable' }),
+            expect.objectContaining({ classification: 'assumption', evidenceStatus: 'assumption-only' }),
+            expect.objectContaining({ classification: 'observation', applicability: expect.objectContaining({ status: 'not-declared' }) }),
+          ]),
+        },
       });
     });
   });
@@ -164,6 +187,7 @@ describe('STEM system projection', () => {
       referenceEvaluation: workspace.evaluations[0]!,
       comparison: workspace.comparison,
       mathDefinition,
+      scienceDefinition: createSandboxStemScienceDefinition(),
     });
     expect(projection.math.quantities[0]).toMatchObject({
       id: 'sandbox.values',
@@ -188,7 +212,28 @@ describe('STEM system projection', () => {
       referenceEvaluation: workspace.evaluations[0]!,
       comparison: workspace.comparison,
       mathDefinition,
+      scienceDefinition: createSandboxStemScienceDefinition(),
     })).toThrow(/must exactly match the recorded equation variables/i);
+  });
+
+  it('rejects science links to undeclared math nodes', async () => {
+    const workspace = await new Phase1aService().getWorkspace();
+    const scienceDefinition = createSandboxStemScienceDefinition();
+    scienceDefinition.items[0]!.equationIds = ['equation.not-declared'];
+    expect(() => buildStemSystemProjection({
+      challenge: workspace.challenge.record,
+      scenario: workspace.challenge.scenario,
+      model: workspace.challenge.model,
+      workflow: workspace.challenge.workflow,
+      requirements: workspace.challenge.requirements,
+      constraints: workspace.challenge.constraints,
+      systemElements: workspace.challenge.systemElements,
+      interfaces: workspace.challenge.interfaces,
+      referenceEvaluation: workspace.evaluations[0]!,
+      comparison: workspace.comparison,
+      mathDefinition: createSandboxStemMathDefinition(),
+      scienceDefinition,
+    })).toThrow(/references unknown equation/i);
   });
 
   it('rejects an incomplete STEM challenge selection', async () => {

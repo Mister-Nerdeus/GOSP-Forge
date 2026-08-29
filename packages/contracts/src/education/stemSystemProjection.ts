@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { CanonicalJsonValueSchema } from '../canonical/identity.js';
 import { StemMathProjectionSchema } from './stemMathProjection.js';
+import { StemScienceProjectionSchema } from './stemScienceProjection.js';
 
 export const StemLearningDepthSchema = z.enum([
   'explore',
@@ -94,6 +95,7 @@ export const StemSystemProjectionSchema = z.object({
     })).default([]),
   }),
   math: StemMathProjectionSchema,
+  science: StemScienceProjectionSchema,
   controlledConditions: z.object({
     environment: z.record(CanonicalJsonValueSchema).default({}),
     operatingConditions: z.record(CanonicalJsonValueSchema).default({}),

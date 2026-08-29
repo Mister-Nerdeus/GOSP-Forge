@@ -106,6 +106,19 @@ const workspace = {
       dependencies: [{ fromQuantityId: 'sandbox.offset', toQuantityId: 'sandbox.result', equationId: 'sandbox-001.weighted-sum' }],
       disclosure: 'The browser does not recalculate the result.',
     },
+    science: {
+      treatment: 'synthetic-benchmark',
+      modelRef: { id: 'model.sandbox-001', revision: '1.0.0' },
+      fidelityLevel: 'analytical',
+      items: [{
+        id: 'sandbox.science.weighted-sum-model', title: 'Synthetic weighted-sum model relationship', classification: 'model-equation',
+        statement: 'The benchmark is a deterministic equation.',
+        applicability: { status: 'applicable', description: 'Sandbox only.' },
+        limitations: ['Not a physical model.'], sourceStatus: 'model-declared', evidenceStatus: 'model-only',
+        sourceRefs: [], evidenceRefs: [], equationIds: ['sandbox-001.weighted-sum'], quantityIds: ['sandbox.result'],
+      }],
+      disclosures: ['No natural governing principle or physical observation is asserted.'],
+    },
     controlledConditions: { environment: {}, operatingConditions: {}, parameters: { scale: 2 } },
     assumptions: [], engineering: { requirements: [], constraints: [] },
     model: { name: 'Sandbox analytical model', modelType: 'analytical', fidelityLevel: 'analytical', calibrationStatus: 'not-applicable', solver: { id: 'solver.sandbox-001', revision: '1.0.0' }, limitations: ['Synthetic only.'] },
@@ -189,5 +202,10 @@ describe('renderApp', () => {
     expect(text).toContain('offset = 7 (unitless)');
     expect(text).toContain('Dimensional consistency not-applicable');
     expect(text).toContain('browser does not recalculate');
+    expect(text).toContain('Show the Science');
+    expect(text).toContain('synthetic-benchmark');
+    expect(text).toContain('model equation · Synthetic weighted-sum model relationship');
+    expect(text).toContain('No natural governing principle or physical observation');
+    expect(text).toContain('does not prove that the model represents it adequately');
   });
 });

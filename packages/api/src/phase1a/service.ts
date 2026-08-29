@@ -582,6 +582,7 @@ export class Phase1aService {
       referenceEvaluation: evaluations[0]!,
       comparison,
       mathDefinition: definition.mathDefinition,
+      scienceDefinition: definition.scienceDefinition,
     });
     return {
       milestone: 'Phase-1A — Minimal Challenge-Facing Product Loop',

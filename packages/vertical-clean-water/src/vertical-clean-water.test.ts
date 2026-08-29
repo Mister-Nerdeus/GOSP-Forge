@@ -8,6 +8,7 @@ import {
   createCleanWaterImpactReport,
   createCleanWaterStemSystemDefinition,
   createCleanWaterStemMathDefinition,
+  createCleanWaterStemScienceDefinition,
   generateModuleScorecards,
   generateSystemScorecard,
   runWaterWarningController,
@@ -349,6 +350,23 @@ describe('Clean Water vertical foundation', () => {
       equationId: 'clean-water.flow-screen',
       outputQuantityId: 'clean-water.clean-water-liters',
       dimensionalStatus: 'not-checked',
+    });
+  });
+
+  it('separates Clean Water principles, models, approximations, assumptions, and observations', () => {
+    const definition = createCleanWaterStemScienceDefinition();
+    expect(definition.items.map((item) => item.classification)).toEqual([
+      'principle',
+      'model-equation',
+      'engineering-approximation',
+      'empirical-relationship',
+      'assumption',
+      'observation',
+    ]);
+    expect(definition.items.find((item) => item.classification === 'observation')).toMatchObject({
+      sourceStatus: 'not-declared',
+      evidenceStatus: 'not-declared',
+      applicability: { status: 'not-declared' },
     });
   });
 });

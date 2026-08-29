@@ -21,6 +21,7 @@
   "packages/contracts/src/canonical/canonicalObjects.test.ts",
   "packages/contracts/src/canonical/programGraph.test.ts",
   "packages/contracts/src/education/stemMathProjection.test.ts",
+  "packages/contracts/src/education/stemScienceProjection.test.ts",
   "packages/contracts/src/contracts.test.ts",
   "packages/contracts/src/imports/specImportDraft.test.ts",
   "packages/contracts/src/registry/moduleRegistryEntry.test.ts",

@@ -9,3 +9,4 @@ export * from './rep/reproducibilityComparison.js';
 export * from './rep/sourceImplementationIdentity.js';
 export * from './logic/ruleEngine.js';
 export * from './education/stemMathDefinition.js';
+export * from './education/stemScienceDefinition.js';
