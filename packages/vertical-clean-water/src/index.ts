@@ -17,4 +17,5 @@ export * from './scoring/moduleScorecardGenerator.js';
 export * from './scoring/systemScorecardGenerator.js';
 export * from './specMeaning/applyProductSpecEffects.js';
 export * from './rep/cleanWaterRepAdapter.js';
+export * from './education/stemSystemDefinition.js';
 export * from './validation/cleanWaterValidation.js';

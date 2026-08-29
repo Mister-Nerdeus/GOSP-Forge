@@ -6,6 +6,7 @@ import {
   applyProductSpecEffects,
   compareCleanWaterBaselines,
   createCleanWaterImpactReport,
+  createCleanWaterStemSystemDefinition,
   generateModuleScorecards,
   generateSystemScorecard,
   runWaterWarningController,
@@ -317,5 +318,23 @@ describe('Clean Water vertical foundation', () => {
     expect(moduleScorecards[0]?.rationale.join(' ')).toContain('Educational scorecard only');
     expect(systemScorecard.moduleScoreRefs).toEqual(['pump', 'filter-media']);
     expect(systemScorecard.rationale.join(' ')).toContain('Sponsor status is ignored');
+  });
+
+  it('declares the educational system map inside the vertical boundary', () => {
+    const definition = createCleanWaterStemSystemDefinition('1.0.0');
+
+    expect(definition.systemElements.map((item) => item.id)).toEqual([
+      'source',
+      'pump',
+      'filter',
+    ]);
+    expect(definition.interfaces.map((item) => [item.from.id, item.to.id, item.interfaceType])).toEqual([
+      ['source', 'pump', 'resource'],
+      ['source', 'pump', 'power'],
+      ['pump', 'filter', 'resource'],
+    ]);
+    expect(definition.systemElements.every((item) => item.provenance.method === 'authored')).toBe(
+      true,
+    );
   });
 });

@@ -27,7 +27,10 @@ describe('STEM system projection', () => {
       workflow: workspace.challenge.workflow,
       requirements: workspace.challenge.requirements,
       constraints: workspace.challenge.constraints,
+      systemElements: workspace.challenge.systemElements,
+      interfaces: workspace.challenge.interfaces,
       referenceEvaluation: workspace.evaluations[0]!,
+      comparison: workspace.comparison,
     });
 
     expect(projection.problem.title).toBe('Sandbox 001 deterministic weighted sum');
@@ -45,6 +48,22 @@ describe('STEM system projection', () => {
       'proof.independent-reproduction',
       'proof.physical-validation',
     ]);
+    expect(projection.systemMap.declarationStatus).toBe('not-declared');
+    expect(projection.systemMap.elements).toEqual([]);
+    expect(projection.systemMap.interfaces).toEqual([]);
+    expect(projection.systemMap.disclosures).toEqual(
+      expect.arrayContaining([expect.stringMatching(/does not infer parts or connections/i)]),
+    );
+    expect(projection.variableRoles.inputs.length).toBeGreaterThan(0);
+    expect(projection.variableRoles.changeablePaths).toContain(
+      'submission.materialPayload.values[0]',
+    );
+    expect(projection.variableRoles.outputs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: 'evaluation.result.value', status: 'calculated' }),
+      ]),
+    );
+    expect(projection.variableRoles.measurementStatus).toBe('not-declared');
     expect(projection.disclosure).toMatch(/projection of canonical GOSP records/i);
   });
 
@@ -81,6 +100,23 @@ describe('STEM system projection', () => {
           },
         },
         model: { fidelityLevel: 'rule-check' },
+        systemMap: {
+          declarationStatus: 'declared',
+          elements: [
+            { id: 'source', name: 'Source reservoir and low-voltage supply', resolutionStatus: 'resolved' },
+            { id: 'pump', name: 'Water pump', resolutionStatus: 'resolved' },
+            { id: 'filter', name: 'Educational filter stage', resolutionStatus: 'resolved' },
+          ],
+          interfaces: [
+            { fromElementId: 'source', toElementId: 'pump', interfaceType: 'resource' },
+            { fromElementId: 'source', toElementId: 'pump', interfaceType: 'power' },
+            { fromElementId: 'pump', toElementId: 'filter', interfaceType: 'resource' },
+          ],
+        },
+        variableRoles: {
+          measurementStatus: 'not-declared',
+          measuredOutputs: [],
+        },
       });
     });
   });

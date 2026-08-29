@@ -55,6 +55,9 @@ h1 { max-width: 800px; margin: 10px 0 8px; font-family: Georgia, serif; font-siz
 .key-values dd { min-width: 0; margin: 0; overflow-wrap: anywhere; font-size: 13px; font-weight: 650; }
 
 .card-list { display: grid; gap: 9px; }
+.system-node-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.system-node { display: grid; gap: 5px; padding: 14px; border: 1px solid #b9cec5; border-radius: 10px; background: #edf5f1; }
+.system-node.unresolved { border-color: #d8aa80; background: #fff3e7; }
 .mini-card { display: grid; gap: 4px; padding: 11px 12px; border-left: 3px solid #cf915c; border-radius: 4px 8px 8px 4px; background: #f7f3eb; }
 .mini-card strong { font-size: 13px; line-height: 1.4; }
 .payload, code { overflow-wrap: anywhere; color: #305449; font-family: "Cascadia Code", Consolas, monospace; font-size: 11px; }

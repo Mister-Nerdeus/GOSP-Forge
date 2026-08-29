@@ -33,6 +33,7 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
   app.append(
     hero(workspace),
     challengePanel(workspace, client, root),
+    systemMapPanel(workspace),
     submissionPanel(workspace),
     comparisonSelectionPanel(workspace, client, root),
     resultPanel(workspace),
@@ -43,6 +44,66 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     importPanel(workspace, client, root),
   );
   return app;
+}
+
+function systemMapPanel(workspace: Phase1aWorkspace) {
+  const projection = workspace.stemSystem;
+  const map = projection.systemMap;
+  const nodes = document.createElement('div');
+  nodes.className = 'system-node-grid';
+  if (map.elements.length) {
+    for (const item of map.elements) {
+      nodes.append(
+        elementContainer('article', `system-node ${item.resolutionStatus}`, [
+          element('strong', '', item.name),
+          element('span', 'meta', `${item.elementType} · ${item.id}@${item.revision}`),
+          element('span', 'meta', `${item.status} · ${item.resolutionStatus}`),
+        ]),
+      );
+    }
+  } else {
+    nodes.append(element('p', 'muted', 'No SystemElement records are declared for this Scenario.'));
+  }
+  const connections = map.interfaces.length
+    ? cardList(
+        map.interfaces.map((item) => ({
+          title: `${item.fromElementId} → ${item.toElementId}`,
+          meta: `${item.interfaceType.toUpperCase()} · ${item.direction} · ${item.unit ?? 'unit not declared'}`,
+          body: item.name,
+        })),
+      )
+    : element('p', 'muted', 'No canonical interfaces are declared; no connections are inferred.');
+  const variableSummary = keyValues([
+    ['Submitted inputs', String(projection.variableRoles.inputs.length)],
+    ['Controlled values', String(projection.variableRoles.controlled.length)],
+    ['Changeable paths', String(projection.variableRoles.changeablePaths.length)],
+    ['Calculated outputs', String(projection.variableRoles.outputs.length)],
+    ['Measured outputs', projection.variableRoles.measurementStatus],
+  ]);
+  return panel('System Map', [
+    element('p', 'claim', `${map.declarationStatus} canonical system declaration`),
+    keyValues([
+      ['Challenge', `${projection.boundary.challenge.id}@${projection.boundary.challenge.revision}`],
+      ['Scenario', `${projection.boundary.scenario.id}@${projection.boundary.scenario.revision}`],
+      ['Model', `${projection.boundary.model.id}@${projection.boundary.model.revision}`],
+    ]),
+    nodes,
+    subheading('Declared interactions / flows'),
+    connections,
+    subheading('Input, control, change, and output roles'),
+    variableSummary,
+    details(
+      'Inspect declared paths',
+      bullets([
+        ...projection.variableRoles.inputs.map((item) => `INPUT · ${item.path}`),
+        ...projection.variableRoles.controlled.map((item) => `CONTROLLED · ${item.path}`),
+        ...projection.variableRoles.changeablePaths.map((path) => `CHANGEABLE · ${path}`),
+        ...projection.variableRoles.outputs.map((item) => `CALCULATED OUTPUT · ${item.path}`),
+      ]),
+    ),
+    bullets(map.disclosures),
+    element('p', 'muted', projection.disclosure),
+  ], 'wide');
 }
 
 function hero(workspace: Phase1aWorkspace) {

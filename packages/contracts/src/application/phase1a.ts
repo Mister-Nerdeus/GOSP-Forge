@@ -1,4 +1,10 @@
-import type { CanonicalConstraint, Requirement } from '../canonical/programGraph.js';
+import type {
+  CanonicalConstraint,
+  Interface,
+  Requirement,
+  SystemElement,
+} from '../canonical/programGraph.js';
+import type { StemSystemProjection } from '../education/stemSystemProjection.js';
 import type { Claim, Evidence, ProofObligationSchema } from '../canonical/truthModel.js';
 import type {
   Challenge,
@@ -103,11 +109,14 @@ export type Phase1aWorkspace = {
   };
   evaluator: Phase1aEvaluatorSummary;
   availableEvaluators: Phase1aEvaluatorSummary[];
+  stemSystem: StemSystemProjection;
   challenge: {
     record: Challenge;
     availableChallenges: Challenge[];
     requirements: Array<{ record: Requirement; role: 'hard-gate' | 'objective' }>;
     constraints: CanonicalConstraint[];
+    systemElements: SystemElement[];
+    interfaces: Interface[];
     assumptions: RepMaterialInput['materialAssumptions'];
     model: Model;
     scenario: Scenario;

@@ -26,6 +26,7 @@ import {
   Phase1aEvaluatorRegistry,
   type Phase1aEvaluatorDefinition,
 } from './evaluatorRegistry.js';
+import { buildStemSystemProjection } from './stemSystemProjection.js';
 
 const storageKey = (kind: string, id: string, revision: string) =>
   `phase1a:${kind}:${id}@${revision}`;
@@ -561,6 +562,26 @@ export class Phase1aService {
         this.evaluateSubmission(submission.id, submission.revision),
       ),
     );
+    const requirements = this.evaluators.requirementsFor(challenge, definition);
+    const constraints = this.evaluators.constraintsFor(challenge);
+    const comparison = comparePhase1aEvaluations(
+      evaluations[0]!,
+      evaluations[1]!,
+      definition.objectiveResultPath,
+      definition.limitations,
+    );
+    const stemSystem = buildStemSystemProjection({
+      challenge,
+      scenario: base.compiledScenario,
+      model: base.model,
+      workflow: base.workflow,
+      requirements,
+      constraints,
+      systemElements: definition.systemElements,
+      interfaces: definition.interfaces,
+      referenceEvaluation: evaluations[0]!,
+      comparison,
+    });
     return {
       milestone: 'Phase-1A — Minimal Challenge-Facing Product Loop',
       selection: {
@@ -576,11 +597,14 @@ export class Phase1aService {
       persistence: this.storage.describe(),
       evaluator: this.evaluatorSummary(definition),
       availableEvaluators: this.evaluators.definitions.map((item) => this.evaluatorSummary(item)),
+      stemSystem,
       challenge: {
         record: challenge,
         availableChallenges,
-        requirements: this.evaluators.requirementsFor(challenge, definition),
-        constraints: this.evaluators.constraintsFor(challenge),
+        requirements,
+        constraints,
+        systemElements: definition.systemElements,
+        interfaces: definition.interfaces,
         assumptions: base.materialAssumptions,
         model: base.model,
         scenario: base.compiledScenario,
@@ -588,12 +612,7 @@ export class Phase1aService {
       },
       submissions: visibleSubmissions,
       evaluations,
-      comparison: comparePhase1aEvaluations(
-        evaluations[0]!,
-        evaluations[1]!,
-        definition.objectiveResultPath,
-        definition.limitations,
-      ),
+      comparison,
     };
   }
 

@@ -4,13 +4,16 @@ import {
   SubmissionSchema,
   type Challenge,
   type Evaluation,
+  type Interface,
   type RepEvaluationResult,
   type RepMaterialInput,
   type Submission,
+  type SystemElement,
 } from '@gosp/contracts';
 import { createSandbox001MaterialInput, runSandbox001 } from '@gosp/sim-core';
 import {
   createCleanWaterRepMaterialInput,
+  createCleanWaterStemSystemDefinition,
   evaluateCleanWaterRep,
 } from '@gosp/vertical-clean-water';
 
@@ -24,6 +27,8 @@ export type Phase1aEvaluatorDefinition = {
   seedSubmissions: Submission[];
   objectiveResultPath: string;
   limitations: string[];
+  systemElements: SystemElement[];
+  interfaces: Interface[];
   evaluate(input: RepMaterialInput): RepEvaluationResult;
   claimStatement(evaluation: Evaluation): string;
 };
@@ -47,6 +52,8 @@ function sandboxDefinition(): Phase1aEvaluatorDefinition {
       'Local replay is not independent external reproduction.',
       'No professional approval, product certification, regulatory approval, or deployment readiness is claimed.',
     ],
+    systemElements: [],
+    interfaces: [],
     evaluate: runSandbox001,
     claimStatement: (evaluation) =>
       `Under the recorded synthetic inputs, result.value is ${(evaluation.result as { value: number }).value}.`,
@@ -85,6 +92,7 @@ function cleanWaterDefinition(): Phase1aEvaluatorDefinition {
   };
   payload.compiledInput.water.filterEfficiency = 0.9;
   const parsedCandidate = SubmissionSchema.parse(candidate);
+  const systemDefinition = createCleanWaterStemSystemDefinition(template.compiledScenario.revision);
   return {
     id: 'evaluator.clean-water.educational-screening',
     title: 'Clean Water educational screening',
@@ -97,6 +105,7 @@ function cleanWaterDefinition(): Phase1aEvaluatorDefinition {
       'The calculation is not potable-water, laboratory, professional, certification, or regulatory validation.',
       'Local replay is not independent external reproduction or deployment evidence.',
     ],
+    ...systemDefinition,
     evaluate: evaluateCleanWaterRep,
     claimStatement: (evaluation) => {
       const result = evaluation.result as { flow: { cleanWaterLiters: number } };

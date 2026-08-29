@@ -67,6 +67,37 @@ const workspace = {
     defaultSelection: { baseline: { id: 'submission.reference', revision: '1.0.0' }, candidate: { id: 'submission.candidate', revision: '1.0.0' } },
   },
   availableEvaluators: [],
+  stemSystem: {
+    projectionVersion: '0.1.0', learningDepth: 'explore',
+    problem: { title: 'Sandbox 001 deterministic weighted sum', statement: 'Evaluate a finite weighted sum.' },
+    boundary: {
+      challenge: { id: 'sandbox-001', revision: '1.0.0' },
+      scenario: { id: 'scenario.sandbox-001.reference', revision: '1.0.0' },
+      model: { id: 'model.sandbox-001', revision: '1.0.0' },
+      workflow: { id: 'workflow.sandbox-001', revision: '1.0.0' },
+    },
+    systemElements: [],
+    systemMap: {
+      declarationStatus: 'not-declared', elements: [], interfaces: [],
+      disclosures: [
+        'The selected Scenario declares no SystemElement records; the projection does not infer parts or connections.',
+        'No canonical Interface records are declared for this Scenario; no connections are inferred.',
+      ],
+    },
+    variableRoles: {
+      inputs: [{ path: 'submission.materialPayload.values[0]', value: 1, status: 'submitted' }],
+      controlled: [{ path: 'compiledScenario.parameters.scale', value: 2, status: 'controlled' }],
+      changeablePaths: ['submission.materialPayload.values[0]'],
+      outputs: [{ path: 'evaluation.result.value', value: 53, status: 'calculated' }],
+      measurementStatus: 'not-declared', measuredOutputs: [],
+    },
+    controlledConditions: { environment: {}, operatingConditions: {}, parameters: { scale: 2 } },
+    assumptions: [], engineering: { requirements: [], constraints: [] },
+    model: { name: 'Sandbox analytical model', modelType: 'analytical', fidelityLevel: 'analytical', calibrationStatus: 'not-applicable', solver: { id: 'solver.sandbox-001', revision: '1.0.0' }, limitations: ['Synthetic only.'] },
+    workflow: [{ id: 'evaluate', name: 'Evaluate weighted sum', action: 'execute' }],
+    evidenceStatus: { claim: 'Synthetic result 53.', evidenceReadiness: 'computationally-reproduced', deploymentReadiness: 'concept-only', professionalDisposition: 'not-assessed', evidence: [], unresolvedProofObligations: [] },
+    disclosure: 'This STEM system view is a projection of canonical GOSP records.',
+  },
   challenge: {
     record: { kind: 'Challenge', id: 'sandbox-001', revision: '1.0.0', title: 'Sandbox 001 deterministic weighted sum', problemStatement: 'Evaluate a finite weighted sum.', status: 'open' },
     availableChallenges: [{ id: 'sandbox-001', revision: '1.0.0', title: 'Sandbox 001 deterministic weighted sum' }],
@@ -135,5 +166,9 @@ describe('renderApp', () => {
     expect(text).toContain('submission.reference@1.0.0');
     expect(text).toContain('submission.candidate@1.0.0');
     expect(text).toContain('process restarts');
+    expect(text).toContain('System Map');
+    expect(text).toContain('not-declared canonical system declaration');
+    expect(text).toContain('no connections are inferred');
+    expect(text).toContain('Measured outputs not-declared');
   });
 });
