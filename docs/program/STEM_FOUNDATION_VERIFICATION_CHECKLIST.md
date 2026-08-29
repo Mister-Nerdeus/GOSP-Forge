@@ -71,4 +71,3 @@ Command date/timezone:
 - [ ] Known limitations and follow-up proof obligations are listed.
 - [ ] Issue checklist is updated with observed evidence.
 - [ ] Commit/push/PR/merge status is stated explicitly.
-

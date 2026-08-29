@@ -1,9 +1,9 @@
 # STEM Foundation Execution Plan
 
-Date: 2026-08-28  
-Initiative: GitHub Issue #4  
-Working branch: `cipher/stem-foundation`  
-Authority base: `canonical/verified-lineage` at `e73243568619a5a4d52ab8326b97c6adea8cf2a8`  
+Date: 2026-08-28
+Initiative: GitHub Issue #4
+Working branch: `cipher/stem-foundation`
+Authority base: `canonical/verified-lineage` at `e73243568619a5a4d52ab8326b97c6adea8cf2a8`
 Status: **Approved direction translated into staged local work; no canonical merge authorized**
 
 ## Outcome
@@ -108,8 +108,8 @@ Deliver:
 - browser System Map for Sandbox and Clean Water;
 - explicit `unknown`/`not-declared` treatment instead of inferred connections.
 
-Dependencies: A1.  
-Acceptance: a non-expert can identify the boundary, parts, connections, and controlled/changeable quantities without source code.  
+Dependencies: A1.
+Acceptance: a non-expert can identify the boundary, parts, connections, and controlled/changeable quantities without source code.
 Non-claims: diagram completeness does not establish physical completeness, safety, or validation.
 
 ### B — Show the Math
@@ -123,8 +123,8 @@ Deliver:
 - Sandbox and Clean Water projections from existing REP explainability records;
 - learner-facing Show-the-Math view.
 
-Dependencies: A1; coordinate with A2 for shared quantity identifiers.  
-Acceptance: the displayed numeric path reproduces the recorded result without a browser-only calculation.  
+Dependencies: A1; coordinate with A2 for shared quantity identifiers.
+Acceptance: the displayed numeric path reproduces the recorded result without a browser-only calculation.
 Non-claims: displayed equations do not establish scientific completeness, calibration, or physical validity.
 
 ### C — Show the Science
@@ -137,8 +137,8 @@ Deliver:
 - links from principles to B equation/model nodes;
 - Clean Water example plus a synthetic Sandbox `not-applicable`/benchmark treatment.
 
-Dependencies: B.  
-Acceptance: the learner can distinguish nature, representation, approximation, and observation.  
+Dependencies: B.
+Acceptance: the learner can distinguish nature, representation, approximation, and observation.
 Non-claims: a declared principle is not proof that a model implements it adequately.
 
 ### D — Show Engineering
@@ -150,8 +150,8 @@ Deliver:
 - failed-gate and unresolved-obligation visibility before optimization results;
 - no universal score where objectives conflict.
 
-Dependencies: A2 and B.  
-Acceptance: a learner can explain what may change, what must not fail, and why one revision differs.  
+Dependencies: A2 and B.
+Acceptance: a learner can explain what may change, what must not fail, and why one revision differs.
 Non-claims: passing modeled gates is not safety approval or deployment readiness.
 
 ### E — Show Technology
@@ -163,8 +163,8 @@ Deliver:
 - provenance/status for sourced product data;
 - Clean Water example without introducing water fields into core.
 
-Dependencies: A2 and D.  
-Acceptance: the learner can answer what each technology does and why it exists.  
+Dependencies: A2 and D.
+Acceptance: the learner can answer what each technology does and why it exists.
 Non-claims: listing a component is not endorsement, availability, compatibility, or verification.
 
 ### F/G — Model Fidelity and How Do We Know?
@@ -176,8 +176,8 @@ Deliver:
 - explicit broken-link and unavailable states;
 - material and execution identity separation preserved.
 
-Dependencies: A1 and B; existing REP and truth contracts.  
-Acceptance: one consequential Sandbox and Clean Water result can be traced end to end.  
+Dependencies: A1 and B; existing REP and truth contracts.
+Acceptance: one consequential Sandbox and Clean Water result can be traced end to end.
 Non-claims: local replay is not independent reproduction; fidelity is not evidence readiness.
 
 ### H — Learning-depth projection
@@ -189,8 +189,8 @@ Deliver:
 - instructor-selected depth with no change to underlying material result;
 - tests proving projection depth does not alter canonical inputs or hashes.
 
-Dependencies: R1.  
-Acceptance: two depths show different explanatory detail for the same exact evaluation identity.  
+Dependencies: R1.
+Acceptance: two depths show different explanatory detail for the same exact evaluation identity.
 Non-claims: a depth label is not grade alignment, curriculum accreditation, accessibility certification, or learner mastery.
 
 ### I — Dynamic STEM and visualization grammar
@@ -202,8 +202,8 @@ Deliver:
 - before/after causal highlighting from canonical comparison results;
 - time playback only for recorded or model-generated time data.
 
-Dependencies: B, H, and canonical comparison/evaluator paths.  
-Acceptance: changing an allowed Clean Water parameter produces a new evaluation and visibly traces what changed.  
+Dependencies: B, H, and canonical comparison/evaluator paths.
+Acceptance: changing an allowed Clean Water parameter produces a new evaluation and visibly traces what changed.
 Non-claims: animation is not measurement; smooth motion is not solver fidelity.
 
 ### J — Simulation to Experiment and failure preservation
@@ -215,8 +215,8 @@ Deliver:
 - failed evaluations, negative results, and contradictions retained;
 - evidence/readiness updates only through canonical truth rules.
 
-Dependencies: F/G and I.  
-Acceptance: a teaching problem can record a prediction and a synthetic or explicitly labeled measured observation, with discrepancy and uncertainty visible.  
+Dependencies: F/G and I.
+Acceptance: a teaching problem can record a prediction and a synthetic or explicitly labeled measured observation, with discrepancy and uncertainty visible.
 Non-claims: a test plan is not a completed test; synthetic observations are not measurements.
 
 ### K — Human relevance
@@ -228,8 +228,8 @@ Deliver:
 - stakeholder/value choices shown separately from technical results;
 - unsupported categories omitted or marked unknown.
 
-Dependencies: A2, D, and F/G.  
-Acceptance: Clean Water explains at least one supported benefit, tradeoff, and uncertainty without advocacy language.  
+Dependencies: A2, D, and F/G.
+Acceptance: Clean Water explains at least one supported benefit, tradeoff, and uncertainty without advocacy language.
 Non-claims: the projection is not policy advice, lifecycle assessment, environmental certification, or proof of social benefit.
 
 ### L — End-to-end foundation demonstrator
@@ -243,8 +243,8 @@ see -> understand -> measure -> math -> science -> engineering change
     -> evaluate -> inspect evidence -> inspect uncertainty -> compare with observation
 ```
 
-Dependencies: R1 through R4.  
-Acceptance: a non-expert and an advanced reviewer can answer Issue #4's acceptance questions from the same exact evaluation.  
+Dependencies: R1 through R4.
+Acceptance: a non-expert and an advanced reviewer can answer Issue #4's acceptance questions from the same exact evaluation.
 Non-claims: the Clean Water demonstrator does not claim potability, treatment efficacy, field performance, or professional approval.
 
 ### M — Advanced challenge readiness gate
@@ -258,8 +258,8 @@ Deliver:
 - explicit owner go/no-go;
 - only after go: use retractable solar as a validation vertical for system, math, science, engineering, technology, fidelity, evidence, and experiment views.
 
-Dependencies: R5 and explicit owner authorization.  
-Acceptance: solar consumes the same public contracts without changing core for solar terminology.  
+Dependencies: R5 and explicit owner authorization.
+Acceptance: solar consumes the same public contracts without changing core for solar terminology.
 Non-claims: no school participation, sponsor involvement, manufacturer validation, physical competition, or national-scale program is implied.
 
 ## Verification gates
