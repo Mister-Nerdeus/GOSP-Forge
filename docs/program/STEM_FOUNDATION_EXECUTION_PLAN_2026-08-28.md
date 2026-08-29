@@ -201,6 +201,8 @@ Dependencies: R1.
 Acceptance: two depths show different explanatory detail for the same exact evaluation identity.
 Non-claims: a depth label is not grade alignment, curriculum accreditation, accessibility certification, or learner mastery.
 
+Status: implemented and locally verified on 2026-08-29 at implementation SHA `f9e25b69b7ba9b38cc8e4ccd916fcc4b22b8a9f3`. See `docs/program/STEM_FOUNDATION_SLICE_H_2026-08-29.md`.
+
 ### I — Dynamic STEM and visualization grammar
 
 Deliver:
@@ -351,4 +353,4 @@ A package is not done because code exists. It is done only when:
 
 ## Current next action
 
-Begin H as Issue #11. Project the same exact evaluation across learning depths without changing material input, result, or identity. A2 through F/G are complete dependencies.
+Begin I as Issue #12. Add canonical-evaluator-routed parameter interaction and reusable visualization primitives without browser calculations or invented time data. A2 through H are complete dependencies.
