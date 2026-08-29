@@ -72,14 +72,14 @@ const workspace = {
     learningProjection: {
       selectedDepth: 'research-professional',
       canonicalIdentity: { evaluationId: 'evaluation.submission.reference', evaluationRevision: '0.1.0', materialInputHash: hashA, materialResultHash: hashB },
-      selectedManifest: { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
+      selectedManifest: { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
       availableManifests: [
-        { depth: 'explore', label: 'Explore', detailLevel: 'introductory', includedSections: ['system-map'], redactedSections: ['math', 'science', 'engineering', 'technology', 'how-we-know'], disclosure: 'Presentation only.' },
-        { depth: 'measure', label: 'Measure', detailLevel: 'guided', includedSections: ['system-map', 'math'], redactedSections: ['science', 'engineering', 'technology', 'how-we-know'], disclosure: 'Presentation only.' },
-        { depth: 'model', label: 'Model', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science'], redactedSections: ['engineering', 'technology', 'how-we-know'], disclosure: 'Presentation only.' },
-        { depth: 'solve', label: 'Solve', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology'], redactedSections: ['how-we-know'], disclosure: 'Presentation only.' },
-        { depth: 'verify', label: 'Verify', detailLevel: 'verification', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
-        { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
+        { depth: 'explore', label: 'Explore', detailLevel: 'introductory', includedSections: ['system-map'], redactedSections: ['math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'measure', label: 'Measure', detailLevel: 'guided', includedSections: ['system-map', 'math'], redactedSections: ['science', 'engineering', 'technology', 'dynamic', 'how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'model', label: 'Model', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science'], redactedSections: ['engineering', 'technology', 'dynamic', 'how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'solve', label: 'Solve', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic'], redactedSections: ['how-we-know'], disclosure: 'Presentation only.' },
+        { depth: 'verify', label: 'Verify', detailLevel: 'verification', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
+        { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
       ],
       identityInvariant: true,
       disclosures: ['Learning depth changes presentation, not canonical inputs, material results, hashes, evidence, or readiness.', 'A depth label is not grade alignment, curriculum accreditation, accessibility certification, or evidence of learner mastery.'],
@@ -194,6 +194,21 @@ const workspace = {
       edges: [{ from: 'trace.result', to: 'trace.source.not-declared', relationship: 'source-status', status: 'resolved' }],
       disclosures: ['Higher model fidelity is not stronger evidence, physical validation, deployment readiness, or professional approval.', 'Local replay is not independent reproduction.'],
     },
+    dynamic: {
+      allowedParameters: [{ id: 'sandbox.design.offset', label: 'Offset', inputPath: 'submission.materialPayload.offset', currentValue: 7, valueType: 'number', rationale: 'Allowed for comparison.' }],
+      visualPrimitives: [
+        { kind: 'flow', status: 'unavailable', provenance: 'not-declared', description: 'No flow.' },
+        { kind: 'vector-force', status: 'unavailable', provenance: 'not-declared', description: 'No vectors.' },
+        { kind: 'energy', status: 'unavailable', provenance: 'not-declared', description: 'No energy.' },
+        { kind: 'electrical-control', status: 'unavailable', provenance: 'not-declared', description: 'No electrical path.' },
+        { kind: 'time-series', status: 'unavailable', provenance: 'not-declared', description: 'No series.' },
+        { kind: 'uncertainty', status: 'unavailable', provenance: 'not-declared', description: 'No uncertainty.' },
+        { kind: 'sensitivity', status: 'available', provenance: 'evaluation-result', description: 'Recorded sensitivity.', data: [{ effect: 23 }] },
+      ],
+      causalHighlights: { status: 'available', changedInputs: [{ path: 'submission.materialPayload.values[0]', baseline: 1, candidate: 0, baselineAvailability: 'available', candidateAvailability: 'available' }], changedResults: [{ resultPath: 'result.value', baseline: 53, candidate: 23, delta: -30 }] },
+      timePlayback: { status: 'unavailable', provenance: 'not-declared', frameCount: 0, explanation: 'Playback disabled.' },
+      disclosures: ['Animation is not measurement. Smooth motion is not solver fidelity. A browser transition is not an engineering calculation.'],
+    },
     controlledConditions: { environment: {}, operatingConditions: {}, parameters: { scale: 2 } },
     assumptions: [], engineering: { requirements: [], constraints: [] },
     model: { name: 'Sandbox analytical model', modelType: 'analytical', fidelityLevel: 'analytical', calibrationStatus: 'not-applicable', solver: { id: 'solver.sandbox-001', revision: '1.0.0' }, limitations: ['Synthetic only.'] },
@@ -245,6 +260,7 @@ describe('renderApp', () => {
       validateEvidencePackage: async () => ({ ok: true }),
       exportArchive: async () => ({}),
       importArchive: async () => ({}),
+      changeParameter: async () => workspace,
     } as Phase1aClient;
     const { renderApp } = await import('./App');
     const root = new TestElement('div') as unknown as HTMLElement;
@@ -303,5 +319,10 @@ describe('renderApp', () => {
     expect(text).toContain('Authoritative source not-declared');
     expect(text).toContain('Physical validation remains open');
     expect(text).toContain('Higher model fidelity is not stronger evidence');
+    expect(text).toContain('Dynamic STEM');
+    expect(text).toContain('Allowed parameter · Offset');
+    expect(text).toContain('sensitivity · available');
+    expect(text).toContain('time series · unavailable');
+    expect(text).toContain('Animation is not measurement');
   });
 });

@@ -6,6 +6,7 @@ import { StemEngineeringProjectionSchema } from './stemEngineeringProjection.js'
 import { StemTechnologyProjectionSchema } from './stemTechnologyProjection.js';
 import { StemHowWeKnowTraceSchema } from './stemHowWeKnowTrace.js';
 import { StemLearningProjectionSchema } from './stemLearningProjection.js';
+import { StemDynamicProjectionSchema } from './stemDynamicProjection.js';
 import { StemLearningDepthSchema } from './stemLearningProjection.js';
 
 export const StemSystemProjectionSchema = z.object({
@@ -96,6 +97,7 @@ export const StemSystemProjectionSchema = z.object({
   engineeringDecision: StemEngineeringProjectionSchema,
   technology: StemTechnologyProjectionSchema,
   howWeKnow: StemHowWeKnowTraceSchema,
+  dynamic: StemDynamicProjectionSchema,
   controlledConditions: z.object({
     environment: z.record(CanonicalJsonValueSchema).default({}),
     operatingConditions: z.record(CanonicalJsonValueSchema).default({}),

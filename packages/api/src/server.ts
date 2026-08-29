@@ -113,6 +113,27 @@ export function createGospServer(options: { phase1a?: Phase1aService } = {}) {
         const body = await readJsonBody(req);
         return sendJson(res, 201, { ok: true, submission: await phase1a.createSubmission(body) });
       }
+      if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/parameter-change') {
+        const body = (await readJsonBody(req)) as {
+          baseline?: { id?: unknown; revision?: unknown };
+          parameterId?: unknown;
+          value?: unknown;
+          learningDepth?: unknown;
+        };
+        if (!body.baseline || typeof body.baseline.id !== 'string' || typeof body.baseline.revision !== 'string' || typeof body.parameterId !== 'string') {
+          throw new Phase1aValidationError('Parameter change requires baseline identity and parameterId.');
+        }
+        const validDepths = ['explore', 'measure', 'model', 'solve', 'verify', 'research-professional'] as const;
+        if (body.learningDepth !== undefined && (typeof body.learningDepth !== 'string' || !validDepths.includes(body.learningDepth as typeof validDepths[number]))) {
+          throw new Phase1aValidationError(`Unknown STEM learning depth ${String(body.learningDepth)}.`);
+        }
+        return sendJson(res, 200, await phase1a.applyParameterChange({
+          baseline: { id: body.baseline.id, revision: body.baseline.revision },
+          parameterId: body.parameterId,
+          value: body.value,
+          learningDepth: body.learningDepth as typeof validDepths[number] | undefined,
+        }));
+      }
       if (req.method === 'POST' && requestUrl.pathname === '/api/phase1a/evaluations') {
         const body = (await readJsonBody(req)) as { submissionId?: unknown; revision?: unknown };
         if (typeof body.submissionId !== 'string' || typeof body.revision !== 'string') {

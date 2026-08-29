@@ -156,7 +156,10 @@ describe('STEM system projection', () => {
         `${baseUrl}/api/phase1a/stem-system?challengeId=${encodeURIComponent(cleanWater.challengeRef.id)}&challengeRevision=${encodeURIComponent(cleanWater.challengeRef.revision)}`,
       );
       expect(selectedResponse.status).toBe(200);
-      await expect(selectedResponse.json()).resolves.toMatchObject({
+      const selectedProjection = await selectedResponse.json() as {
+        dynamic: { allowedParameters: Array<Record<string, unknown>>; visualPrimitives: Array<Record<string, unknown>>; timePlayback: Record<string, unknown> };
+      };
+      expect(selectedProjection).toMatchObject({
         boundary: {
           challenge: {
             id: cleanWater.challengeRef.id,
@@ -238,6 +241,66 @@ describe('STEM system projection', () => {
           executionIdentity: { replayStatus: 'verified-local-replay' },
         },
       });
+      expect(selectedProjection.dynamic.allowedParameters).toContainEqual(expect.objectContaining({
+        id: 'clean-water.design.filter-efficiency', currentValue: 0.8, valueType: 'number',
+      }));
+      expect(selectedProjection.dynamic.visualPrimitives).toEqual(expect.arrayContaining([
+        expect.objectContaining({ kind: 'flow', status: 'available', provenance: 'canonical-interface' }),
+        expect.objectContaining({ kind: 'electrical-control', status: 'available', provenance: 'canonical-interface' }),
+        expect.objectContaining({ kind: 'time-series', status: 'unavailable' }),
+        expect.objectContaining({ kind: 'uncertainty', status: 'available', provenance: 'model-metadata' }),
+        expect.objectContaining({ kind: 'sensitivity', status: 'available', provenance: 'evaluation-result' }),
+      ]));
+      expect(selectedProjection.dynamic.timePlayback).toMatchObject({ status: 'unavailable', provenance: 'not-declared', frameCount: 0, explanation: expect.stringMatching(/disabled/i) });
+    });
+  });
+
+  it('routes an allowed Clean Water parameter change through a canonical Submission and evaluator', async () => {
+    await withServer(async (baseUrl) => {
+      const selected = await fetch(`${baseUrl}/api/phase1a/workspace?challengeId=challenge.clean-water-local-demo&challengeRevision=1.0.0&learningDepth=solve`).then((response) => response.json()) as {
+        selection: { baseline: { id: string; revision: string } };
+      };
+      const response = await fetch(`${baseUrl}/api/phase1a/parameter-change`, {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          baseline: selected.selection.baseline,
+          parameterId: 'clean-water.design.filter-efficiency',
+          value: 0.75,
+          learningDepth: 'solve',
+        }),
+      });
+      expect(response.status).toBe(200);
+      const changed = await response.json() as {
+        stemSystem: { learningDepth: string; dynamic: { causalHighlights: { changedInputs: unknown[]; changedResults: unknown[] } } };
+        selection: { baseline: { id: string }; candidate: { id: string } };
+        evaluations: Array<{ evaluation: { result: { flow: { cleanWaterLiters: number } }; materialInputHash: string; materialResultHash: string } }>;
+        comparison: { changedInputs: Array<{ path: string; baseline: unknown; candidate: unknown }>; resultDeltas: Array<{ resultPath: string; baseline: number; candidate: number; delta: number }> };
+      };
+      expect(changed.selection.candidate.id).toMatch(/^submission\.challenge\.clean-water-local-demo\.parameter-/);
+      expect(changed.selection.candidate.id).not.toBe(changed.selection.baseline.id);
+      expect(changed.evaluations.map((item) => item.evaluation.result.flow.cleanWaterLiters)).toEqual([64, 60]);
+      expect(changed.evaluations[1]!.evaluation.materialInputHash).not.toBe(changed.evaluations[0]!.evaluation.materialInputHash);
+      expect(changed.evaluations[1]!.evaluation.materialResultHash).not.toBe(changed.evaluations[0]!.evaluation.materialResultHash);
+      expect(changed.comparison.changedInputs).toContainEqual(expect.objectContaining({
+        path: 'submission.materialPayload.compiledInput.water.filterEfficiency', baseline: 0.8, candidate: 0.75,
+      }));
+      expect(changed.comparison.resultDeltas).toContainEqual(expect.objectContaining({
+        resultPath: 'result.flow.cleanWaterLiters', baseline: 64, candidate: 60, delta: -4,
+      }));
+      expect(changed.stemSystem.learningDepth).toBe('solve');
+      expect(changed.stemSystem.dynamic.causalHighlights.changedInputs.length).toBeGreaterThan(0);
+      expect(changed.stemSystem.dynamic.causalHighlights.changedResults.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('rejects an undeclared parameter change before evaluation', async () => {
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/api/phase1a/parameter-change`, {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ baseline: { id: 'submission.sandbox-001.reference', revision: '1.0.0' }, parameterId: 'parameter.not-allowed', value: 1 }),
+      });
+      expect(response.status).toBe(422);
+      await expect(response.json()).resolves.toMatchObject({ error: expect.stringMatching(/not allowed/i) });
     });
   });
 

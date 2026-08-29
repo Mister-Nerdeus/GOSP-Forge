@@ -24,6 +24,7 @@ import {
   StemHowWeKnowTraceSchema,
   StemLearningProjectionSchema,
   type StemLearningDepth,
+  StemDynamicProjectionSchema,
   type SystemElement,
   type Workflow,
 } from '@gosp/contracts';
@@ -585,7 +586,7 @@ function buildHowWeKnowTrace(input: {
   });
 }
 
-const learningSections = ['system-map', 'math', 'science', 'engineering', 'technology', 'how-we-know'] as const;
+const learningSections = ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know'] as const;
 
 function buildLearningProjection(depth: StemLearningDepth, evaluationView: Phase1aEvaluationView) {
   const definitions: Array<{
@@ -597,7 +598,7 @@ function buildLearningProjection(depth: StemLearningDepth, evaluationView: Phase
     { depth: 'explore', label: 'Explore', detailLevel: 'introductory', includedSections: ['system-map'] },
     { depth: 'measure', label: 'Measure', detailLevel: 'guided', includedSections: ['system-map', 'math'] },
     { depth: 'model', label: 'Model', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science'] },
-    { depth: 'solve', label: 'Solve', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology'] },
+    { depth: 'solve', label: 'Solve', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic'] },
     { depth: 'verify', label: 'Verify', detailLevel: 'verification', includedSections: [...learningSections] },
     { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: [...learningSections] },
   ];
@@ -621,6 +622,89 @@ function buildLearningProjection(depth: StemLearningDepth, evaluationView: Phase
     disclosures: [
       'Learning depth changes presentation, not canonical inputs, material results, hashes, evidence, or readiness.',
       'A depth label is not grade alignment, curriculum accreditation, accessibility certification, or evidence of learner mastery.',
+    ],
+  });
+}
+
+function firstTimeSeries(value: unknown): unknown[] | undefined {
+  if (Array.isArray(value)) {
+    if (value.length && value.every((item) => item && typeof item === 'object' && ('time' in item || 'timestamp' in item))) return value;
+    for (const item of value) {
+      const found = firstTimeSeries(item);
+      if (found) return found;
+    }
+  } else if (value && typeof value === 'object') {
+    for (const item of Object.values(value)) {
+      const found = firstTimeSeries(item);
+      if (found) return found;
+    }
+  }
+  return undefined;
+}
+
+function buildDynamicProjection(input: {
+  interfaces: Interface[];
+  math: StemMathProjection;
+  engineering: ReturnType<typeof buildEngineeringProjection>;
+  evaluationView: Phase1aEvaluationView;
+  comparison: Phase1aComparison;
+}) {
+  const { interfaces, math, engineering, evaluationView, comparison } = input;
+  const resourceInterfaces = interfaces.filter((item) => item.interfaceType === 'resource');
+  const electricalInterfaces = interfaces.filter((item) => item.interfaceType === 'power' || item.interfaceType === 'control');
+  const energyQuantities = math.quantities.filter((item) => item.unit && /^(J|kJ|MJ|Wh|kWh)$/i.test(item.unit));
+  const timeSeries = firstTimeSeries(evaluationView.evaluation.result);
+  const uncertainty = evaluationView.evaluation.uncertainty;
+  const sensitivity = evaluationView.evaluation.sensitivity;
+  const available = (kind: 'flow' | 'vector-force' | 'energy' | 'electrical-control' | 'time-series' | 'uncertainty' | 'sensitivity', provenance: 'canonical-interface' | 'evaluation-result' | 'model-metadata' | 'recorded-series' | 'model-generated-series', description: string, data: unknown) => ({ kind, status: 'available' as const, provenance, description, data });
+  const unavailable = (kind: 'flow' | 'vector-force' | 'energy' | 'electrical-control' | 'time-series' | 'uncertainty' | 'sensitivity', description: string) => ({ kind, status: 'unavailable' as const, provenance: 'not-declared' as const, description });
+
+  return StemDynamicProjectionSchema.parse({
+    allowedParameters: engineering.designVariables.flatMap((variable) => {
+      const valueType = typeof variable.baseline;
+      if (variable.changePolicy !== 'allowed-for-comparison' || variable.baseline === undefined || !['number', 'string', 'boolean'].includes(valueType)) return [];
+      const quantity = math.quantities.find((item) => item.id === variable.quantityId);
+      return [{ id: variable.id, label: quantity?.label ?? variable.id, inputPath: variable.inputPath, currentValue: variable.baseline, valueType, rationale: variable.rationale }];
+    }),
+    visualPrimitives: [
+      resourceInterfaces.length
+        ? available('flow', 'canonical-interface', 'Declared resource-flow interfaces; arrow direction comes from canonical Interface records.', resourceInterfaces.map(({ id, from, to, direction, unit }) => ({ id, from: from.id, to: to.id, direction, unit: unit ?? null })))
+        : unavailable('flow', 'No canonical resource-flow Interface records are declared.'),
+      unavailable('vector-force', 'No declared force or vector result is available.'),
+      energyQuantities.length
+        ? available('energy', 'evaluation-result', 'Declared energy quantities from the recorded projection.', energyQuantities.map(({ id, value, unit }) => ({ id, value: value ?? null, unit })))
+        : unavailable('energy', 'No declared energy quantity is available.'),
+      electricalInterfaces.length
+        ? available('electrical-control', 'canonical-interface', 'Declared power or control interfaces.', electricalInterfaces.map(({ id, interfaceType, from, to, direction, unit }) => ({ id, interfaceType, from: from.id, to: to.id, direction, unit: unit ?? null })))
+        : unavailable('electrical-control', 'No canonical power or control Interface records are declared.'),
+      timeSeries
+        ? available('time-series', 'model-generated-series', 'Time series recorded in the canonical Evaluation result.', timeSeries)
+        : unavailable('time-series', 'No recorded or model-generated time series is available.'),
+      uncertainty.length
+        ? available('uncertainty', 'model-metadata', 'Uncertainty metadata recorded on the Evaluation.', uncertainty)
+        : unavailable('uncertainty', 'No Evaluation uncertainty entries are declared.'),
+      sensitivity.length
+        ? available('sensitivity', 'evaluation-result', 'Sensitivity entries recorded on the Evaluation.', sensitivity)
+        : unavailable('sensitivity', 'No Evaluation sensitivity entries are declared.'),
+    ],
+    causalHighlights: {
+      status: comparison.changedInputs.length || comparison.resultDeltas.length ? 'available' : 'not-declared',
+      changedInputs: comparison.changedInputs.map(({ path, baseline, candidate }) => ({
+        path,
+        baseline,
+        candidate,
+        baselineAvailability: baseline === undefined ? 'unavailable' : 'available',
+        candidateAvailability: candidate === undefined ? 'unavailable' : 'available',
+      })),
+      changedResults: comparison.resultDeltas.map(({ resultPath, baseline, candidate, delta }) => ({ resultPath, baseline, candidate, delta })),
+    },
+    timePlayback: timeSeries
+      ? { status: 'available', provenance: 'model-generated-series', frameCount: timeSeries.length, explanation: 'Playback frames come only from the recorded Evaluation result.' }
+      : { status: 'unavailable', provenance: 'not-declared', frameCount: 0, explanation: 'Playback is disabled because no recorded or model-generated time series exists.' },
+    disclosures: [
+      'Animation is not measurement. Smooth motion is not solver fidelity. A browser transition is not an engineering calculation.',
+      'Parameter changes create canonical Submissions and are evaluated by the registered server-side evaluator.',
+      'Unavailable visualization primitives remain unavailable; the browser does not invent vectors, energy, uncertainty, sensitivity, or time frames.',
     ],
   });
 }
@@ -790,6 +874,13 @@ export function buildStemSystemProjection(input: {
     engineeringDecision,
     technology,
     howWeKnow: buildHowWeKnowTrace({ model, math, evaluationView: referenceEvaluation }),
+    dynamic: buildDynamicProjection({
+      interfaces,
+      math,
+      engineering: engineeringDecision,
+      evaluationView: referenceEvaluation,
+      comparison,
+    }),
     controlledConditions: {
       environment: scenario.environment,
       operatingConditions: scenario.operatingConditions,

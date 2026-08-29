@@ -6,7 +6,7 @@ export const StemLearningDepthSchema = z.enum([
 ]);
 
 export const StemLearningSectionSchema = z.enum([
-  'system-map', 'math', 'science', 'engineering', 'technology', 'how-we-know',
+  'system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'how-we-know',
 ]);
 
 const ManifestSchema = z.object({

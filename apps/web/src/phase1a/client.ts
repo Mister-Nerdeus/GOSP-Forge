@@ -16,6 +16,7 @@ export type Phase1aClient = {
   validateEvidencePackage(value: unknown): Promise<unknown>;
   exportArchive(): Promise<unknown>;
   importArchive(value: unknown): Promise<unknown>;
+  changeParameter(value: { baseline: { id: string; revision: string }; parameterId: string; value: unknown; learningDepth?: StemLearningDepth }): Promise<Phase1aWorkspace>;
 };
 
 async function request(path: string, init?: RequestInit) {
@@ -75,5 +76,6 @@ export function createPhase1aClient(): Phase1aClient {
       request('/api/phase1a/evidence-package/validate', jsonRequest(value)),
     exportArchive: () => request('/api/phase1a/archive'),
     importArchive: (value) => request('/api/phase1a/archive', jsonRequest(value)),
+    changeParameter: (value) => request('/api/phase1a/parameter-change', jsonRequest(value)) as Promise<Phase1aWorkspace>,
   };
 }

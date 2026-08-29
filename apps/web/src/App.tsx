@@ -41,6 +41,7 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     ...(included.has('science') ? [sciencePanel(workspace)] : []),
     ...(included.has('engineering') ? [engineeringPanel(workspace)] : []),
     ...(included.has('technology') ? [technologyPanel(workspace)] : []),
+    ...(included.has('dynamic') ? [dynamicStemPanel(workspace, client, root)] : []),
     ...(included.has('how-we-know') ? [howWeKnowPanel(workspace)] : []),
     submissionPanel(workspace),
     comparisonSelectionPanel(workspace, client, root),
@@ -233,6 +234,69 @@ function howWeKnowPanel(workspace: Phase1aWorkspace) {
       meta: `${edge.relationship} · ${edge.status}`,
     }))),
     bullets(trace.disclosures),
+  ], 'wide');
+}
+
+function dynamicStemPanel(workspace: Phase1aWorkspace, client: Phase1aClient, root: HTMLElement) {
+  const dynamic = workspace.stemSystem.dynamic;
+  const controls = dynamic.allowedParameters.map((parameter) => {
+    const input = document.createElement('input');
+    input.type = parameter.valueType === 'number' ? 'number' : 'text';
+    input.value = String(parameter.currentValue);
+    const status = element('p', 'form-status', parameter.rationale);
+    const button = actionButton('Evaluate parameter change', async () => {
+      await runFormAction(status, async () => {
+        const value = parameter.valueType === 'number'
+          ? Number(input.value)
+          : parameter.valueType === 'boolean'
+            ? input.value === 'true'
+            : input.value;
+        const next = await client.changeParameter({
+          baseline: workspace.selection.baseline,
+          parameterId: parameter.id,
+          value,
+          learningDepth: workspace.stemSystem.learningDepth,
+        });
+        root.replaceChildren(createShell(next, client, root));
+      }, 'Canonical Submission created and evaluated through the registered server-side evaluator.');
+    });
+    return layer(`Allowed parameter · ${parameter.label}`, [
+      keyValues([['Parameter ID', parameter.id], ['Material path', parameter.inputPath], ['Current value', String(parameter.currentValue)]]),
+      labeledControl('New value', input),
+      button,
+      status,
+    ]);
+  });
+  return panel('Dynamic STEM', [
+    element('p', 'claim', 'Parameter changes create canonical Submissions and server-side evaluations.'),
+    ...(controls.length ? controls : [element('p', 'muted', 'No parameter is allowed for canonical comparison.')]),
+    subheading('Visualization primitives'),
+    cardList(dynamic.visualPrimitives.map((primitive) => ({
+      title: `${primitive.kind.replaceAll('-', ' ')} · ${primitive.status}`,
+      meta: primitive.provenance,
+      body: `${primitive.description}${primitive.data === undefined ? '' : ` Data: ${JSON.stringify(primitive.data)}`}`,
+    }))),
+    subheading('Canonical before / after highlights'),
+    cardList([
+      ...dynamic.causalHighlights.changedInputs.map((change) => ({
+        title: change.path,
+        meta: 'material input',
+        body: `${displayRecordedValue(change.baseline)} → ${displayRecordedValue(change.candidate)}`,
+      })),
+      ...dynamic.causalHighlights.changedResults.map((change) => ({
+        title: change.resultPath,
+        meta: 'recorded result',
+        body: `${change.baseline} → ${change.candidate} (Δ ${change.delta})`,
+      })),
+    ]),
+    subheading('Time playback'),
+    keyValues([
+      ['Status', dynamic.timePlayback.status],
+      ['Provenance', dynamic.timePlayback.provenance],
+      ['Frames', String(dynamic.timePlayback.frameCount)],
+    ]),
+    element('p', 'muted', dynamic.timePlayback.explanation),
+    bullets(dynamic.disclosures),
   ], 'wide');
 }
 
