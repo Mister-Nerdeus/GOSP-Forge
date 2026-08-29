@@ -125,6 +125,8 @@ Dependencies: A1; coordinate with A2 for shared quantity identifiers.
 Acceptance: the displayed numeric path reproduces the recorded result without a browser-only calculation.
 Non-claims: displayed equations do not establish scientific completeness, calibration, or physical validity.
 
+Status: implemented and locally verified on 2026-08-29 at implementation SHA `dae57a6dced261612caf6d9aff96f08e4466e2d3`. See `docs/program/STEM_FOUNDATION_SLICE_B_2026-08-29.md`.
+
 ### C — Show the Science
 
 Deliver:
@@ -341,4 +343,4 @@ A package is not done because code exists. It is done only when:
 
 ## Current next action
 
-Begin B as Issue #6. B establishes quantity/equation dependency identifiers that later science, engineering, traceability, learning-depth, and dynamic views consume. A2 is complete and is the stable system/variable-role dependency for B.
+Begin C as Issue #7. C links governing principles, model equations, engineering approximations, empirical relationships, assumptions, and observations to the stable equation/quantity identifiers established by B. A2 and B are complete dependencies.
