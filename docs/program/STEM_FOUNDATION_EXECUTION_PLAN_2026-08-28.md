@@ -231,6 +231,8 @@ Dependencies: F/G and I.
 Acceptance: a teaching problem can record a prediction and a synthetic or explicitly labeled measured observation, with discrepancy and uncertainty visible.
 Non-claims: a test plan is not a completed test; synthetic observations are not measurements.
 
+Status: implemented and locally verified on 2026-08-29 at implementation SHA `47d68dfd04a991f105e0b248915650fb4ffee87e`. See `docs/program/STEM_FOUNDATION_SLICE_J_2026-08-29.md`.
+
 ### K — Human relevance
 
 Deliver:
@@ -312,10 +314,10 @@ Non-claims: no school participation, sponsor involvement, manufacturer validatio
 
 ### R4 — Simulation to Reality
 
-- [ ] test plan, observation, discrepancy, failure, and contradiction paths are covered;
-- [ ] synthetic versus measured status is unmistakable;
-- [ ] readiness changes require canonical evidence rules;
-- [ ] `pnpm verify` and evidence-path smoke pass.
+- [x] test plan, observation, discrepancy, failure, and contradiction paths are covered;
+- [x] synthetic versus measured status is unmistakable;
+- [x] readiness changes require canonical evidence rules;
+- [x] `pnpm verify` and evidence-path smoke pass.
 
 ### R5 — Foundation Demonstrator
 
@@ -355,4 +357,4 @@ A package is not done because code exists. It is done only when:
 
 ## Current next action
 
-Begin J as Issue #13. Connect predictions to explicitly classified observations, discrepancy, uncertainty, and preserved failure evidence without promoting synthetic data to measurement. A2 through I are complete dependencies.
+Begin K as Issue #14. Connect human-relevance categories only to supported canonical quantities or evidence, keep stakeholder values separate from technical results, and leave unsupported categories unknown. A2 through J are complete dependencies.
