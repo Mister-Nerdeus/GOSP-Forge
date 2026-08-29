@@ -10,6 +10,7 @@ import {
   createCleanWaterStemMathDefinition,
   createCleanWaterStemScienceDefinition,
   createCleanWaterStemEngineeringDefinition,
+  createCleanWaterStemTechnologyDefinition,
   generateModuleScorecards,
   generateSystemScorecard,
   runWaterWarningController,
@@ -20,6 +21,15 @@ import {
   validateCleanWaterModuleSafety,
 } from './index.js';
 describe('Clean Water vertical foundation', () => {
+  it('owns all technology categories and preserves missing product provenance', () => {
+    const definition = createCleanWaterStemTechnologyDefinition();
+    expect(new Set(definition.nodes.map((node) => node.category))).toEqual(new Set([
+      'sensor', 'controller', 'software', 'actuator', 'power', 'communication', 'fabrication', 'instrument', 'solver',
+    ]));
+    expect(definition.nodes.filter((node) => node.category !== 'solver').every((node) => node.productProvenanceStatus === 'not-declared')).toBe(true);
+    expect(definition.disclosures.join(' ')).toMatch(/not endorsement.*availability.*compatibility.*safety/i);
+  });
+
   it('owns potable-water safety and education validation', () => {
     expect(
       validateCleanWaterModuleSafety({

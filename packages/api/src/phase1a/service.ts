@@ -584,6 +584,7 @@ export class Phase1aService {
       mathDefinition: definition.mathDefinition,
       scienceDefinition: definition.scienceDefinition,
       engineeringDefinition: definition.engineeringDefinition,
+      technologyDefinition: definition.technologyDefinition,
       candidateEvaluation: evaluations[1]!,
     });
     return {

@@ -146,6 +146,17 @@ const workspace = {
       revisionExplanation: { summary: 'Baseline performed better.', changedInputs: ['values changed'], resultChanges: ['53 → 23'] },
       disclosures: ['Passing modeled gates is not safety approval.'],
     },
+    technology: {
+      nodes: [{
+        id: 'technology.sandbox.solver', name: 'Sandbox reference solver', category: 'solver',
+        purpose: 'Execute the recorded deterministic model.', declarationStatus: 'declared',
+        systemElementResolution: 'not-declared',
+        purposeLinks: [{ kind: 'model-step', targetId: 'sandbox-001.weighted-sum', explanation: 'Implements the declared relationship.', declarationStatus: 'declared', resolutionStatus: 'resolved' }],
+        propertyEvidence: [{ property: 'implementation identity', representedValue: 'solver.sandbox-001@1.0.0', status: 'authored', sourceRefs: [] }],
+        productProvenanceStatus: 'not-applicable', productSourceRefs: [], availabilityStatus: 'not-checked', compatibilityStatus: 'not-checked', safetyStatus: 'not-assessed',
+      }],
+      disclosures: ['Listing a technology does not establish availability, compatibility, safety, endorsement, or verification.'],
+    },
     controlledConditions: { environment: {}, operatingConditions: {}, parameters: { scale: 2 } },
     assumptions: [], engineering: { requirements: [], constraints: [] },
     model: { name: 'Sandbox analytical model', modelType: 'analytical', fidelityLevel: 'analytical', calibrationStatus: 'not-applicable', solver: { id: 'solver.sandbox-001', revision: '1.0.0' }, limitations: ['Synthetic only.'] },
@@ -241,5 +252,10 @@ describe('renderApp', () => {
     expect(text).toContain('SINGLE-OBJECTIVE · baseline-preferred');
     expect(text).toContain('Passing modeled gates is not safety approval');
     expect(text.indexOf('Unresolved proof obligations')).toBeLessThan(text.indexOf('Separate objective outcomes'));
+    expect(text).toContain('Show the Technology');
+    expect(text).toContain('Sandbox reference solver');
+    expect(text).toContain('Product provenance not-applicable');
+    expect(text).toContain('Availability not-checked');
+    expect(text).toContain('Listing a technology does not establish availability');
   });
 });

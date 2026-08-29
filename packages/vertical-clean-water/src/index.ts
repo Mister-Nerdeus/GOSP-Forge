@@ -21,4 +21,5 @@ export * from './education/stemSystemDefinition.js';
 export * from './education/stemMathDefinition.js';
 export * from './education/stemScienceDefinition.js';
 export * from './education/stemEngineeringDefinition.js';
+export * from './education/stemTechnologyDefinition.js';
 export * from './validation/cleanWaterValidation.js';

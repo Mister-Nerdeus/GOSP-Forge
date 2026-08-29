@@ -37,6 +37,7 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     mathPanel(workspace),
     sciencePanel(workspace),
     engineeringPanel(workspace),
+    technologyPanel(workspace),
     submissionPanel(workspace),
     comparisonSelectionPanel(workspace, client, root),
     resultPanel(workspace),
@@ -112,6 +113,38 @@ function engineeringPanel(workspace: Phase1aWorkspace) {
       ...engineering.revisionExplanation.resultChanges,
     ]),
     bullets(engineering.disclosures),
+  ], 'wide');
+}
+
+function technologyPanel(workspace: Phase1aWorkspace) {
+  const technology = workspace.stemSystem.technology;
+  return panel('Show the Technology', [
+    element('p', 'claim', 'Technology roles are linked to declared engineering or model purposes; missing declarations remain visible.'),
+    ...technology.nodes.map((node) => layer(`${node.category} · ${node.name}`, [
+      element('p', '', node.purpose),
+      keyValues([
+        ['Declaration', node.declarationStatus],
+        ['System element', node.systemElementId ? `${node.systemElementId} · ${node.systemElementResolution}` : 'not-declared'],
+        ['Product provenance', node.productProvenanceStatus],
+        ['Availability', node.availabilityStatus],
+        ['Compatibility', node.compatibilityStatus],
+        ['Safety', node.safetyStatus],
+      ]),
+      subheading('Purpose links'),
+      cardList(node.purposeLinks.map((link) => ({
+        title: `${link.kind.replaceAll('-', ' ')} · ${link.targetId}`,
+        meta: `${link.declarationStatus} · ${link.resolutionStatus}`,
+        body: link.explanation,
+      }))),
+      subheading('Represented properties and evidence'),
+      node.propertyEvidence.length
+        ? cardList(node.propertyEvidence.map((property) => ({
+            title: `${property.property}: ${property.representedValue}`,
+            meta: `${property.status} · sources ${property.sourceRefs.length ? property.sourceRefs.join(', ') : 'none declared'}`,
+          })))
+        : element('p', 'muted', 'No represented product property or supporting source is declared.'),
+    ])),
+    bullets(technology.disclosures),
   ], 'wide');
 }
 

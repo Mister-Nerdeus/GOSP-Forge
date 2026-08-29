@@ -10,6 +10,7 @@ import {
   type StemMathDefinition,
   type StemScienceDefinition,
   type StemEngineeringDefinition,
+  type StemTechnologyDefinition,
   type Submission,
   type SystemElement,
 } from '@gosp/contracts';
@@ -18,6 +19,7 @@ import {
   createSandboxStemMathDefinition,
   createSandboxStemScienceDefinition,
   createSandboxStemEngineeringDefinition,
+  createSandboxStemTechnologyDefinition,
   runSandbox001,
 } from '@gosp/sim-core';
 import {
@@ -25,6 +27,7 @@ import {
   createCleanWaterStemMathDefinition,
   createCleanWaterStemScienceDefinition,
   createCleanWaterStemEngineeringDefinition,
+  createCleanWaterStemTechnologyDefinition,
   createCleanWaterStemSystemDefinition,
   evaluateCleanWaterRep,
 } from '@gosp/vertical-clean-water';
@@ -44,6 +47,7 @@ export type Phase1aEvaluatorDefinition = {
   mathDefinition: StemMathDefinition;
   scienceDefinition: StemScienceDefinition;
   engineeringDefinition: StemEngineeringDefinition;
+  technologyDefinition: StemTechnologyDefinition;
   evaluate(input: RepMaterialInput): RepEvaluationResult;
   claimStatement(evaluation: Evaluation): string;
 };
@@ -72,6 +76,7 @@ function sandboxDefinition(): Phase1aEvaluatorDefinition {
     mathDefinition: createSandboxStemMathDefinition(),
     scienceDefinition: createSandboxStemScienceDefinition(),
     engineeringDefinition: createSandboxStemEngineeringDefinition(),
+    technologyDefinition: createSandboxStemTechnologyDefinition(),
     evaluate: runSandbox001,
     claimStatement: (evaluation) =>
       `Under the recorded synthetic inputs, result.value is ${(evaluation.result as { value: number }).value}.`,
@@ -127,6 +132,7 @@ function cleanWaterDefinition(): Phase1aEvaluatorDefinition {
     mathDefinition: createCleanWaterStemMathDefinition(),
     scienceDefinition: createCleanWaterStemScienceDefinition(),
     engineeringDefinition: createCleanWaterStemEngineeringDefinition(template.challenge.revision),
+    technologyDefinition: createCleanWaterStemTechnologyDefinition(),
     evaluate: evaluateCleanWaterRep,
     claimStatement: (evaluation) => {
       const result = evaluation.result as { flow: { cleanWaterLiters: number } };

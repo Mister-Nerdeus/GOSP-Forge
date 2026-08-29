@@ -18,6 +18,9 @@ import {
   type StemMathProjection,
   type StemScienceDefinition,
   type StemEngineeringDefinition,
+  StemTechnologyDefinitionSchema,
+  StemTechnologyProjectionSchema,
+  type StemTechnologyDefinition,
   type SystemElement,
   type Workflow,
 } from '@gosp/contracts';
@@ -388,6 +391,50 @@ function buildEngineeringProjection(input: {
   });
 }
 
+function buildTechnologyProjection(input: {
+  definitionInput: StemTechnologyDefinition;
+  systemElements: SystemElement[];
+  requirements: Array<{ record: Requirement; role: 'hard-gate' | 'objective' }>;
+  math: StemMathProjection;
+}) {
+  const definition = StemTechnologyDefinitionSchema.parse(input.definitionInput);
+  const knownElements = new Set(input.systemElements.map((element) => element.id));
+  const knownRequirements = new Set(input.requirements.map(({ record }) => record.id));
+  const knownModelSteps = new Set(input.math.equations.map((equation) => equation.id));
+  const knownMeasurements = new Set<string>();
+
+  const linkResolved = (link: StemTechnologyDefinition['nodes'][number]['purposeLinks'][number]) => {
+    if (link.declarationStatus === 'not-declared') return false;
+    if (link.kind === 'requirement') return knownRequirements.has(link.targetId);
+    if (link.kind === 'model-step') return knownModelSteps.has(link.targetId);
+    if (link.kind === 'measurement') return knownMeasurements.has(link.targetId);
+    return true;
+  };
+
+  for (const node of definition.nodes) {
+    if (node.systemElementId && !knownElements.has(node.systemElementId)) {
+      throw new Error(`Technology ${node.id} references unknown SystemElement ${node.systemElementId}.`);
+    }
+    for (const link of node.purposeLinks) {
+      if (link.declarationStatus === 'declared' && !linkResolved(link)) {
+        throw new Error(`Technology ${node.id} has unresolved declared ${link.kind} target ${link.targetId}.`);
+      }
+    }
+  }
+
+  return StemTechnologyProjectionSchema.parse({
+    nodes: definition.nodes.map((node) => ({
+      ...node,
+      systemElementResolution: node.systemElementId ? 'resolved' : 'not-declared',
+      purposeLinks: node.purposeLinks.map((link) => ({
+        ...link,
+        resolutionStatus: linkResolved(link) ? 'resolved' : 'not-declared',
+      })),
+    })),
+    disclosures: definition.disclosures,
+  });
+}
+
 export function buildStemSystemProjection(input: {
   challenge: Challenge;
   scenario: Scenario;
@@ -402,6 +449,7 @@ export function buildStemSystemProjection(input: {
   mathDefinition: StemMathDefinition;
   scienceDefinition: StemScienceDefinition;
   engineeringDefinition: StemEngineeringDefinition;
+  technologyDefinition: StemTechnologyDefinition;
   candidateEvaluation: Phase1aEvaluationView;
 }): StemSystemProjection {
   const {
@@ -418,6 +466,7 @@ export function buildStemSystemProjection(input: {
     mathDefinition,
     scienceDefinition,
     engineeringDefinition,
+    technologyDefinition,
     candidateEvaluation,
   } = input;
   const openProofObligations = referenceEvaluation.claim.proofObligations.filter(
@@ -537,6 +586,12 @@ export function buildStemSystemProjection(input: {
       baseline: referenceEvaluation,
       candidate: candidateEvaluation,
       comparison,
+      math,
+    }),
+    technology: buildTechnologyProjection({
+      definitionInput: technologyDefinition,
+      systemElements,
+      requirements,
       math,
     }),
     controlledConditions: {

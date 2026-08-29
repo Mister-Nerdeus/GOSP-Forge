@@ -9,12 +9,19 @@ import { compareRepEnvironmentReports } from './reproducibilityComparison.js';
 import { createSandboxStemMathDefinition } from '../education/stemMathDefinition.js';
 import { createSandboxStemScienceDefinition } from '../education/stemScienceDefinition.js';
 import { createSandboxStemEngineeringDefinition } from '../education/stemEngineeringDefinition.js';
+import { createSandboxStemTechnologyDefinition } from '../education/stemTechnologyDefinition.js';
 import {
   referenceRunnerSourceManifest,
   sourceImplementationContentHash,
 } from './sourceImplementationIdentity.js';
 
 describe('REP v0.1 reference runner', () => {
+  it('keeps Sandbox technology limited to the declared synthetic solver', () => {
+    const definition = createSandboxStemTechnologyDefinition();
+    expect(definition.nodes).toHaveLength(1);
+    expect(definition.nodes[0]).toMatchObject({ category: 'solver', productProvenanceStatus: 'not-applicable' });
+  });
+
   it('declares the Sandbox math path as a unitless protocol benchmark', () => {
     const definition = createSandboxStemMathDefinition();
     expect(definition.equations[0]).toMatchObject({

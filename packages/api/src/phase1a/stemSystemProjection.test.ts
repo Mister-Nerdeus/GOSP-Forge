@@ -6,6 +6,7 @@ import {
   createSandboxStemMathDefinition,
   createSandboxStemScienceDefinition,
   createSandboxStemEngineeringDefinition,
+  createSandboxStemTechnologyDefinition,
 } from '@gosp/sim-core';
 
 async function withServer<T>(run: (baseUrl: string) => Promise<T>) {
@@ -39,6 +40,7 @@ describe('STEM system projection', () => {
       mathDefinition: createSandboxStemMathDefinition(),
       scienceDefinition: createSandboxStemScienceDefinition(),
       engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      technologyDefinition: createSandboxStemTechnologyDefinition(),
       candidateEvaluation: workspace.evaluations[1]!,
     });
 
@@ -102,6 +104,11 @@ describe('STEM system projection', () => {
     expect(projection.engineeringDecision.tradeoff).toMatchObject({
       status: 'single-objective',
       decision: 'baseline-preferred',
+    });
+    expect(projection.technology.nodes[0]).toMatchObject({
+      category: 'solver',
+      systemElementResolution: 'not-declared',
+      productProvenanceStatus: 'not-applicable',
     });
     expect(projection.disclosure).toMatch(/projection of canonical GOSP records/i);
   });
@@ -195,6 +202,13 @@ describe('STEM system projection', () => {
           ]),
           tradeoff: { status: 'conflict', decision: 'no-universal-winner' },
         },
+        technology: {
+          nodes: expect.arrayContaining([
+            expect.objectContaining({ category: 'power', systemElementResolution: 'resolved', productProvenanceStatus: 'not-declared' }),
+            expect.objectContaining({ category: 'sensor', declarationStatus: 'conceptual', purposeLinks: [expect.objectContaining({ resolutionStatus: 'not-declared' })] }),
+            expect.objectContaining({ category: 'solver', productProvenanceStatus: 'not-applicable' }),
+          ]),
+        },
       });
     });
   });
@@ -217,6 +231,7 @@ describe('STEM system projection', () => {
       mathDefinition,
       scienceDefinition: createSandboxStemScienceDefinition(),
       engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      technologyDefinition: createSandboxStemTechnologyDefinition(),
       candidateEvaluation: workspace.evaluations[1]!,
     });
     expect(projection.math.quantities[0]).toMatchObject({
@@ -244,6 +259,7 @@ describe('STEM system projection', () => {
       mathDefinition,
       scienceDefinition: createSandboxStemScienceDefinition(),
       engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      technologyDefinition: createSandboxStemTechnologyDefinition(),
       candidateEvaluation: workspace.evaluations[1]!,
     })).toThrow(/must exactly match the recorded equation variables/i);
   });
@@ -266,6 +282,7 @@ describe('STEM system projection', () => {
       mathDefinition: createSandboxStemMathDefinition(),
       scienceDefinition,
       engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      technologyDefinition: createSandboxStemTechnologyDefinition(),
       candidateEvaluation: workspace.evaluations[1]!,
     })).toThrow(/references unknown equation/i);
   });
@@ -290,6 +307,7 @@ describe('STEM system projection', () => {
       mathDefinition: createSandboxStemMathDefinition(),
       scienceDefinition: createSandboxStemScienceDefinition(),
       engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      technologyDefinition: createSandboxStemTechnologyDefinition(),
     });
     expect(projection.engineeringDecision.hardGates[0]).toMatchObject({
       candidate: { actual: 'failed', passed: false },

@@ -11,3 +11,4 @@ export * from './logic/ruleEngine.js';
 export * from './education/stemMathDefinition.js';
 export * from './education/stemScienceDefinition.js';
 export * from './education/stemEngineeringDefinition.js';
+export * from './education/stemTechnologyDefinition.js';
