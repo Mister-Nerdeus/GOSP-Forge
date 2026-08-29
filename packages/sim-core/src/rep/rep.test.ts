@@ -8,6 +8,7 @@ import { runSandbox001 } from './sandbox001.js';
 import { compareRepEnvironmentReports } from './reproducibilityComparison.js';
 import { createSandboxStemMathDefinition } from '../education/stemMathDefinition.js';
 import { createSandboxStemScienceDefinition } from '../education/stemScienceDefinition.js';
+import { createSandboxStemEngineeringDefinition } from '../education/stemEngineeringDefinition.js';
 import {
   referenceRunnerSourceManifest,
   sourceImplementationContentHash,
@@ -29,6 +30,12 @@ describe('REP v0.1 reference runner', () => {
     expect(definition.disclosures.join(' ')).toMatch(
       /no natural governing principle.*physical observation/i,
     );
+  });
+
+  it('keeps Sandbox engineering objectives and hazards inside the benchmark boundary', () => {
+    const definition = createSandboxStemEngineeringDefinition();
+    expect(definition.objectives).toHaveLength(1);
+    expect(definition.hazards[0]?.description).toMatch(/synthetic benchmark result/i);
   });
   it('uses Unicode code-point ordering and rejects non-JSON values', () => {
     expect(canonicalJson({ '\u{1F600}': 2, '\uE000': 1 })).toBe('{"":1,"😀":2}');

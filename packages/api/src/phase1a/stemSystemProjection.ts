@@ -3,6 +3,8 @@ import {
   StemMathDefinitionSchema,
   StemMathProjectionSchema,
   StemScienceDefinitionSchema,
+  StemEngineeringDefinitionSchema,
+  StemEngineeringProjectionSchema,
   type CanonicalConstraint,
   type Challenge,
   type Interface,
@@ -15,6 +17,7 @@ import {
   type StemMathDefinition,
   type StemMathProjection,
   type StemScienceDefinition,
+  type StemEngineeringDefinition,
   type SystemElement,
   type Workflow,
 } from '@gosp/contracts';
@@ -187,6 +190,204 @@ function buildScienceProjection(
   };
 }
 
+function numericMargin(
+  constraint: CanonicalConstraint,
+  baselineActual: unknown,
+  candidateActual: unknown,
+) {
+  if (
+    typeof constraint.value !== 'number' ||
+    typeof baselineActual !== 'number' ||
+    typeof candidateActual !== 'number'
+  ) {
+    return {
+      status: 'not-applicable' as const,
+      unit: constraint.unit,
+      explanation: 'This gate is not a numeric threshold, so a numeric margin is not applicable.',
+    };
+  }
+  const threshold = constraint.value;
+  const marginFor = (actual: number) => {
+    if (constraint.operator === 'gte' || constraint.operator === 'gt') {
+      return actual - threshold;
+    }
+    if (constraint.operator === 'lte' || constraint.operator === 'lt') {
+      return threshold - actual;
+    }
+    return undefined;
+  };
+  const baseline = marginFor(baselineActual);
+  const candidate = marginFor(candidateActual);
+  if (baseline === undefined || candidate === undefined) {
+    return {
+      status: 'not-applicable' as const,
+      unit: constraint.unit,
+      explanation: 'The declared numeric operator has no directional margin rule.',
+    };
+  }
+  return {
+    status: 'available' as const,
+    baseline,
+    candidate,
+    unit: constraint.unit,
+    explanation: 'Positive margin is on the passing side of the declared modeled threshold.',
+  };
+}
+
+function buildEngineeringProjection(input: {
+  definitionInput: StemEngineeringDefinition;
+  requirements: Array<{ record: Requirement; role: 'hard-gate' | 'objective' }>;
+  baseline: Phase1aEvaluationView;
+  candidate: Phase1aEvaluationView;
+  comparison: Phase1aComparison;
+  math: StemMathProjection;
+}) {
+  const { requirements, baseline, candidate, comparison, math } = input;
+  const definition = StemEngineeringDefinitionSchema.parse(input.definitionInput);
+  const quantityIds = new Set(math.quantities.map((quantity) => quantity.id));
+  definition.designVariables.forEach((variable) => {
+    if (!quantityIds.has(variable.quantityId)) {
+      throw new Error(
+        `STEM engineering variable ${variable.id} references unknown quantity ${variable.quantityId}.`,
+      );
+    }
+  });
+  const hardGates = baseline.hardGates.map((gate, index) => {
+    const candidateGate = candidate.hardGates[index];
+    if (!candidateGate || candidateGate.constraint.id !== gate.constraint.id) {
+      throw new Error(`Comparable evaluations must expose matching hard gate ${gate.constraint.id}.`);
+    }
+    return {
+      constraintId: gate.constraint.id,
+      statement: gate.constraint.statement,
+      baseline: { actual: gate.actual, passed: gate.passed },
+      candidate: { actual: candidateGate.actual, passed: candidateGate.passed },
+      changed: gate.passed !== candidateGate.passed,
+      margin: numericMargin(gate.constraint, gate.actual, candidateGate.actual),
+    };
+  });
+  const designVariables = definition.designVariables.map((variable) => {
+    const changed = comparison.changedInputPaths.some(
+      (path) => path === variable.inputPath || path.startsWith(`${variable.inputPath}[`) || path.startsWith(`${variable.inputPath}.`),
+    );
+    const baselineValue = valueAtPath(baseline.materialInput, variable.inputPath);
+    const candidateValue = valueAtPath(candidate.materialInput, variable.inputPath);
+    return {
+      ...variable,
+      changed,
+      ...(baselineValue === undefined ? {} : { baseline: baselineValue }),
+      ...(candidateValue === undefined ? {} : { candidate: candidateValue }),
+    };
+  });
+  const objectives = definition.objectives.map((objective) => {
+    if (objective.rule.kind === 'numeric-result') {
+      const baselineValue = valueAtPath(baseline.evaluation, objective.rule.resultPath);
+      const candidateValue = valueAtPath(candidate.evaluation, objective.rule.resultPath);
+      if (typeof baselineValue !== 'number' || typeof candidateValue !== 'number') {
+        return {
+          id: objective.id,
+          statement: objective.statement,
+          assessmentKind: objective.rule.kind,
+          preference: 'not-assessed' as const,
+          explanation: `Numeric objective path ${objective.rule.resultPath} is unavailable.`,
+        };
+      }
+      const delta = candidateValue - baselineValue;
+      const candidatePreferred = objective.rule.direction === 'maximize' ? delta > 0 : delta < 0;
+      const baselinePreferred = objective.rule.direction === 'maximize' ? delta < 0 : delta > 0;
+      const preference = candidatePreferred
+        ? ('candidate' as const)
+        : baselinePreferred
+          ? ('baseline' as const)
+          : ('equivalent' as const);
+      return {
+        id: objective.id,
+        statement: objective.statement,
+        assessmentKind: objective.rule.kind,
+        baseline: baselineValue,
+        candidate: candidateValue,
+        preference,
+        explanation: `${objective.rule.direction} ${objective.rule.resultPath}; candidate delta ${delta}.`,
+      };
+    }
+    const inputPath = objective.rule.inputPath;
+    const baselineValue = valueAtPath(baseline.materialInput, inputPath);
+    const candidateValue = valueAtPath(candidate.materialInput, inputPath);
+    const changed = comparison.changedInputPaths.some(
+      (path) => path === inputPath || path.startsWith(`${inputPath}[`) || path.startsWith(`${inputPath}.`),
+    );
+    return {
+      id: objective.id,
+      statement: objective.statement,
+      assessmentKind: objective.rule.kind,
+      ...(baselineValue === undefined ? {} : { baseline: baselineValue }),
+      ...(candidateValue === undefined ? {} : { candidate: candidateValue }),
+      preference: changed ? ('baseline' as const) : ('equivalent' as const),
+      explanation: changed
+        ? `The candidate changed preserved path ${inputPath}; this objective prefers the baseline absent new evidence.`
+        : `The preserved path ${inputPath} did not change.`,
+    };
+  });
+  const directional = new Set(
+    objectives.map((objective) => objective.preference).filter(
+      (preference) => preference === 'baseline' || preference === 'candidate',
+    ),
+  );
+  const tradeoff = directional.has('baseline') && directional.has('candidate')
+    ? {
+        status: 'conflict' as const,
+        decision: 'no-universal-winner' as const,
+        explanation: 'Declared objectives prefer different revisions. Value judgment or additional evidence is required; no universal winner is asserted.',
+      }
+    : definition.objectives.length === 1
+      ? {
+          status: 'single-objective' as const,
+          decision: directional.has('candidate') ? ('candidate-preferred' as const) : directional.has('baseline') ? ('baseline-preferred' as const) : ('equivalent' as const),
+          explanation: 'Only one declared objective is assessed; this is not a universal multi-objective ranking.',
+        }
+      : {
+          status: 'aligned' as const,
+          decision: directional.has('candidate') ? ('candidate-preferred' as const) : directional.has('baseline') ? ('baseline-preferred' as const) : ('equivalent' as const),
+          explanation: 'The assessed objectives do not prefer opposing revisions.',
+        };
+  return StemEngineeringProjectionSchema.parse({
+    requirements: requirements.map(({ record, role }) => ({
+      id: record.id,
+      statement: record.statement,
+      obligation: record.obligation,
+      role,
+      status: record.status,
+      verificationMethod: record.verificationMethod,
+    })),
+    hardGates,
+    unresolvedProofObligations: {
+      baseline: comparison.unresolvedProofObligations.baseline.map(({ id, description }) => ({ id, description })),
+      candidate: comparison.unresolvedProofObligations.candidate.map(({ id, description }) => ({ id, description })),
+    },
+    designVariables,
+    hazards: definition.hazards.map((hazard) => ({
+      id: hazard.id,
+      description: hazard.description,
+      severity: hazard.severity,
+      likelihood: hazard.likelihood,
+      status: hazard.status,
+      mitigationStatus: hazard.mitigationRefs.length ? 'declared' : 'not-declared',
+    })),
+    objectives,
+    tradeoff,
+    revisionExplanation: {
+      summary: comparison.explanation.summary,
+      changedInputs: comparison.changedInputs.map(
+        (change) => `${change.path}: ${String(change.baseline)} → ${String(change.candidate)}`,
+      ),
+      resultChanges: comparison.resultDeltas.map(
+        (delta) => `${delta.resultPath}: ${delta.baseline} → ${delta.candidate} (Δ ${delta.delta})`,
+      ),
+    },
+    disclosures: definition.disclosures,
+  });
+}
+
 export function buildStemSystemProjection(input: {
   challenge: Challenge;
   scenario: Scenario;
@@ -200,6 +401,8 @@ export function buildStemSystemProjection(input: {
   comparison: Phase1aComparison;
   mathDefinition: StemMathDefinition;
   scienceDefinition: StemScienceDefinition;
+  engineeringDefinition: StemEngineeringDefinition;
+  candidateEvaluation: Phase1aEvaluationView;
 }): StemSystemProjection {
   const {
     challenge,
@@ -214,6 +417,8 @@ export function buildStemSystemProjection(input: {
     comparison,
     mathDefinition,
     scienceDefinition,
+    engineeringDefinition,
+    candidateEvaluation,
   } = input;
   const openProofObligations = referenceEvaluation.claim.proofObligations.filter(
     (item) => item.status === 'open',
@@ -326,6 +531,14 @@ export function buildStemSystemProjection(input: {
     },
     math,
     science: buildScienceProjection(scienceDefinition, model, math),
+    engineeringDecision: buildEngineeringProjection({
+      definitionInput: engineeringDefinition,
+      requirements,
+      baseline: referenceEvaluation,
+      candidate: candidateEvaluation,
+      comparison,
+      math,
+    }),
     controlledConditions: {
       environment: scenario.environment,
       operatingConditions: scenario.operatingConditions,

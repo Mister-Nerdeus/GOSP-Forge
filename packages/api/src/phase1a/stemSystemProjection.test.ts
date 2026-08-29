@@ -5,6 +5,7 @@ import { buildStemSystemProjection } from './stemSystemProjection.js';
 import {
   createSandboxStemMathDefinition,
   createSandboxStemScienceDefinition,
+  createSandboxStemEngineeringDefinition,
 } from '@gosp/sim-core';
 
 async function withServer<T>(run: (baseUrl: string) => Promise<T>) {
@@ -37,6 +38,8 @@ describe('STEM system projection', () => {
       comparison: workspace.comparison,
       mathDefinition: createSandboxStemMathDefinition(),
       scienceDefinition: createSandboxStemScienceDefinition(),
+      engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      candidateEvaluation: workspace.evaluations[1]!,
     });
 
     expect(projection.problem.title).toBe('Sandbox 001 deterministic weighted sum');
@@ -91,6 +94,15 @@ describe('STEM system projection', () => {
     expect(projection.science.disclosures.join(' ')).toMatch(
       /no natural governing principle.*physical observation/i,
     );
+    expect(projection.engineeringDecision.hardGates[0]).toMatchObject({
+      baseline: { actual: 'completed', passed: true },
+      candidate: { actual: 'completed', passed: true },
+      margin: { status: 'not-applicable' },
+    });
+    expect(projection.engineeringDecision.tradeoff).toMatchObject({
+      status: 'single-objective',
+      decision: 'baseline-preferred',
+    });
     expect(projection.disclosure).toMatch(/projection of canonical GOSP records/i);
   });
 
@@ -167,6 +179,22 @@ describe('STEM system projection', () => {
             expect.objectContaining({ classification: 'observation', applicability: expect.objectContaining({ status: 'not-declared' }) }),
           ]),
         },
+        engineeringDecision: {
+          designVariables: [expect.objectContaining({
+            id: 'clean-water.design.filter-efficiency',
+            changed: true,
+            baseline: 0.8,
+            candidate: 0.9,
+          })],
+          hazards: expect.arrayContaining([
+            expect.objectContaining({ id: 'hazard.clean-water.potability-misinterpretation', mitigationStatus: 'not-declared' }),
+          ]),
+          objectives: expect.arrayContaining([
+            expect.objectContaining({ id: 'objective.clean-water.output-volume', preference: 'candidate' }),
+            expect.objectContaining({ id: 'objective.clean-water.preserve-unsupported-assumption', preference: 'baseline' }),
+          ]),
+          tradeoff: { status: 'conflict', decision: 'no-universal-winner' },
+        },
       });
     });
   });
@@ -188,6 +216,8 @@ describe('STEM system projection', () => {
       comparison: workspace.comparison,
       mathDefinition,
       scienceDefinition: createSandboxStemScienceDefinition(),
+      engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      candidateEvaluation: workspace.evaluations[1]!,
     });
     expect(projection.math.quantities[0]).toMatchObject({
       id: 'sandbox.values',
@@ -213,6 +243,8 @@ describe('STEM system projection', () => {
       comparison: workspace.comparison,
       mathDefinition,
       scienceDefinition: createSandboxStemScienceDefinition(),
+      engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      candidateEvaluation: workspace.evaluations[1]!,
     })).toThrow(/must exactly match the recorded equation variables/i);
   });
 
@@ -233,7 +265,37 @@ describe('STEM system projection', () => {
       comparison: workspace.comparison,
       mathDefinition: createSandboxStemMathDefinition(),
       scienceDefinition,
+      engineeringDefinition: createSandboxStemEngineeringDefinition(),
+      candidateEvaluation: workspace.evaluations[1]!,
     })).toThrow(/references unknown equation/i);
+  });
+
+  it('keeps a failed modeled gate ahead of objective outcomes', async () => {
+    const workspace = await new Phase1aService().getWorkspace();
+    const candidateEvaluation = structuredClone(workspace.evaluations[1]!);
+    candidateEvaluation.hardGates[0]!.actual = 'failed';
+    candidateEvaluation.hardGates[0]!.passed = false;
+    const projection = buildStemSystemProjection({
+      challenge: workspace.challenge.record,
+      scenario: workspace.challenge.scenario,
+      model: workspace.challenge.model,
+      workflow: workspace.challenge.workflow,
+      requirements: workspace.challenge.requirements,
+      constraints: workspace.challenge.constraints,
+      systemElements: workspace.challenge.systemElements,
+      interfaces: workspace.challenge.interfaces,
+      referenceEvaluation: workspace.evaluations[0]!,
+      candidateEvaluation,
+      comparison: workspace.comparison,
+      mathDefinition: createSandboxStemMathDefinition(),
+      scienceDefinition: createSandboxStemScienceDefinition(),
+      engineeringDefinition: createSandboxStemEngineeringDefinition(),
+    });
+    expect(projection.engineeringDecision.hardGates[0]).toMatchObject({
+      candidate: { actual: 'failed', passed: false },
+      changed: true,
+    });
+    expect(projection.engineeringDecision.unresolvedProofObligations.candidate.length).toBeGreaterThan(0);
   });
 
   it('rejects an incomplete STEM challenge selection', async () => {

@@ -36,6 +36,7 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     systemMapPanel(workspace),
     mathPanel(workspace),
     sciencePanel(workspace),
+    engineeringPanel(workspace),
     submissionPanel(workspace),
     comparisonSelectionPanel(workspace, client, root),
     resultPanel(workspace),
@@ -46,6 +47,72 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     importPanel(workspace, client, root),
   );
   return app;
+}
+
+function engineeringPanel(workspace: Phase1aWorkspace) {
+  const engineering = workspace.stemSystem.engineeringDecision;
+  return panel('Show Engineering', [
+    element(
+      'p',
+      'claim',
+      engineering.hardGates.every((gate) => gate.baseline.passed && gate.candidate.passed)
+        ? 'Modeled hard gates pass for both recorded revisions.'
+        : 'MODELED HARD GATE FAILURE — review before objective outcomes.',
+    ),
+    subheading('Requirements, hard gates, and objectives'),
+    cardList(engineering.requirements.map((requirement) => ({
+      title: requirement.statement,
+      meta: `${requirement.role.toUpperCase()} · ${requirement.obligation} · ${requirement.status} · ${requirement.id}`,
+      body: requirement.verificationMethod ? `Verification method: ${requirement.verificationMethod}` : undefined,
+    }))),
+    subheading('Gate state and margins'),
+    cardList(engineering.hardGates.map((gate) => ({
+      title: `${gate.constraintId} · ${gate.baseline.passed && gate.candidate.passed ? 'PASS' : 'FAIL'}`,
+      meta: `baseline ${String(gate.baseline.actual)} / ${gate.baseline.passed ? 'pass' : 'fail'} · candidate ${String(gate.candidate.actual)} / ${gate.candidate.passed ? 'pass' : 'fail'} · margin ${gate.margin.status}`,
+      body: `${gate.statement} ${gate.margin.explanation}`,
+    }))),
+    subheading('Unresolved proof obligations — before optimization outcomes'),
+    cardList([
+      ...engineering.unresolvedProofObligations.baseline.map((item) => ({
+        title: `BASELINE · ${item.description}`,
+        meta: item.id,
+      })),
+      ...engineering.unresolvedProofObligations.candidate.map((item) => ({
+        title: `CANDIDATE · ${item.description}`,
+        meta: item.id,
+      })),
+    ]),
+    subheading('Design variables'),
+    cardList(engineering.designVariables.map((variable) => ({
+      title: `${variable.id} · ${variable.changed ? 'changed' : 'fixed'}`,
+      meta: `${variable.changePolicy} · ${variable.quantityId}`,
+      body: `${variable.inputPath}: ${displayRecordedValue(variable.baseline)} → ${displayRecordedValue(variable.candidate)}. ${variable.rationale}`,
+    }))),
+    subheading('Hazards'),
+    cardList(engineering.hazards.map((hazard) => ({
+      title: hazard.description,
+      meta: `${hazard.severity} severity · ${hazard.likelihood} likelihood · ${hazard.status} · mitigation ${hazard.mitigationStatus}`,
+      body: hazard.id,
+    }))),
+    subheading('Separate objective outcomes'),
+    cardList(engineering.objectives.map((objective) => ({
+      title: objective.statement,
+      meta: `${objective.preference.toUpperCase()} · ${objective.assessmentKind}`,
+      body: `${displayRecordedValue(objective.baseline)} → ${displayRecordedValue(objective.candidate)}. ${objective.explanation}`,
+    }))),
+    element(
+      'p',
+      'comparison-summary',
+      `${engineering.tradeoff.status.toUpperCase()} · ${engineering.tradeoff.decision}: ${engineering.tradeoff.explanation}`,
+    ),
+    subheading('Why the revision differs'),
+    element('p', '', engineering.revisionExplanation.summary),
+    bullets([
+      ...engineering.revisionExplanation.changedInputs,
+      ...engineering.revisionExplanation.resultChanges,
+    ]),
+    bullets(engineering.disclosures),
+  ], 'wide');
 }
 
 function sciencePanel(workspace: Phase1aWorkspace) {

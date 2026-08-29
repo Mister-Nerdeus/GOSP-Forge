@@ -9,6 +9,7 @@ import {
   type RepMaterialInput,
   type StemMathDefinition,
   type StemScienceDefinition,
+  type StemEngineeringDefinition,
   type Submission,
   type SystemElement,
 } from '@gosp/contracts';
@@ -16,12 +17,14 @@ import {
   createSandbox001MaterialInput,
   createSandboxStemMathDefinition,
   createSandboxStemScienceDefinition,
+  createSandboxStemEngineeringDefinition,
   runSandbox001,
 } from '@gosp/sim-core';
 import {
   createCleanWaterRepMaterialInput,
   createCleanWaterStemMathDefinition,
   createCleanWaterStemScienceDefinition,
+  createCleanWaterStemEngineeringDefinition,
   createCleanWaterStemSystemDefinition,
   evaluateCleanWaterRep,
 } from '@gosp/vertical-clean-water';
@@ -40,6 +43,7 @@ export type Phase1aEvaluatorDefinition = {
   interfaces: Interface[];
   mathDefinition: StemMathDefinition;
   scienceDefinition: StemScienceDefinition;
+  engineeringDefinition: StemEngineeringDefinition;
   evaluate(input: RepMaterialInput): RepEvaluationResult;
   claimStatement(evaluation: Evaluation): string;
 };
@@ -67,6 +71,7 @@ function sandboxDefinition(): Phase1aEvaluatorDefinition {
     interfaces: [],
     mathDefinition: createSandboxStemMathDefinition(),
     scienceDefinition: createSandboxStemScienceDefinition(),
+    engineeringDefinition: createSandboxStemEngineeringDefinition(),
     evaluate: runSandbox001,
     claimStatement: (evaluation) =>
       `Under the recorded synthetic inputs, result.value is ${(evaluation.result as { value: number }).value}.`,
@@ -121,6 +126,7 @@ function cleanWaterDefinition(): Phase1aEvaluatorDefinition {
     ...systemDefinition,
     mathDefinition: createCleanWaterStemMathDefinition(),
     scienceDefinition: createCleanWaterStemScienceDefinition(),
+    engineeringDefinition: createCleanWaterStemEngineeringDefinition(template.challenge.revision),
     evaluate: evaluateCleanWaterRep,
     claimStatement: (evaluation) => {
       const result = evaluation.result as { flow: { cleanWaterLiters: number } };
@@ -171,20 +177,20 @@ export class Phase1aEvaluatorRegistry {
         }),
         role: 'hard-gate' as const,
       },
-      {
+      ...definition.engineeringDefinition.objectives.map((objective) => ({
         record: RequirementSchema.parse({
           kind: 'Requirement',
-          id: `requirement.${challenge.id}.objective`,
+          id: objective.id,
           revision: challenge.revision,
           provenance,
           relationships: [{ type: 'applies-to', target, description: 'Controlled comparison objective.' }],
-          statement: `A candidate should improve ${definition.objectiveResultPath} within fixed comparison boundaries.`,
+          statement: objective.statement,
           obligation: 'should',
           status: 'accepted',
           verificationMethod: 'analysis',
         }),
         role: 'objective' as const,
-      },
+      })),
     ];
   }
 

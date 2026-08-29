@@ -119,6 +119,33 @@ const workspace = {
       }],
       disclosures: ['No natural governing principle or physical observation is asserted.'],
     },
+    engineeringDecision: {
+      requirements: [
+        { id: 'requirement.valid', statement: 'Inputs shall be valid.', obligation: 'shall', role: 'hard-gate', status: 'accepted', verificationMethod: 'analysis' },
+        { id: 'objective.sandbox.result', statement: 'Increase the recorded result.', obligation: 'should', role: 'objective', status: 'accepted', verificationMethod: 'analysis' },
+      ],
+      hardGates: [{
+        constraintId: 'constraint.minimum', statement: 'Evaluation must complete.',
+        baseline: { actual: 'completed', passed: true }, candidate: { actual: 'completed', passed: true }, changed: false,
+        margin: { status: 'not-applicable', explanation: 'Logical gate has no numeric margin.' },
+      }],
+      unresolvedProofObligations: {
+        baseline: [{ id: 'proof.physical-validation', description: 'Physical validation remains open.' }],
+        candidate: [{ id: 'proof.physical-validation', description: 'Physical validation remains open.' }],
+      },
+      designVariables: [{
+        id: 'sandbox.design.values', quantityId: 'sandbox.values', inputPath: 'submission.materialPayload.values',
+        changePolicy: 'allowed-for-comparison', changed: true, baseline: [1, 2, 3], candidate: [0, 1, 1], rationale: 'Values may change.',
+      }],
+      hazards: [{ id: 'hazard.sandbox.physical-misinterpretation', description: 'Synthetic result may be misrepresented.', severity: 'minor', likelihood: 'possible', status: 'mitigating', mitigationStatus: 'not-declared' }],
+      objectives: [{
+        id: 'objective.sandbox.result', statement: 'Increase the recorded result.', assessmentKind: 'numeric-result',
+        baseline: 53, candidate: 23, preference: 'baseline', explanation: 'Maximize result.value.',
+      }],
+      tradeoff: { status: 'single-objective', decision: 'baseline-preferred', explanation: 'Not a universal ranking.' },
+      revisionExplanation: { summary: 'Baseline performed better.', changedInputs: ['values changed'], resultChanges: ['53 → 23'] },
+      disclosures: ['Passing modeled gates is not safety approval.'],
+    },
     controlledConditions: { environment: {}, operatingConditions: {}, parameters: { scale: 2 } },
     assumptions: [], engineering: { requirements: [], constraints: [] },
     model: { name: 'Sandbox analytical model', modelType: 'analytical', fidelityLevel: 'analytical', calibrationStatus: 'not-applicable', solver: { id: 'solver.sandbox-001', revision: '1.0.0' }, limitations: ['Synthetic only.'] },
@@ -207,5 +234,12 @@ describe('renderApp', () => {
     expect(text).toContain('model equation · Synthetic weighted-sum model relationship');
     expect(text).toContain('No natural governing principle or physical observation');
     expect(text).toContain('does not prove that the model represents it adequately');
+    expect(text).toContain('Show Engineering');
+    expect(text).toContain('margin not-applicable');
+    expect(text).toContain('Unresolved proof obligations — before optimization outcomes');
+    expect(text).toContain('Synthetic result may be misrepresented');
+    expect(text).toContain('SINGLE-OBJECTIVE · baseline-preferred');
+    expect(text).toContain('Passing modeled gates is not safety approval');
+    expect(text.indexOf('Unresolved proof obligations')).toBeLessThan(text.indexOf('Separate objective outcomes'));
   });
 });

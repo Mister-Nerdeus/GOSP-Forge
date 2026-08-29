@@ -9,6 +9,7 @@ import {
   createCleanWaterStemSystemDefinition,
   createCleanWaterStemMathDefinition,
   createCleanWaterStemScienceDefinition,
+  createCleanWaterStemEngineeringDefinition,
   generateModuleScorecards,
   generateSystemScorecard,
   runWaterWarningController,
@@ -368,5 +369,15 @@ describe('Clean Water vertical foundation', () => {
       evidenceStatus: 'not-declared',
       applicability: { status: 'not-declared' },
     });
+  });
+
+  it('declares opposing engineering objectives without a composite score', () => {
+    const definition = createCleanWaterStemEngineeringDefinition();
+    expect(definition.objectives.map((objective) => objective.rule.kind)).toEqual([
+      'numeric-result',
+      'preserve-input',
+    ]);
+    expect(definition.hazards).toHaveLength(2);
+    expect(definition.disclosures.join(' ')).toMatch(/no composite score/i);
   });
 });
