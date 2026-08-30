@@ -127,6 +127,15 @@ importers:
         specifier: workspace:*
         version: link:../sim-core
 
+  packages/vertical-solar-deployment:
+    dependencies:
+      '@gosp/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@gosp/sim-core':
+        specifier: workspace:*
+        version: link:../sim-core
+
 packages:
 
   '@esbuild/aix-ppc64@0.28.2':

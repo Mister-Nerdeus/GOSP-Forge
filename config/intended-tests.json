@@ -40,5 +40,6 @@
   "packages/module-registry/src/module-registry.test.ts",
   "packages/sim-core/src/boundary.test.ts",
   "packages/sim-core/src/rep/rep.test.ts",
-  "packages/vertical-clean-water/src/vertical-clean-water.test.ts"
+  "packages/vertical-clean-water/src/vertical-clean-water.test.ts",
+  "packages/vertical-solar-deployment/src/solarDeploymentRepAdapter.test.ts"
 ]

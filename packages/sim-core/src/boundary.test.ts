@@ -15,6 +15,11 @@ const prohibitedTerms = [
   ['filter', 'efficiency'].join(''),
   ['turbidity', 'range'].join(''),
   ['is', 'water', 'module'].join(''),
+  ['solar', '-', 'deployment'].join(''),
+  ['photo', 'voltaic'].join(''),
+  ['irradiance', 'wm2'].join(''),
+  ['stow', 'time'].join(''),
+  ['bend', 'radius'].join(''),
 ];
 
 function sourceFiles(directory: string): string[] {
