@@ -9,6 +9,7 @@ import { StemLearningProjectionSchema } from './stemLearningProjection.js';
 import { StemDynamicProjectionSchema } from './stemDynamicProjection.js';
 import { StemLearningDepthSchema } from './stemLearningProjection.js';
 import { StemExperimentProjectionSchema } from './stemExperimentProjection.js';
+import { StemHumanRelevanceProjectionSchema } from './stemHumanRelevanceProjection.js';
 
 export const StemSystemProjectionSchema = z.object({
   projectionVersion: z.literal('0.1.0'),
@@ -100,6 +101,7 @@ export const StemSystemProjectionSchema = z.object({
   howWeKnow: StemHowWeKnowTraceSchema,
   dynamic: StemDynamicProjectionSchema,
   experiment: StemExperimentProjectionSchema,
+  humanRelevance: StemHumanRelevanceProjectionSchema,
   controlledConditions: z.object({
     environment: z.record(CanonicalJsonValueSchema).default({}),
     operatingConditions: z.record(CanonicalJsonValueSchema).default({}),

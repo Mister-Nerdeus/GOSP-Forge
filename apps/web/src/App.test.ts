@@ -72,7 +72,7 @@ const workspace = {
     learningProjection: {
       selectedDepth: 'research-professional',
       canonicalIdentity: { evaluationId: 'evaluation.submission.reference', evaluationRevision: '0.1.0', materialInputHash: hashA, materialResultHash: hashB },
-      selectedManifest: { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
+      selectedManifest: { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: ['system-map', 'human-relevance', 'math', 'science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'], redactedSections: [], disclosure: 'Presentation only.' },
       availableManifests: [
         { depth: 'explore', label: 'Explore', detailLevel: 'introductory', includedSections: ['system-map'], redactedSections: ['math', 'science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'], disclosure: 'Presentation only.' },
         { depth: 'measure', label: 'Measure', detailLevel: 'guided', includedSections: ['system-map', 'math'], redactedSections: ['science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'], disclosure: 'Presentation only.' },
@@ -224,6 +224,14 @@ const workspace = {
       canonicalTruthBoundary: { evaluationStatus: 'completed', contradictionIds: [], preservedFailureState: 'preserved', evidenceReadinessBefore: 'computationally-reproduced', evidenceReadinessAfter: 'computationally-reproduced', readinessUpdate: 'not-applied' },
       disclosures: ['A test plan is not a completed test.', 'Synthetic observations are not measurements.', 'One observation is not validation.'],
     },
+    humanRelevance: {
+      categories: ['cost','safety','energy','water','reliability','accessibility','maintenance','labor-skills','materials-waste','environment','infrastructure-community'].map((category) => category === 'water' ? {
+        category, status: 'supported', outcomes: [{ interpretation: 'benefit', statement: 'A recorded modeled quantity is available for comparison.', measures: [{ quantityId: 'sandbox.result', value: 53 }], evidenceRefs: ['evidence.fixture@1.0.0'], limitations: ['Modeled quantity only.', 'Stakeholder priorities remain separate.'] }],
+      } : { category, status: 'unknown', outcomes: [], unknownReason: 'No canonical quantity and evidence are declared.' }),
+      stakeholderValues: [{ stakeholder: 'learner', value: 'Understand uncertainty.', status: 'authored-preference' }],
+      technicalValueSeparation: true,
+      disclosures: ['This projection is not policy advice.','This projection is not a lifecycle assessment.','This projection is not environmental certification.','This projection is not an economic forecast.','This projection is not proof of social benefit.'],
+    },
     controlledConditions: { environment: {}, operatingConditions: {}, parameters: { scale: 2 } },
     assumptions: [], engineering: { requirements: [], constraints: [] },
     model: { name: 'Sandbox analytical model', modelType: 'analytical', fidelityLevel: 'analytical', calibrationStatus: 'not-applicable', solver: { id: 'solver.sandbox-001', revision: '1.0.0' }, limitations: ['Synthetic only.'] },
@@ -343,6 +351,11 @@ describe('renderApp', () => {
     expect(text).toContain('synthetic');
     expect(text).toContain('Evidence readiness computationally-reproduced → computationally-reproduced');
     expect(text).toContain('Synthetic observations are not measurements');
+    expect(text).toContain('Human Relevance');
+    expect(text).toContain('water · supported');
+    expect(text).toContain('cost · unknown');
+    expect(text).toContain('Stakeholder values — authored preferences, not technical results');
+    expect(text).toContain('not policy advice');
     expect(text).toContain('Animation is not measurement');
   });
 });

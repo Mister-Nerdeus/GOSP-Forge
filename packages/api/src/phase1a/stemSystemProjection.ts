@@ -28,6 +28,9 @@ import {
   StemExperimentDefinitionSchema,
   StemExperimentProjectionSchema,
   type StemExperimentDefinition,
+  StemHumanRelevanceDefinitionSchema,
+  StemHumanRelevanceProjectionSchema,
+  type StemHumanRelevanceDefinition,
   type SystemElement,
   type Workflow,
 } from '@gosp/contracts';
@@ -589,7 +592,7 @@ function buildHowWeKnowTrace(input: {
   });
 }
 
-const learningSections = ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'] as const;
+const learningSections = ['system-map', 'human-relevance', 'math', 'science', 'engineering', 'technology', 'dynamic', 'experiment', 'how-we-know'] as const;
 
 function buildLearningProjection(depth: StemLearningDepth, evaluationView: Phase1aEvaluationView) {
   const definitions: Array<{
@@ -598,10 +601,10 @@ function buildLearningProjection(depth: StemLearningDepth, evaluationView: Phase
     detailLevel: 'introductory' | 'guided' | 'technical' | 'verification' | 'full';
     includedSections: Array<typeof learningSections[number]>;
   }> = [
-    { depth: 'explore', label: 'Explore', detailLevel: 'introductory', includedSections: ['system-map'] },
-    { depth: 'measure', label: 'Measure', detailLevel: 'guided', includedSections: ['system-map', 'math'] },
-    { depth: 'model', label: 'Model', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science'] },
-    { depth: 'solve', label: 'Solve', detailLevel: 'technical', includedSections: ['system-map', 'math', 'science', 'engineering', 'technology', 'dynamic'] },
+    { depth: 'explore', label: 'Explore', detailLevel: 'introductory', includedSections: ['system-map', 'human-relevance'] },
+    { depth: 'measure', label: 'Measure', detailLevel: 'guided', includedSections: ['system-map', 'human-relevance', 'math'] },
+    { depth: 'model', label: 'Model', detailLevel: 'technical', includedSections: ['system-map', 'human-relevance', 'math', 'science'] },
+    { depth: 'solve', label: 'Solve', detailLevel: 'technical', includedSections: ['system-map', 'human-relevance', 'math', 'science', 'engineering', 'technology', 'dynamic'] },
     { depth: 'verify', label: 'Verify', detailLevel: 'verification', includedSections: [...learningSections] },
     { depth: 'research-professional', label: 'Research / Professional', detailLevel: 'full', includedSections: [...learningSections] },
   ];
@@ -711,6 +714,72 @@ function buildExperimentProjection(input: {
   });
 }
 
+function buildHumanRelevanceProjection(input: {
+  definitionInput: StemHumanRelevanceDefinition;
+  math: StemMathProjection;
+  evaluationView: Phase1aEvaluationView;
+  comparison: Phase1aComparison;
+}) {
+  const definition = StemHumanRelevanceDefinitionSchema.parse(input.definitionInput);
+  const evidenceRefs = input.evaluationView.evidence
+    .filter((item) => item.status === 'accepted')
+    .map((item) => `${item.id}@${item.revision}`);
+  const uncertaintyText = input.evaluationView.evaluation.uncertainty
+    .map((item) => 'rationale' in item ? item.rationale : JSON.stringify(item))
+    .join(' ');
+  const categories = definition.declarations.map((declaration) => {
+    const measures = declaration.quantityIds.flatMap((quantityId) => {
+      const quantity = input.math.quantities.find((item) => item.id === quantityId);
+      return quantity?.availability === 'available' && quantity.value !== undefined
+        ? [{ quantityId, value: quantity.value, ...(quantity.unit ? { unit: quantity.unit } : {}) }]
+        : [];
+    });
+    if (declaration.status === 'unknown' || !measures.length || !evidenceRefs.length) {
+      return {
+        category: declaration.category,
+        status: 'unknown' as const,
+        outcomes: [],
+        unknownReason: declaration.unknownReason ?? 'Required canonical quantities or accepted evidence are unavailable.',
+      };
+    }
+    const measureText = measures.map((item) => `${item.quantityId} = ${String(item.value)}${item.unit ? ` ${item.unit}` : ''}`).join(', ');
+    return {
+      category: declaration.category,
+      status: 'supported' as const,
+      outcomes: declaration.interpretations.map((interpretation) => ({
+        interpretation,
+        statement: interpretation === 'benefit'
+          ? `Within the recorded model boundary, ${measureText}; this modeled quantity is available for comparison.`
+          : interpretation === 'tradeoff'
+            ? `${input.comparison.explanation.summary} The result depends on the recorded changed inputs and is not a universal preference.`
+            : `${uncertaintyText || 'No quantified uncertainty interval is recorded.'} The supported quantity remains model-dependent.`,
+        measures,
+        evidenceRefs,
+        limitations: [
+          'The linked evidence supports the recorded computation and local replay, not physical performance or broader social impact.',
+          'A technical quantity does not decide stakeholder priorities.',
+        ],
+      })),
+    };
+  });
+  return StemHumanRelevanceProjectionSchema.parse({
+    categories,
+    stakeholderValues: definition.stakeholderValues,
+    technicalValueSeparation: true,
+    disclosures: definition.nonClaims,
+  });
+}
+
+const humanRelevanceCategories = ['cost','safety','energy','water','reliability','accessibility','maintenance','labor-skills','materials-waste','environment','infrastructure-community'] as const;
+
+function undeclaredHumanRelevanceDefinition(): StemHumanRelevanceDefinition {
+  return StemHumanRelevanceDefinitionSchema.parse({
+    declarations: humanRelevanceCategories.map((category) => ({ category, status: 'unknown', quantityIds: [], interpretations: [], unknownReason: 'No human-relevance quantity and evidence declaration is registered.' })),
+    stakeholderValues: [],
+    nonClaims: ['This projection is not policy advice.','This projection is not a lifecycle assessment.','This projection is not environmental certification.','This projection is not an economic forecast.','This projection is not proof of social benefit.'],
+  });
+}
+
 function buildDynamicProjection(input: {
   interfaces: Interface[];
   math: StemMathProjection;
@@ -794,6 +863,7 @@ export function buildStemSystemProjection(input: {
   engineeringDefinition: StemEngineeringDefinition;
   technologyDefinition: StemTechnologyDefinition;
   experimentDefinition?: StemExperimentDefinition;
+  humanRelevanceDefinition?: StemHumanRelevanceDefinition;
   candidateEvaluation: Phase1aEvaluationView;
   learningDepth?: StemLearningDepth;
 }): StemSystemProjection {
@@ -813,6 +883,7 @@ export function buildStemSystemProjection(input: {
     engineeringDefinition,
     technologyDefinition,
     experimentDefinition,
+    humanRelevanceDefinition,
     candidateEvaluation,
     learningDepth = 'explore',
   } = input;
@@ -925,6 +996,12 @@ export function buildStemSystemProjection(input: {
     math,
     evaluationView: referenceEvaluation,
   });
+  const humanRelevance = buildHumanRelevanceProjection({
+    definitionInput: humanRelevanceDefinition ?? undeclaredHumanRelevanceDefinition(),
+    math,
+    evaluationView: referenceEvaluation,
+    comparison,
+  });
 
   return StemSystemProjectionSchema.parse({
     projectionVersion: '0.1.0',
@@ -975,6 +1052,7 @@ export function buildStemSystemProjection(input: {
       comparison,
     }),
     experiment,
+    humanRelevance,
     controlledConditions: {
       environment: scenario.environment,
       operatingConditions: scenario.operatingConditions,

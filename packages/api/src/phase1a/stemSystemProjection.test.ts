@@ -266,6 +266,18 @@ describe('STEM system projection', () => {
       });
       expect(selectedProjection.variableRoles).toMatchObject({ measurementStatus: 'not-declared', measuredOutputs: [] });
       expect(selectedProjection.experiment.disclosures.join(' ')).toMatch(/synthetic observation is not a measurement.*one observation is not validation/i);
+      const waterRelevance = selectedProjection.humanRelevance.categories.find((item) => item.category === 'water');
+      expect(waterRelevance).toMatchObject({
+        status: 'supported',
+        outcomes: expect.arrayContaining([
+          expect.objectContaining({ interpretation: 'benefit', measures: [expect.objectContaining({ quantityId: 'clean-water.clean-water-liters', value: 64, unit: 'L' })] }),
+          expect.objectContaining({ interpretation: 'tradeoff', statement: expect.stringMatching(/not a universal preference/i) }),
+          expect.objectContaining({ interpretation: 'uncertainty', statement: expect.stringMatching(/model input.*not been physically validated/i) }),
+        ]),
+      });
+      expect(waterRelevance!.outcomes.every((item) => item.evidenceRefs.length > 0)).toBe(true);
+      expect(selectedProjection.humanRelevance.categories.find((item) => item.category === 'cost')).toMatchObject({ status: 'unknown', outcomes: [] });
+      expect(selectedProjection.humanRelevance.technicalValueSeparation).toBe(true);
     });
   });
 
@@ -325,7 +337,7 @@ describe('STEM system projection', () => {
         howWeKnow: { consequentialResult: unknown; materialIdentity: unknown };
       };
       const verify = await fetch(`${baseUrl}/api/phase1a/stem-system?learningDepth=verify`).then((response) => response.json()) as typeof explore;
-      expect(explore.learningProjection.selectedManifest.includedSections).toEqual(['system-map']);
+      expect(explore.learningProjection.selectedManifest.includedSections).toEqual(['system-map', 'human-relevance']);
       expect(verify.learningProjection.selectedManifest.includedSections).toContain('how-we-know');
       expect(verify.learningProjection.canonicalIdentity).toEqual(explore.learningProjection.canonicalIdentity);
       expect(verify.howWeKnow.consequentialResult).toEqual(explore.howWeKnow.consequentialResult);

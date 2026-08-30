@@ -27,6 +27,7 @@
     "packages/contracts/src/education/stemLearningProjection.test.ts",
     "packages/contracts/src/education/stemDynamicProjection.test.ts",
     "packages/contracts/src/education/stemExperimentProjection.test.ts",
+    "packages/contracts/src/education/stemHumanRelevanceProjection.test.ts",
   "packages/contracts/src/education/stemScienceProjection.test.ts",
   "packages/contracts/src/contracts.test.ts",
   "packages/contracts/src/imports/specImportDraft.test.ts",

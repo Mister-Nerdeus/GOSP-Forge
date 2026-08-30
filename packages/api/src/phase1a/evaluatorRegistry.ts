@@ -12,6 +12,7 @@ import {
   type StemEngineeringDefinition,
   type StemTechnologyDefinition,
   type StemExperimentDefinition,
+  type StemHumanRelevanceDefinition,
   type Submission,
   type SystemElement,
 } from '@gosp/contracts';
@@ -22,6 +23,7 @@ import {
   createSandboxStemEngineeringDefinition,
   createSandboxStemTechnologyDefinition,
   createSandboxStemExperimentDefinition,
+  createSandboxStemHumanRelevanceDefinition,
   runSandbox001,
 } from '@gosp/sim-core';
 import {
@@ -32,6 +34,7 @@ import {
   createCleanWaterStemTechnologyDefinition,
   createCleanWaterStemSystemDefinition,
   createCleanWaterStemExperimentDefinition,
+  createCleanWaterStemHumanRelevanceDefinition,
   evaluateCleanWaterRep,
 } from '@gosp/vertical-clean-water';
 
@@ -52,6 +55,7 @@ export type Phase1aEvaluatorDefinition = {
   engineeringDefinition: StemEngineeringDefinition;
   technologyDefinition: StemTechnologyDefinition;
   experimentDefinition: StemExperimentDefinition;
+  humanRelevanceDefinition: StemHumanRelevanceDefinition;
   evaluate(input: RepMaterialInput): RepEvaluationResult;
   claimStatement(evaluation: Evaluation): string;
 };
@@ -82,6 +86,7 @@ function sandboxDefinition(): Phase1aEvaluatorDefinition {
     engineeringDefinition: createSandboxStemEngineeringDefinition(),
     technologyDefinition: createSandboxStemTechnologyDefinition(),
     experimentDefinition: createSandboxStemExperimentDefinition(),
+    humanRelevanceDefinition: createSandboxStemHumanRelevanceDefinition(),
     evaluate: runSandbox001,
     claimStatement: (evaluation) =>
       `Under the recorded synthetic inputs, result.value is ${(evaluation.result as { value: number }).value}.`,
@@ -139,6 +144,7 @@ function cleanWaterDefinition(): Phase1aEvaluatorDefinition {
     engineeringDefinition: createCleanWaterStemEngineeringDefinition(template.challenge.revision),
     technologyDefinition: createCleanWaterStemTechnologyDefinition(),
     experimentDefinition: createCleanWaterStemExperimentDefinition(),
+    humanRelevanceDefinition: createCleanWaterStemHumanRelevanceDefinition(),
     evaluate: evaluateCleanWaterRep,
     claimStatement: (evaluation) => {
       const result = evaluation.result as { flow: { cleanWaterLiters: number } };

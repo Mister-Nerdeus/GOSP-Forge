@@ -37,6 +37,7 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     challengePanel(workspace, client, root),
     learningDepthPanel(workspace, client, root),
     ...(included.has('system-map') ? [systemMapPanel(workspace)] : []),
+    ...(included.has('human-relevance') ? [humanRelevancePanel(workspace)] : []),
     ...(included.has('math') ? [mathPanel(workspace)] : []),
     ...(included.has('science') ? [sciencePanel(workspace)] : []),
     ...(included.has('engineering') ? [engineeringPanel(workspace)] : []),
@@ -276,6 +277,27 @@ function experimentPanel(workspace: Phase1aWorkspace) {
       ['Readiness update', experiment.canonicalTruthBoundary.readinessUpdate],
     ]),
     bullets(experiment.disclosures),
+  ], 'wide');
+}
+
+function humanRelevancePanel(workspace: Phase1aWorkspace) {
+  const relevance = workspace.stemSystem.humanRelevance;
+  return panel('Human Relevance', [
+    element('p', 'claim', 'Technical quantities and evidence are shown separately from authored stakeholder priorities.'),
+    ...relevance.categories.map((category) => layer(`${category.category.replaceAll('-', ' / ')} · ${category.status}`, category.status === 'unknown'
+      ? [element('p', 'muted', category.unknownReason ?? 'Unknown.')]
+      : category.outcomes.map((outcome) => elementContainer('article', 'result-card', [
+          element('strong', '', outcome.interpretation.toUpperCase()),
+          element('p', '', outcome.statement),
+          keyValues([
+            ['Measures', outcome.measures.map((item) => `${item.quantityId} = ${displayRecordedValue(item.value)}${item.unit ? ` ${item.unit}` : ''}`).join(', ')],
+            ['Evidence', outcome.evidenceRefs.join(', ')],
+          ]),
+          bullets(outcome.limitations),
+        ])))),
+    subheading('Stakeholder values — authored preferences, not technical results'),
+    cardList(relevance.stakeholderValues.map((item) => ({ title: item.stakeholder, meta: item.status, body: item.value }))),
+    bullets(relevance.disclosures),
   ], 'wide');
 }
 

@@ -659,6 +659,7 @@ export class Phase1aService {
       engineeringDefinition: definition.engineeringDefinition,
       technologyDefinition: definition.technologyDefinition,
       experimentDefinition: definition.experimentDefinition,
+      humanRelevanceDefinition: definition.humanRelevanceDefinition,
       candidateEvaluation: evaluations[1]!,
       learningDepth,
     });
