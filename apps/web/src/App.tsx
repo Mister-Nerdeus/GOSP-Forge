@@ -61,6 +61,7 @@ function learningDepthPanel(workspace: Phase1aWorkspace, client: Phase1aClient, 
   const learning = workspace.stemSystem.learningProjection;
   const selector = document.createElement('select');
   selector.className = 'select-control';
+  selector.ariaLabel = 'Learning depth';
   for (const manifest of learning.availableManifests) {
     const option = document.createElement('option');
     option.value = manifest.depth;
@@ -531,6 +532,7 @@ function challengePanel(
   const { record, requirements, constraints, assumptions, model, scenario } = workspace.challenge;
   const selector = document.createElement('select');
   selector.className = 'select-control';
+  selector.ariaLabel = 'Challenge';
   for (const challenge of workspace.challenge.availableChallenges) {
     const option = document.createElement('option');
     option.value = `${challenge.id}@${challenge.revision}`;

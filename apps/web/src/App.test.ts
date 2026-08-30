@@ -8,6 +8,7 @@ class TestElement {
   type = '';
   href = '';
   download = '';
+  ariaLabel = '';
   children: TestElement[] = [];
   classList = { add: (...values: string[]) => { this.className = [this.className, ...values].filter(Boolean).join(' '); } };
 
