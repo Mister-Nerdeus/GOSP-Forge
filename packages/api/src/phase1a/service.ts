@@ -28,6 +28,7 @@ import {
   type Phase1aEvaluatorDefinition,
 } from './evaluatorRegistry.js';
 import { buildStemSystemProjection } from './stemSystemProjection.js';
+import { buildAdvancedChallengeProjection } from './advancedChallengeProjection.js';
 
 const storageKey = (kind: string, id: string, revision: string) =>
   `phase1a:${kind}:${id}@${revision}`;
@@ -641,6 +642,16 @@ export class Phase1aService {
         this.evaluateSubmission(submission.id, submission.revision),
       ),
     );
+    const challengeEvaluations = await Promise.all(
+      visibleSubmissions.map((submission) =>
+        selectedSubmissions.some((selectedSubmission) =>
+          selectedSubmission.id === submission.id && selectedSubmission.revision === submission.revision)
+          ? Promise.resolve(evaluations.find((view) =>
+              view.evaluation.submissionRef.id === submission.id &&
+              view.evaluation.submissionRef.revision === submission.revision)!)
+          : this.evaluateSubmission(submission.id, submission.revision),
+      ),
+    );
     const requirements = this.evaluators.requirementsFor(challenge, definition);
     const constraints = this.evaluators.constraintsFor(challenge);
     const comparison = comparePhase1aEvaluations(
@@ -685,6 +696,13 @@ export class Phase1aService {
       evaluator: this.evaluatorSummary(definition),
       availableEvaluators: this.evaluators.definitions.map((item) => this.evaluatorSummary(item)),
       stemSystem,
+      advancedChallenge: buildAdvancedChallengeProjection({
+        challenge,
+        scenario: base.compiledScenario,
+        model: base.model,
+        engineeringDefinition: definition.engineeringDefinition,
+        evaluations: challengeEvaluations,
+      }),
       challenge: {
         record: challenge,
         availableChallenges,

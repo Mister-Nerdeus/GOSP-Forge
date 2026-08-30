@@ -4,6 +4,7 @@
   "packages/api/src/http/rateLimit.test.ts",
   "packages/api/src/http/readJsonBody.test.ts",
   "packages/api/src/phase1a/comparison.test.ts",
+  "packages/api/src/phase1a/advancedChallengeProjection.test.ts",
   "packages/api/src/phase1a/service.test.ts",
   "packages/api/src/phase1a/stemSystemProjection.test.ts",
   "packages/api/src/routes/validate.test.ts",
