@@ -45,6 +45,25 @@ describe('buildAdvancedChallengeProjection', () => {
     expect(() => buildAdvancedChallengeProjection(input)).toThrow(/crosses the selected/i);
   });
 
+  it.each([
+    ['solver', (input: Awaited<ReturnType<typeof sandboxFixture>>['input']) => {
+      input.evaluations[1]!.materialInput.model.solver.contentHash = 'c'.repeat(64);
+    }],
+    ['runner', (input: Awaited<ReturnType<typeof sandboxFixture>>['input']) => {
+      input.evaluations[1]!.evaluation.runner.contentHash = 'c'.repeat(64);
+    }],
+    ['contract', (input: Awaited<ReturnType<typeof sandboxFixture>>['input']) => {
+      input.evaluations[1]!.evaluation.contractIdentities[0]!.contentHash = 'c'.repeat(64);
+    }],
+    ['dataset', (input: Awaited<ReturnType<typeof sandboxFixture>>['input']) => {
+      input.evaluations[1]!.evaluation.datasetIdentities.push({ kind: 'dataset', id: 'dataset.other', revision: '1', contentHash: 'c'.repeat(64) });
+    }],
+  ] as const)('rejects %s identity drift across candidates', async (_label, mutate) => {
+    const { input } = await sandboxFixture();
+    mutate(input);
+    expect(() => buildAdvancedChallengeProjection(input)).toThrow(/exact solver, runner, contract, or dataset/i);
+  });
+
   it('keeps the workspace usable and discloses a stored candidate rejected by its evaluator', async () => {
     const service = new Phase1aService();
     const initial = await service.getWorkspace();

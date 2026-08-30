@@ -350,6 +350,7 @@ describe('renderApp', () => {
     expect(text).toContain('Passing modeled gates is not safety approval');
     expect(text).toContain('Advanced Challenge Tradeoffs');
     expect(text).toContain('MODELED, PROCESS-LOCAL PARETO VIEW');
+    expect(text).toContain('Candidate count 2');
     expect(text).toContain('submission.reference@1.0.0 · non-dominated');
     expect(text).toContain('submission.candidate@1.0.0 · dominated');
     expect(text).toContain('No composite score or ranking');

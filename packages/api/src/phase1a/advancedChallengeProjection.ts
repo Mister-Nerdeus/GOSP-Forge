@@ -12,6 +12,21 @@ function sameIdentity(left: { id: string; revision: string }, right: { id: strin
   return left.id === right.id && left.revision === right.revision;
 }
 
+function sameMaterialIdentity(
+  left: { kind: string; id: string; revision: string; contentHash: string },
+  right: { kind: string; id: string; revision: string; contentHash: string },
+) {
+  return left.kind === right.kind && sameIdentity(left, right) && left.contentHash === right.contentHash;
+}
+
+function sameMaterialIdentitySet(
+  left: Array<{ kind: string; id: string; revision: string; contentHash: string }>,
+  right: Array<{ kind: string; id: string; revision: string; contentHash: string }>,
+) {
+  return left.length === right.length && left.every((identity) =>
+    right.some((candidate) => sameMaterialIdentity(identity, candidate)));
+}
+
 function valueAtPath(root: unknown, path: string): unknown {
   const segments = path.replace(/\[(\d+)\]/g, '.$1').split('.').filter(Boolean);
   let cursor = root;
@@ -27,6 +42,7 @@ function assertBoundary(
   scenario: Scenario,
   model: Model,
   view: Phase1aEvaluationView,
+  reference: Phase1aEvaluationView,
 ) {
   const evaluation = view.evaluation;
   const material = view.materialInput;
@@ -39,6 +55,17 @@ function assertBoundary(
     !sameIdentity(material.model, model)
   ) {
     throw new Error(`Evaluation ${evaluation.id}@${evaluation.revision} crosses the selected Challenge/Scenario/Model boundary.`);
+  }
+  if (
+    !sameMaterialIdentity(material.model.solver, model.solver) ||
+    !sameMaterialIdentity(evaluation.runner, material.runner) ||
+    !sameMaterialIdentity(evaluation.runner, reference.evaluation.runner) ||
+    !sameMaterialIdentitySet(evaluation.contractIdentities, material.contractIdentities) ||
+    !sameMaterialIdentitySet(evaluation.contractIdentities, reference.evaluation.contractIdentities) ||
+    !sameMaterialIdentitySet(evaluation.datasetIdentities, material.datasetIdentities) ||
+    !sameMaterialIdentitySet(evaluation.datasetIdentities, reference.evaluation.datasetIdentities)
+  ) {
+    throw new Error(`Evaluation ${evaluation.id}@${evaluation.revision} crosses the exact solver, runner, contract, or dataset identity boundary.`);
   }
 }
 
@@ -69,8 +96,9 @@ export function buildAdvancedChallengeProjection(input: {
     throw new Error('Advanced Challenge projection requires at least one evaluated candidate.');
   }
 
+  const reference = input.evaluations[0]!;
   const candidates: AdvancedChallengeProjection['candidates'] = input.evaluations.map((view) => {
-    assertBoundary(input.challenge, input.scenario, input.model, view);
+    assertBoundary(input.challenge, input.scenario, input.model, view, reference);
     const failedGateIds = view.hardGates
       .filter((gate) => !gate.passed)
       .map((gate) => gate.constraint.id);

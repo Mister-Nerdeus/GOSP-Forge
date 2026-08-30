@@ -69,6 +69,9 @@ function advancedChallengePanel(workspace: Phase1aWorkspace) {
       ['Challenge', `${projection.boundary.challenge.id}@${projection.boundary.challenge.revision}`],
       ['Scenario', `${projection.boundary.scenario.id}@${projection.boundary.scenario.revision}`],
       ['Model', `${projection.boundary.model.id}@${projection.boundary.model.revision}`],
+      ['Candidate count', String(projection.candidates.length)],
+      ['Excluded stored candidates', String(projection.excludedCandidates.length)],
+      ['Non-dominated count', String(projection.nonDominatedSet.length)],
     ]),
     subheading('Separate numeric objectives'),
     cardList(projection.objectives.map((objective) => ({

@@ -40,4 +40,36 @@ describe('AdvancedChallengeProjectionSchema', () => {
   it('rejects a non-dominated set that does not match candidate status', () => {
     expect(() => AdvancedChallengeProjectionSchema.parse({ ...projection, nonDominatedSet: [] })).toThrow(/exactly match/i);
   });
+
+  it('rejects duplicate objective and candidate identities', () => {
+    expect(() => AdvancedChallengeProjectionSchema.parse({
+      ...projection,
+      objectives: [projection.objectives[0], projection.objectives[0]],
+    })).toThrow(/objective identities must be unique/i);
+    expect(() => AdvancedChallengeProjectionSchema.parse({
+      ...projection,
+      candidates: [projection.candidates[0], projection.candidates[0]],
+      nonDominatedSet: [projection.nonDominatedSet[0], projection.nonDominatedSet[0]],
+    })).toThrow(/candidate Submission identities must be unique/i);
+
+    const duplicateEvaluation = structuredClone(projection);
+    duplicateEvaluation.candidates.push({
+      ...structuredClone(projection.candidates[0]!),
+      submission: { id: 'submission-b', revision: '1' },
+    });
+    duplicateEvaluation.nonDominatedSet.push({ submissionId: 'submission-b', submissionRevision: '1' });
+    expect(() => AdvancedChallengeProjectionSchema.parse(duplicateEvaluation)).toThrow(/candidate Evaluation identities must be unique/i);
+  });
+
+  it('rejects unknown dominance references and eligibility despite a failed gate', () => {
+    const unknownDominator = structuredClone(projection);
+    unknownDominator.candidates[0]!.dominatedBy = [{ submissionId: 'not-projected', submissionRevision: '1' }];
+    unknownDominator.candidates[0]!.paretoStatus = 'dominated' as never;
+    unknownDominator.nonDominatedSet = [];
+    expect(() => AdvancedChallengeProjectionSchema.parse(unknownDominator)).toThrow(/another projected candidate/i);
+
+    const failedGate = structuredClone(projection);
+    failedGate.candidates[0]!.failedGateIds = ['gate.failed'];
+    expect(() => AdvancedChallengeProjectionSchema.parse(failedGate)).toThrow(/eligible candidates must pass/i);
+  });
 });

@@ -59,6 +59,10 @@ export const AdvancedChallengeProjectionSchema = z.object({
   if (new Set(candidateKeys).size !== candidateKeys.length) {
     context.addIssue({ code: z.ZodIssueCode.custom, path: ['candidates'], message: 'Candidate Submission identities must be unique.' });
   }
+  const evaluationKeys = projection.candidates.map((candidate) => `${candidate.evaluation.id}@${candidate.evaluation.revision}`);
+  if (new Set(evaluationKeys).size !== evaluationKeys.length) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ['candidates'], message: 'Candidate Evaluation identities must be unique.' });
+  }
   const candidateKeySet = new Set(candidateKeys);
 
   projection.candidates.forEach((candidate, index) => {
