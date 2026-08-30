@@ -333,10 +333,12 @@ Non-claims: no school participation, sponsor involvement, manufacturer validatio
 
 ### R6 — Advanced challenge readiness
 
-- [ ] R5 accepted by owner;
-- [ ] second vertical proves contract reuse;
-- [ ] solar validation plan reviewed;
-- [ ] explicit owner authorization recorded before advanced-challenge implementation or outreach.
+- [x] R5 accepted by owner;
+- [x] second vertical proves contract reuse;
+- [x] solar validation plan reviewed and executed as a synthetic repository-local proof;
+- [x] explicit owner authorization recorded before solar validation; no advanced-challenge implementation or outreach occurred.
+
+Status: Gate M was implemented and locally verified on 2026-08-29 at exact implementation SHA `b61c9504b9ab96dd3dbd72232c3ce2f22f821dd0`. See `docs/program/STEM_FOUNDATION_GATE_M_2026-08-29.md`. This result proves reuse of the existing STEM contracts by a second vertical; it does not authorize competition work, external participation, release, or canonical merge.
 
 ## Change-control rules
 
@@ -361,4 +363,4 @@ A package is not done because code exists. It is done only when:
 
 ## Current next action
 
-Issues #5 through #15 are complete on `cipher/stem-foundation`. Stop at Issue #16 and request explicit owner direction before any advanced-challenge, solar-validation, release, or canonical-merge action.
+Issues #5 through #16 are complete on `cipher/stem-foundation`. Stop and request a new explicit owner decision before any advanced-challenge or competition implementation, external validation or outreach, release, or canonical merge.
