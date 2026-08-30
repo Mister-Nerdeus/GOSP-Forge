@@ -66,6 +66,10 @@ A repository-owned automated browser harness remains deferred while the applicat
 - authenticated or concurrent persisted lifecycle behavior;
 - or a substantially broader evaluator catalog.
 
+## 2026-08-29 advanced-challenge smoke
+
+The isolated local workspace used `%TEMP%\gosp-advanced-smoke-20260829-2234`. The API listened on `127.0.0.1:3080`, and Vite served `http://localhost:5174/` because port 5173 was occupied. At Solve depth, the synthetic solar view rendered the exact Challenge/Scenario/Model boundary, three separate numeric objectives, hard-gate eligibility before outcomes, and both seeded candidates as non-dominated. The no-composite-score/no-ranking and no-universal-winner disclosures were visible. No browser console warning or error was observed. The processes were stopped after the test.
+
 ## Non-claims
 
 This strategy does not claim broad browser automation, cross-browser support, production deployment, production database readiness, professional review, or physical validation.

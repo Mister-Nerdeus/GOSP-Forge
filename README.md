@@ -40,7 +40,7 @@ Not implemented: full CAD, professional-grade simulation, manufacturer verificat
 ## Local Gates
 
 ```powershell
-pnpm install
+pnpm install --frozen-lockfile
 pnpm verify
 pnpm evidence:local
 ```
@@ -48,6 +48,8 @@ pnpm evidence:local
 `pnpm dev:phase1a` starts the loopback-only local application. Its ignored `.gosp/` workspace survives restarts; export an archive before moving or replacing that directory.
 
 For the staged Clean Water STEM teaching path and its non-expert/advanced acceptance script, use the [Clean Water STEM Foundation Demonstrator](docs/product/STEM_FOUNDATION_CLEAN_WATER_DEMONSTRATOR.md).
+
+At Solve, Verify, and Research/Professional depth, the local application also shows the domain-neutral Advanced Challenge projection for current process-local candidates. It reports hard-gate eligibility, separate declared numeric objectives, dominance relations, and the conditional non-dominated set. It does not calculate a composite score, universal winner, ranking, award, physical superiority, or readiness change. See the [Slice N checkpoint](docs/program/ADVANCED_CHALLENGE_SLICE_N_2026-08-29.md).
 
 The current policy is local-only. The GitHub Actions workflow has no automatic push or pull-request trigger.
 

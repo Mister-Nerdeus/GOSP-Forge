@@ -4,7 +4,9 @@
 - Issue: #17
 - Branch: `cipher/stem-foundation`
 - Starting SHA: `853b813deedd829be17f812fad3ac7ee8ae05819`
-- Status: active
+- Implementation starting SHA: `40bff6228a6992cef2f9feedb65950ccc19fe90c`
+- Verified implementation SHA: `7b0b3e9455b5ad7f99617e9c0de4a4685293c293`
+- Status: complete; awaiting owner review
 
 ## Outcome
 
@@ -84,18 +86,20 @@ Browser acceptance must confirm that solar's two seeded candidates are both non-
 
 ## Verification gates
 
-- [ ] N1 positive and negative schema tests pass.
-- [ ] N2 algorithm tests pass for tradeoff, dominance, equivalence, failed gate, missing value, and cross-boundary cases.
-- [ ] Sandbox, Clean Water, and solar application tests pass.
-- [ ] New tests are present in intended-test discovery.
-- [ ] Frozen-lockfile install passes.
-- [ ] Full build and typecheck pass.
-- [ ] `pnpm verify` exits zero with exact totals recorded.
-- [ ] REP replay hashes match and Clean Water commands remain successful.
-- [ ] Core boundary scan finds no vertical leakage.
-- [ ] Local browser acceptance passes and records observed results.
-- [ ] Local evidence is generated only from a clean exact implementation SHA.
-- [ ] Final audit and claim scan pass.
+- [x] N1 positive and negative schema tests pass.
+- [x] N2 algorithm tests pass for tradeoff, dominance, equivalence, failed gate, missing value, and cross-boundary cases.
+- [x] Sandbox, Clean Water, and solar application tests pass.
+- [x] New tests are present in intended-test discovery.
+- [x] Frozen-lockfile install passes.
+- [x] Full build and typecheck pass.
+- [x] `pnpm verify` exits zero with exact totals recorded.
+- [x] REP replay hashes match and Clean Water commands remain successful.
+- [x] Core boundary scan finds no vertical leakage.
+- [x] Local browser acceptance passes and records observed results.
+- [x] Local evidence is generated only from a clean exact implementation SHA.
+- [x] Final audit and claim scan pass.
+
+See `ADVANCED_CHALLENGE_SLICE_N_2026-08-29.md` for the exact checkpoint record.
 
 ## Non-claims
 
