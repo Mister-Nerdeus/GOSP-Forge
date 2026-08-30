@@ -15,6 +15,7 @@
   "dependencies": {
     "@gosp/contracts": "workspace:*",
     "@gosp/sim-core": "workspace:*",
-    "@gosp/vertical-clean-water": "workspace:*"
+    "@gosp/vertical-clean-water": "workspace:*",
+    "@gosp/vertical-solar-deployment": "workspace:*"
   }
 }

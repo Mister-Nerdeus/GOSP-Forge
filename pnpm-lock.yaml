@@ -66,6 +66,9 @@ importers:
       '@gosp/vertical-clean-water':
         specifier: workspace:*
         version: link:../vertical-clean-water
+      '@gosp/vertical-solar-deployment':
+        specifier: workspace:*
+        version: link:../vertical-solar-deployment
 
   packages/cli:
     dependencies:

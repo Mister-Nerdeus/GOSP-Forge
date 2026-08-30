@@ -37,6 +37,17 @@ import {
   createCleanWaterStemHumanRelevanceDefinition,
   evaluateCleanWaterRep,
 } from '@gosp/vertical-clean-water';
+import {
+  createSolarDeploymentStemEngineeringDefinition,
+  createSolarDeploymentStemExperimentDefinition,
+  createSolarDeploymentStemHumanRelevanceDefinition,
+  createSolarDeploymentStemMathDefinition,
+  createSolarDeploymentStemScienceDefinition,
+  createSolarDeploymentStemSystemDefinition,
+  createSolarDeploymentStemTechnologyDefinition,
+  createSyntheticSolarDeploymentRepMaterialInput,
+  evaluateSyntheticSolarDeploymentRep,
+} from '@gosp/vertical-solar-deployment';
 
 const provenance = { sources: [], method: 'authored' as const, notes: [] };
 
@@ -153,10 +164,51 @@ function cleanWaterDefinition(): Phase1aEvaluatorDefinition {
   };
 }
 
+function solarDeploymentDefinition(): Phase1aEvaluatorDefinition {
+  const template = createSyntheticSolarDeploymentRepMaterialInput();
+  const candidate = structuredClone(template.submission);
+  candidate.id = 'submission.solar-deployment.synthetic.faster-stow';
+  const payload = candidate.materialPayload as {
+    deployment: { deployedFraction: number; stowTimeSeconds: number };
+  };
+  payload.deployment.deployedFraction = 0.85;
+  payload.deployment.stowTimeSeconds = 12;
+  const systemDefinition = createSolarDeploymentStemSystemDefinition(template.challenge.revision);
+  return {
+    id: 'evaluator.solar-deployment.synthetic-screening',
+    title: 'Retractable solar contract-reuse validation',
+    description: 'Vertical-owned synthetic screening adapter used only to validate reuse of the existing STEM contracts.',
+    template,
+    seedSubmissions: [template.submission, SubmissionSchema.parse(candidate)],
+    objectiveResultPath: 'result.power.instantaneousPowerW',
+    limitations: [
+      'Synthetic software-contract validation only; no physical panel, mechanism, controls, weather, or field validation occurred.',
+      'The reduced-order calculations are not a structural, electrical, fire, reliability, certification, or safety assessment.',
+      'No manufacturer, school, sponsor, competition, deployment, procurement, or professional involvement is represented.',
+    ],
+    ...systemDefinition,
+    mathDefinition: createSolarDeploymentStemMathDefinition(),
+    scienceDefinition: createSolarDeploymentStemScienceDefinition(),
+    engineeringDefinition: createSolarDeploymentStemEngineeringDefinition(template.challenge.revision),
+    technologyDefinition: createSolarDeploymentStemTechnologyDefinition(),
+    experimentDefinition: createSolarDeploymentStemExperimentDefinition(),
+    humanRelevanceDefinition: createSolarDeploymentStemHumanRelevanceDefinition(),
+    evaluate: evaluateSyntheticSolarDeploymentRep,
+    claimStatement: (evaluation) => {
+      const result = evaluation.result as {
+        power: { instantaneousPowerW: number };
+        deployment: { bendRadiusMarginM: number };
+        storm: { stowTimeMarginSeconds: number };
+      };
+      return `Under the recorded synthetic screening inputs, instantaneous power is ${result.power.instantaneousPowerW} W, bend-radius margin is ${result.deployment.bendRadiusMarginM} m, and storm-stow timing margin is ${result.storm.stowTimeMarginSeconds} s.`;
+    },
+  };
+}
+
 export class Phase1aEvaluatorRegistry {
   readonly definitions: Phase1aEvaluatorDefinition[];
 
-  constructor(definitions = [sandboxDefinition(), cleanWaterDefinition()]) {
+  constructor(definitions = [sandboxDefinition(), cleanWaterDefinition(), solarDeploymentDefinition()]) {
     this.definitions = definitions;
   }
 

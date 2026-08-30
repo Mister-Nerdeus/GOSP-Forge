@@ -36,6 +36,7 @@ describe('createGospServer', () => {
       expect(workspace.availableEvaluators.map((item) => item.id)).toEqual([
         'evaluator.sandbox-001',
         'evaluator.clean-water.educational-screening',
+        'evaluator.solar-deployment.synthetic-screening',
       ]);
       expect(workspace.evaluations.map((item) => item.evaluation.result.value)).toEqual([53, 23]);
 
@@ -107,7 +108,7 @@ describe('createGospServer', () => {
         body: JSON.stringify(archive),
       });
       expect(restoreResponse.status).toBe(200);
-      await expect(restoreResponse.json()).resolves.toEqual({ challenges: 2, submissions: 4 });
+      await expect(restoreResponse.json()).resolves.toEqual({ challenges: 3, submissions: 6 });
     });
   });
 

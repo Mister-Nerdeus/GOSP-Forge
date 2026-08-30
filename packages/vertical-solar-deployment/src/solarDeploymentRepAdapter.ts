@@ -172,7 +172,12 @@ export function createSyntheticSolarDeploymentRepMaterialInput(
     },
     compiledScenario: {
       kind: 'Scenario', id: scenarioId, revision: '0.1.0', provenance: syntheticProvenance,
-      name: 'Synthetic retractable solar reference scenario', systemElementRefs: [],
+      name: 'Synthetic retractable solar reference scenario',
+      systemElementRefs: [
+        ref('SystemElement', 'solar-panel'),
+        ref('SystemElement', 'retraction-mechanism'),
+        ref('SystemElement', 'storm-controller'),
+      ],
       environment: parsedPayload.environment, componentData: [componentIdentity],
       operatingConditions: { hazardWindThresholdMps: parsedPayload.control.hazardWindThresholdMps },
       assumptions,

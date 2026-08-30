@@ -319,6 +319,57 @@ describe('STEM system projection', () => {
     });
   });
 
+  it('projects retractable solar through the unchanged public STEM contract surface', async () => {
+    await withServer(async (baseUrl) => {
+      const query = 'challengeId=challenge.solar-deployment.synthetic&challengeRevision=0.1.0&learningDepth=verify';
+      const response = await fetch(`${baseUrl}/api/phase1a/stem-system?${query}`);
+      expect(response.status).toBe(200);
+      const projection = await response.json() as {
+        boundary: { challenge: { id: string } };
+        systemMap: { elements: Array<{ id: string }> };
+        math: { equations: Array<{ id: string }>; quantities: Array<{ id: string; value?: number }> };
+        science: { treatment: string };
+        engineeringDecision: { tradeoff: { status: string; decision: string }; hazards: Array<{ id: string }> };
+        technology: { nodes: Array<{ id: string }> };
+        experiment: { observation: { classification?: string }; discrepancy: { criterionOutcome: string; failureState: string }; canonicalTruthBoundary: { readinessUpdate: string } };
+        humanRelevance: { categories: Array<{ category: string; status: string }> };
+        model: { fidelityLevel: string; calibrationStatus: string };
+        evidenceStatus: { deploymentReadiness: string; professionalDisposition: string };
+      };
+      expect(projection.boundary.challenge.id).toBe('challenge.solar-deployment.synthetic');
+      expect(projection.systemMap.elements.map((item) => item.id)).toEqual([
+        'solar-panel', 'retraction-mechanism', 'storm-controller',
+      ]);
+      expect(projection.math.equations.map((item) => item.id)).toEqual([
+        'solar.power', 'solar.bend-margin', 'solar.stow-margin',
+      ]);
+      expect(projection.math.quantities).toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: 'solar.instantaneous-power', value: expect.any(Number) }),
+        expect.objectContaining({ id: 'solar.stow-margin', value: 6 }),
+      ]));
+      expect(projection.math.quantities.find((item) => item.id === 'solar.bend-margin')?.value).toBeCloseTo(0.025, 8);
+      expect(projection.science.treatment).toBe('physical-domain');
+      expect(projection.engineeringDecision.tradeoff).toEqual({
+        status: 'conflict', decision: 'no-universal-winner',
+        explanation: expect.any(String),
+      });
+      expect(projection.engineeringDecision.hazards).toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: 'hazard.solar.modeled-safety-misinterpretation' }),
+      ]));
+      expect(projection.technology.nodes).toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: 'technology.solar.solver' }),
+      ]));
+      expect(projection.experiment).toMatchObject({
+        observation: { classification: 'synthetic' },
+        discrepancy: { criterionOutcome: 'fail', failureState: 'negative-result' },
+        canonicalTruthBoundary: { readinessUpdate: 'not-applied' },
+      });
+      expect(projection.humanRelevance.categories.find((item) => item.category === 'energy')).toMatchObject({ status: 'supported' });
+      expect(projection.model).toMatchObject({ fidelityLevel: 'analytical', calibrationStatus: 'not-calibrated' });
+      expect(projection.evidenceStatus).toMatchObject({ deploymentReadiness: 'concept-only', professionalDisposition: 'not-assessed' });
+    });
+  });
+
   it('rejects an undeclared parameter change before evaluation', async () => {
     await withServer(async (baseUrl) => {
       const response = await fetch(`${baseUrl}/api/phase1a/parameter-change`, {

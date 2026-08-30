@@ -231,8 +231,8 @@ describe('Phase1aService canonical product loop', () => {
     const restored = new Phase1aService();
 
     await expect(restored.importWorkspaceArchive(archive)).resolves.toEqual({
-      challenges: 2,
-      submissions: 4,
+      challenges: 3,
+      submissions: 6,
     });
     await expect(restored.getWorkspace()).resolves.toMatchObject({
       submissions: expect.arrayContaining([
