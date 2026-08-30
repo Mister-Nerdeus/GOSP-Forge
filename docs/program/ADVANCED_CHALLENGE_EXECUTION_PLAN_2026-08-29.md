@@ -5,7 +5,7 @@
 - Branch: `cipher/stem-foundation`
 - Starting SHA: `853b813deedd829be17f812fad3ac7ee8ae05819`
 - Implementation starting SHA: `40bff6228a6992cef2f9feedb65950ccc19fe90c`
-- Verified implementation SHA: `7b0b3e9455b5ad7f99617e9c0de4a4685293c293`
+- Verified implementation SHA: `36d381f7f6d56e6d53aeceddd9b82d3488735614`
 - Status: complete; awaiting owner review
 
 ## Outcome

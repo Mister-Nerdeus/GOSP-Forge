@@ -4,7 +4,8 @@
 - Branch: `cipher/stem-foundation`
 - Owner-authorized milestone start: `853b813deedd829be17f812fad3ac7ee8ae05819`
 - Implementation starting SHA after the committed plan: `40bff6228a6992cef2f9feedb65950ccc19fe90c`
-- Verified implementation SHA: `7b0b3e9455b5ad7f99617e9c0de4a4685293c293`
+- Initial closeout implementation SHA: `7b0b3e9455b5ad7f99617e9c0de4a4685293c293`
+- Post-close acceptance-remediation SHA: `36d381f7f6d56e6d53aeceddd9b82d3488735614`
 - Result: PASS; ready for owner review
 
 ## Delivered
@@ -16,6 +17,8 @@
 - Preserved equivalent candidates as mutually non-dominating.
 - Made missing numeric outcomes and evaluator-rejected stored candidates explicit.
 - Added a generic Solve/Verify/Research browser view that renders server-owned outcomes and performs no comparison math.
+- Displays candidate, excluded-candidate, and non-dominated counts explicitly.
+- Rejects solver, runner, contract, or dataset identity drift before objective comparison.
 - Preserved the existing pairwise comparison, canonical objects, REP identity and hashing, evidence readiness, deployment readiness, and professional disposition rules.
 
 ## Files changed
@@ -62,6 +65,18 @@ pnpm dev:phase1a
 pnpm install --offline --frozen-lockfile
 pnpm verify
 pnpm evidence:phase1a
+
+# Post-close acceptance remediation
+pnpm --filter @gosp/contracts build
+pnpm --filter @gosp/api build
+pnpm exec vitest run packages/contracts/src/application/advancedChallenge.test.ts packages/api/src/phase1a/advancedChallengeProjection.test.ts apps/web/src/App.test.ts
+pnpm --filter @gosp/contracts typecheck
+pnpm --filter @gosp/api typecheck
+pnpm --filter @gosp/web typecheck
+pnpm install --offline --frozen-lockfile
+pnpm verify
+pnpm dev:phase1a
+pnpm evidence:phase1a
 ```
 
 ## Verification results
@@ -69,13 +84,14 @@ pnpm evidence:phase1a
 - Frozen lockfile install: PASS; lockfile already current.
 - Runtime policy, lint, all workspace builds, and all workspace typechecks: PASS.
 - Intended/discovered test files: 45/45.
-- Tests: 208 passed, 0 failed.
+- Tests after acceptance remediation: 214 passed, 0 failed.
 - REP replay: input and result hashes matched.
 - Clean Water example validation, simulation, and estimate: PASS.
 - Foundation audit: GO, 23 pass, 0 warn, 0 fail.
 - Claim scan: 237 files, zero findings.
 - Evidence writer: PASS from the clean exact implementation SHA.
-- Evidence artifact: `artifacts/phase-1a/local/execution-2026-08-30T02-39-19-611Z.json`.
+- Current evidence artifact: `artifacts/phase-1a/local/execution-2026-08-30T03-21-52-264Z.json`.
+- The earlier `execution-2026-08-30T02-39-19-611Z.json` remains valid only for the superseded initial implementation SHA.
 
 ## Browser observations
 
@@ -92,12 +108,15 @@ At Solve depth for `challenge.solar-deployment.synthetic@0.1.0`:
 
 The durable default workspace also contained an earlier locally authored solar candidate. The projection correctly included it and recomputed the process-local non-dominated set. That observation is not used as the two-seed acceptance result; the isolated run above is.
 
+The post-close remediation smoke used `%TEMP%\gosp-advanced-remediation-smoke-20260829-2318`. It additionally confirmed candidate count 2, excluded stored candidates 0, non-dominated count 2, both seeded candidates non-dominated, the exact boundary, and zero console warnings or errors.
+
 ## Failures encountered and resolved
 
 1. The first solar test searched serialized disclosure text for words that the non-claim itself intentionally contains, and TypeScript narrowed the mutable Pareto status too tightly. The assertion was changed to check absent result properties, and the candidate list received its contract type.
 2. A live smoke exposed that evaluating every stored Submission could make the workspace unavailable when a canonically stored payload fails evaluator validation. The server now preserves the record, excludes it from Pareto comparison, and returns an explicit `evaluation-unavailable` disclosure. A regression test covers this behavior.
 3. During live reload, the browser briefly consumed the new UI bundle against the still-running old API process and showed an undefined-field error. Restarting both documented development services loaded one contract version; the fresh rerun had no page or console error.
 4. The browser wait helper did not support `networkidle`; the smoke used `domcontentloaded` plus a bounded render wait.
+5. A post-close audit found that the browser omitted the required candidate count, negative schema tests did not cover every listed invariant, and cross-boundary rejection did not yet check solver, runner, contract, and dataset identities. Issue #17 was reopened; the missing view fields, invariants, and four identity-drift cases were added and fully reverified before the issue was closed again.
 
 ## Remaining limitations and explicit non-claims
 
