@@ -10,6 +10,8 @@ Challenge -> Submission -> REP Evaluation -> Evidence -> Comparison
 
 The browser is a projection. It does not calculate scores, canonicalize material input, or create material hashes. The local API validates canonical records with `@gosp/contracts` and invokes the existing `@gosp/sim-core` REP runner.
 
+The STEM Foundation adds progressive System, Human Relevance, Math, Science, Engineering, Technology, Dynamic STEM, Experiment, and How Do We Know projections over this same application truth chain. See the [Clean Water STEM demonstrator](STEM_FOUNDATION_CLEAN_WATER_DEMONSTRATOR.md) for setup and the manual acceptance path.
+
 ## Local operation
 
 From the repository root:
@@ -36,6 +38,8 @@ The API listens on `127.0.0.1:3080`; Vite uses its normal local port and proxies
 - Export and validate a portable material-hashed evidence package.
 - Export and restore a validated canonical workspace archive.
 - Author a new revision and narrative for a registered Challenge, plus Submission identity/material payload, through structured browser controls backed by canonical API validation.
+- Switch among Explore, Measure, Model, Solve, Verify, and Research / Professional explanations without changing canonical evaluation identity.
+- Inspect the complete Clean Water STEM path and route allowed parameter changes through canonical Submission/evaluator/comparison behavior.
 
 ## Limitations and non-claims
 

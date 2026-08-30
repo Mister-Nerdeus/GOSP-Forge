@@ -47,6 +47,8 @@ pnpm evidence:local
 
 `pnpm dev:phase1a` starts the loopback-only local application. Its ignored `.gosp/` workspace survives restarts; export an archive before moving or replacing that directory.
 
+For the staged Clean Water STEM teaching path and its non-expert/advanced acceptance script, use the [Clean Water STEM Foundation Demonstrator](docs/product/STEM_FOUNDATION_CLEAN_WATER_DEMONSTRATOR.md).
+
 The current policy is local-only. The GitHub Actions workflow has no automatic push or pull-request trigger.
 
 ## Claim vs Implementation
