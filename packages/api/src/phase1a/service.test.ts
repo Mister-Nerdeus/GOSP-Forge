@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { Phase1aService, Phase1aValidationError } from './service.js';
+import { LocalMemoryStorage } from '../storage/localMemoryStorage.js';
 
 const fixture = (name: string) =>
   JSON.parse(
@@ -8,6 +9,23 @@ const fixture = (name: string) =>
   ) as unknown;
 
 describe('Phase1aService canonical product loop', () => {
+  it('additively reconciles newly registered evaluators into an existing schema-v1 workspace', async () => {
+    const storage = new LocalMemoryStorage();
+    await storage.set('phase1a:schema-version', '1');
+    await storage.set('phase1a:challenge-refs', []);
+    await storage.set('phase1a:submission-refs', []);
+    await storage.set('owner:preserved-record', { keep: true });
+
+    const workspace = await new Phase1aService(storage).getWorkspace();
+
+    expect(workspace.availableEvaluators.map((item) => item.id)).toEqual([
+      'evaluator.sandbox-001',
+      'evaluator.clean-water.educational-screening',
+      'evaluator.solar-deployment.synthetic-screening',
+    ]);
+    await expect(storage.get('owner:preserved-record')).resolves.toEqual({ keep: true });
+  });
+
   it('runs two valid sandbox submissions through REP and replays both results', async () => {
     const service = new Phase1aService(undefined, () => '2026-08-09T12:00:00.000Z');
     const workspace = await service.getWorkspace();

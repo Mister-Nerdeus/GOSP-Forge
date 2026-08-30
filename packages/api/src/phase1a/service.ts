@@ -107,40 +107,46 @@ export class Phase1aService {
   private async ensureSeeded() {
     if (this.seeded) return;
     const schemaVersion = await this.storage.get('phase1a:schema-version');
-    if (schemaVersion === '1') {
-      this.seeded = true;
-      return;
-    }
-    if (schemaVersion !== undefined) {
+    if (schemaVersion !== undefined && schemaVersion !== '1') {
       throw new Error(`Unsupported Phase-1A storage schema ${String(schemaVersion)}.`);
     }
-    const challengeRefs: Array<{ kind: 'Challenge'; id: string; revision: string }> = [];
-    const submissionRefs: Array<{ kind: 'Submission'; id: string; revision: string }> = [];
+    const challengeRefs = ((await this.storage.get('phase1a:challenge-refs')) ?? []) as Array<{
+      kind: 'Challenge'; id: string; revision: string;
+    }>;
+    const submissionRefs = ((await this.storage.get('phase1a:submission-refs')) ?? []) as Array<{
+      kind: 'Submission'; id: string; revision: string;
+    }>;
     for (const definition of this.evaluators.definitions) {
       const baseInput = definition.template;
-      await this.storage.set(
-        templateKey(baseInput.challenge.id, baseInput.challenge.revision),
-        baseInput,
-      );
-      await this.storage.set(
-        storageKey('Challenge', baseInput.challenge.id, baseInput.challenge.revision),
-        baseInput.challenge,
-      );
-      challengeRefs.push({
+      const materialTemplateKey = templateKey(baseInput.challenge.id, baseInput.challenge.revision);
+      if ((await this.storage.get(materialTemplateKey)) === undefined) {
+        await this.storage.set(materialTemplateKey, baseInput);
+      }
+      const challengeKey = storageKey('Challenge', baseInput.challenge.id, baseInput.challenge.revision);
+      if ((await this.storage.get(challengeKey)) === undefined) {
+        await this.storage.set(challengeKey, baseInput.challenge);
+      }
+      const challengeRef = {
         kind: 'Challenge',
         id: baseInput.challenge.id,
         revision: baseInput.challenge.revision,
-      });
+      } as const;
+      if (!challengeRefs.some((item) => exactRef(item, challengeRef))) {
+        challengeRefs.push(challengeRef);
+      }
       for (const submission of definition.seedSubmissions) {
-        await this.storage.set(
-          storageKey('Submission', submission.id, submission.revision),
-          submission,
-        );
-        submissionRefs.push({
+        const submissionKey = storageKey('Submission', submission.id, submission.revision);
+        if ((await this.storage.get(submissionKey)) === undefined) {
+          await this.storage.set(submissionKey, submission);
+        }
+        const submissionRef = {
           kind: 'Submission',
           id: submission.id,
           revision: submission.revision,
-        });
+        } as const;
+        if (!submissionRefs.some((item) => exactRef(item, submissionRef))) {
+          submissionRefs.push(submissionRef);
+        }
       }
     }
     await this.storage.set('phase1a:challenge-refs', challengeRefs);
