@@ -18,6 +18,7 @@
   "packages/cli/src/commands/validate.test.ts",
   "packages/cli/src/refResolver.test.ts",
   "packages/contracts/src/ai/aiProposal.test.ts",
+  "packages/contracts/src/application/advancedChallenge.test.ts",
   "packages/contracts/src/canonical/canonicalObjects.test.ts",
   "packages/contracts/src/canonical/programGraph.test.ts",
   "packages/contracts/src/education/stemMathProjection.test.ts",

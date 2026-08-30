@@ -19,6 +19,7 @@ import type {
   RepMaterialInput,
   RepReplayRecord,
 } from '../rep/rep.js';
+import type { AdvancedChallengeProjection } from './advancedChallenge.js';
 
 export type Phase1aProofObligation = typeof ProofObligationSchema._output;
 
@@ -110,6 +111,7 @@ export type Phase1aWorkspace = {
   evaluator: Phase1aEvaluatorSummary;
   availableEvaluators: Phase1aEvaluatorSummary[];
   stemSystem: StemSystemProjection;
+  advancedChallenge?: AdvancedChallengeProjection;
   challenge: {
     record: Challenge;
     availableChallenges: Challenge[];

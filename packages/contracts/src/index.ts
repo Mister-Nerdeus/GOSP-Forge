@@ -90,4 +90,5 @@ export * from './canonical/executionModel.js';
 export * from './canonical/canonicalObject.js';
 export * from './rep/rep.js';
 export * from './application/phase1a.js';
+export * from './application/advancedChallenge.js';
 export * from './application/evidencePackage.js';
