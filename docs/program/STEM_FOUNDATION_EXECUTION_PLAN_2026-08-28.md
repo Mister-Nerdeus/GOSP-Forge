@@ -246,6 +246,8 @@ Dependencies: A2, D, and F/G.
 Acceptance: Clean Water explains at least one supported benefit, tradeoff, and uncertainty without advocacy language.
 Non-claims: the projection is not policy advice, lifecycle assessment, environmental certification, or proof of social benefit.
 
+Status: implemented and locally verified on 2026-08-29 at implementation SHA `be04b99091ccf9cd1bd38e2347c1887c8cc34007`. See `docs/program/STEM_FOUNDATION_SLICE_K_2026-08-29.md`.
+
 ### L — End-to-end foundation demonstrator
 
 Use the existing Clean Water educational vertical as the first understandable teaching problem. Sandbox remains the deterministic protocol benchmark. Solar does not become the demonstrator.
@@ -357,4 +359,4 @@ A package is not done because code exists. It is done only when:
 
 ## Current next action
 
-Begin K as Issue #14. Connect human-relevance categories only to supported canonical quantities or evidence, keep stakeholder values separate from technical results, and leave unsupported categories unknown. A2 through J are complete dependencies.
+Begin L as Issue #15. Integrate the Clean Water teaching path, run the non-expert and advanced-reviewer acceptance scripts, generate the clean local evidence record, and complete an independent architecture/truth review. A2 through K are complete dependencies. Stop before Issue #16.
