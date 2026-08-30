@@ -1,12 +1,12 @@
 # STEM Foundation Gate M — second-vertical readiness checkpoint
 
-Date: 2026-08-29 America/New_York  
-Issue: #16  
-Branch: `cipher/stem-foundation`  
-Starting SHA: `cea3e3fd95a4bb2747eef4dbc9babaf2c197c6d9`  
-Standalone adapter checkpoint: `bab4235d965f2dbaa27ad609924ee42ea3733da0`  
-Application integration checkpoint: `ccaebddbb9ebd4f5f90ccbe9d4cb1ce10f0fc648`  
-Verified implementation SHA: `b61c9504b9ab96dd3dbd72232c3ce2f22f821dd0`
+- Date: 2026-08-29 America/New_York
+- Issue: #16
+- Branch: `cipher/stem-foundation`
+- Starting SHA: `cea3e3fd95a4bb2747eef4dbc9babaf2c197c6d9`
+- Standalone adapter checkpoint: `bab4235d965f2dbaa27ad609924ee42ea3733da0`
+- Application integration checkpoint: `ccaebddbb9ebd4f5f90ccbe9d4cb1ce10f0fc648`
+- Verified implementation SHA: `b61c9504b9ab96dd3dbd72232c3ce2f22f821dd0`
 
 ## Owner decision and scope
 
