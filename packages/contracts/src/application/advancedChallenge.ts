@@ -29,6 +29,11 @@ export const AdvancedChallengeProjectionSchema = z.object({
     reason: z.enum(['non-numeric-objective', 'unavailable-across-candidates']),
     explanation: z.string().min(1),
   })),
+  excludedCandidates: z.array(z.object({
+    submission: RevisionedIdentitySchema,
+    reason: z.literal('evaluation-unavailable'),
+    explanation: z.string().min(1),
+  })),
   candidates: z.array(z.object({
     submission: RevisionedIdentitySchema,
     evaluation: RevisionedIdentitySchema,

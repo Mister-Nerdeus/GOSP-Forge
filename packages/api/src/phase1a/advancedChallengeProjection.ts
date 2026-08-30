@@ -48,6 +48,7 @@ export function buildAdvancedChallengeProjection(input: {
   model: Model;
   engineeringDefinition: StemEngineeringDefinition;
   evaluations: Phase1aEvaluationView[];
+  excludedCandidates?: Array<{ submission: { id: string; revision: string }; explanation: string }>;
 }): AdvancedChallengeProjection {
   const objectives = input.engineeringDefinition.objectives
     .filter((objective) => objective.rule.kind === 'numeric-result')
@@ -138,6 +139,11 @@ export function buildAdvancedChallengeProjection(input: {
         reason: 'non-numeric-objective' as const,
         explanation: 'This declared engineering objective does not provide a numeric result path and is not used for Pareto comparison.',
       })),
+    excludedCandidates: (input.excludedCandidates ?? []).map((candidate) => ({
+      submission: candidate.submission,
+      reason: 'evaluation-unavailable' as const,
+      explanation: candidate.explanation,
+    })),
     candidates,
     nonDominatedSet: candidates
       .filter((candidate) => candidate.paretoStatus === 'non-dominated')

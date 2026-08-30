@@ -68,6 +68,23 @@ const workspace = {
     defaultSelection: { baseline: { id: 'submission.reference', revision: '1.0.0' }, candidate: { id: 'submission.candidate', revision: '1.0.0' } },
   },
   availableEvaluators: [],
+  advancedChallenge: {
+    projectionVersion: '0.1.0',
+    boundary: {
+      challenge: { id: 'sandbox-001', revision: '1.0.0' },
+      scenario: { id: 'scenario.sandbox-001.reference', revision: '1.0.0' },
+      model: { id: 'model.sandbox-001', revision: '1.0.0' },
+    },
+    objectives: [{ id: 'objective.sandbox.result', statement: 'Increase the recorded result.', resultPath: 'result.value', direction: 'maximize', source: 'evaluator-engineering-definition' }],
+    excludedObjectives: [],
+    excludedCandidates: [],
+    candidates: [
+      { submission: { id: 'submission.reference', revision: '1.0.0' }, evaluation: { id: 'evaluation.submission.reference', revision: '0.1.0' }, eligibility: 'eligible', failedGateIds: [], objectiveOutcomes: [{ objectiveId: 'objective.sandbox.result', status: 'available', value: 53 }], dominatedBy: [], paretoStatus: 'non-dominated' },
+      { submission: { id: 'submission.candidate', revision: '1.0.0' }, evaluation: { id: 'evaluation.submission.candidate', revision: '0.1.0' }, eligibility: 'eligible', failedGateIds: [], objectiveOutcomes: [{ objectiveId: 'objective.sandbox.result', status: 'available', value: 23 }], dominatedBy: [{ submissionId: 'submission.reference', submissionRevision: '1.0.0' }], paretoStatus: 'dominated' },
+    ],
+    nonDominatedSet: [{ submissionId: 'submission.reference', submissionRevision: '1.0.0' }],
+    disclosures: ['Modeled outcomes only.', 'Hard gates first.', 'No composite score or ranking.', 'No universal winner.'],
+  },
   stemSystem: {
     projectionVersion: '0.1.0', learningDepth: 'research-professional',
     learningProjection: {
@@ -331,6 +348,11 @@ describe('renderApp', () => {
     expect(text).toContain('Synthetic result may be misrepresented');
     expect(text).toContain('SINGLE-OBJECTIVE · baseline-preferred');
     expect(text).toContain('Passing modeled gates is not safety approval');
+    expect(text).toContain('Advanced Challenge Tradeoffs');
+    expect(text).toContain('MODELED, PROCESS-LOCAL PARETO VIEW');
+    expect(text).toContain('submission.reference@1.0.0 · non-dominated');
+    expect(text).toContain('submission.candidate@1.0.0 · dominated');
+    expect(text).toContain('No composite score or ranking');
     expect(text.indexOf('Unresolved proof obligations')).toBeLessThan(text.indexOf('Separate objective outcomes'));
     expect(text).toContain('Show the Technology');
     expect(text).toContain('Sandbox reference solver');

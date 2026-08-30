@@ -45,6 +45,22 @@ describe('buildAdvancedChallengeProjection', () => {
     expect(() => buildAdvancedChallengeProjection(input)).toThrow(/crosses the selected/i);
   });
 
+  it('keeps the workspace usable and discloses a stored candidate rejected by its evaluator', async () => {
+    const service = new Phase1aService();
+    const initial = await service.getWorkspace();
+    const invalid = structuredClone(initial.submissions[0]!);
+    invalid.id = 'submission.sandbox-001.stored-invalid';
+    invalid.materialPayload = { values: ['not-numeric'], weights: [1], offset: 0 };
+    await service.createSubmission(invalid);
+    const workspace = await service.getWorkspace();
+    expect(workspace.advancedChallenge?.candidates).toHaveLength(2);
+    expect(workspace.advancedChallenge?.excludedCandidates).toEqual([{
+      submission: { id: invalid.id, revision: invalid.revision },
+      reason: 'evaluation-unavailable',
+      explanation: expect.stringMatching(/rejected this stored Submission/i),
+    }]);
+  });
+
   it('projects the two seeded solar tradeoffs without declaring a universal winner', async () => {
     const service = new Phase1aService();
     const initial = await service.getWorkspace();

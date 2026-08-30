@@ -41,6 +41,8 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     ...(included.has('math') ? [mathPanel(workspace)] : []),
     ...(included.has('science') ? [sciencePanel(workspace)] : []),
     ...(included.has('engineering') ? [engineeringPanel(workspace)] : []),
+    ...(workspace.advancedChallenge && ['solve', 'verify', 'research-professional'].includes(workspace.stemSystem.learningDepth)
+      ? [advancedChallengePanel(workspace)] : []),
     ...(included.has('technology') ? [technologyPanel(workspace)] : []),
     ...(included.has('dynamic') ? [dynamicStemPanel(workspace, client, root)] : []),
     ...(included.has('experiment') ? [experimentPanel(workspace)] : []),
@@ -55,6 +57,64 @@ function createShell(workspace: Phase1aWorkspace, client: Phase1aClient, root: H
     importPanel(workspace, client, root),
   );
   return app;
+}
+
+function advancedChallengePanel(workspace: Phase1aWorkspace) {
+  const projection = workspace.advancedChallenge!;
+  const objectiveById = new Map(projection.objectives.map((objective) => [objective.id, objective]));
+  return panel('Advanced Challenge Tradeoffs', [
+    element('p', 'claim', 'MODELED, PROCESS-LOCAL PARETO VIEW — eligibility is checked before objective comparison.'),
+    subheading('Exact comparison boundary'),
+    keyValues([
+      ['Challenge', `${projection.boundary.challenge.id}@${projection.boundary.challenge.revision}`],
+      ['Scenario', `${projection.boundary.scenario.id}@${projection.boundary.scenario.revision}`],
+      ['Model', `${projection.boundary.model.id}@${projection.boundary.model.revision}`],
+    ]),
+    subheading('Separate numeric objectives'),
+    cardList(projection.objectives.map((objective) => ({
+      title: objective.statement,
+      meta: `${objective.direction} · ${objective.id}`,
+      body: `${objective.resultPath} · ${objective.source}`,
+    }))),
+    ...(projection.excludedObjectives.length ? [
+      subheading('Excluded objectives'),
+      cardList(projection.excludedObjectives.map((objective) => ({
+        title: objective.id,
+        meta: objective.reason,
+        body: objective.explanation,
+      }))),
+    ] : []),
+    ...(projection.excludedCandidates.length ? [
+      subheading('Excluded stored candidates'),
+      cardList(projection.excludedCandidates.map((candidate) => ({
+        title: `${candidate.submission.id}@${candidate.submission.revision}`,
+        meta: candidate.reason,
+        body: candidate.explanation,
+      }))),
+    ] : []),
+    subheading('Candidate eligibility and outcomes'),
+    ...projection.candidates.map((candidate) => layer(
+      `${candidate.submission.id}@${candidate.submission.revision} · ${candidate.paretoStatus}`,
+      [
+        keyValues([
+          ['Eligibility', candidate.eligibility],
+          ['Evaluation', `${candidate.evaluation.id}@${candidate.evaluation.revision}`],
+          ['Failed gates', candidate.failedGateIds.join(', ') || 'none'],
+          ['Dominated by', candidate.dominatedBy.map((item) => `${item.submissionId}@${item.submissionRevision}`).join(', ') || 'none'],
+        ]),
+        cardList(candidate.objectiveOutcomes.map((outcome) => ({
+          title: objectiveById.get(outcome.objectiveId)?.statement ?? outcome.objectiveId,
+          meta: `${outcome.status} · ${outcome.objectiveId}`,
+          body: outcome.status === 'available' ? String(outcome.value) : 'No finite recorded value is available.',
+        }))),
+      ],
+    )),
+    subheading('Non-dominated set'),
+    bullets(projection.nonDominatedSet.length
+      ? projection.nonDominatedSet.map((candidate) => `${candidate.submissionId}@${candidate.submissionRevision}`)
+      : ['No eligible non-dominated candidate is available.']),
+    bullets(projection.disclosures),
+  ], 'wide');
 }
 
 function learningDepthPanel(workspace: Phase1aWorkspace, client: Phase1aClient, root: HTMLElement) {

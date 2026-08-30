@@ -10,6 +10,7 @@ const projection = {
   },
   objectives: [{ id: 'output', statement: 'Increase output.', resultPath: 'result.output', direction: 'maximize' as const, source: 'evaluator-engineering-definition' as const }],
   excludedObjectives: [],
+  excludedCandidates: [],
   candidates: [
     {
       submission: { id: 'submission-a', revision: '1' },

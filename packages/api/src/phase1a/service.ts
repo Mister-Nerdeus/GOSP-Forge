@@ -642,7 +642,7 @@ export class Phase1aService {
         this.evaluateSubmission(submission.id, submission.revision),
       ),
     );
-    const challengeEvaluations = await Promise.all(
+    const challengeEvaluationResults = await Promise.allSettled(
       visibleSubmissions.map((submission) =>
         selectedSubmissions.some((selectedSubmission) =>
           selectedSubmission.id === submission.id && selectedSubmission.revision === submission.revision)
@@ -652,6 +652,18 @@ export class Phase1aService {
           : this.evaluateSubmission(submission.id, submission.revision),
       ),
     );
+    const challengeEvaluations = challengeEvaluationResults.flatMap((result) =>
+      result.status === 'fulfilled' ? [result.value] : []);
+    const excludedChallengeCandidates = challengeEvaluationResults.flatMap((result, index) =>
+      result.status === 'rejected'
+        ? [{
+            submission: {
+              id: visibleSubmissions[index]!.id,
+              revision: visibleSubmissions[index]!.revision,
+            },
+            explanation: 'The registered evaluator rejected this stored Submission; it remains stored but is not included in objective comparison.',
+          }]
+        : []);
     const requirements = this.evaluators.requirementsFor(challenge, definition);
     const constraints = this.evaluators.constraintsFor(challenge);
     const comparison = comparePhase1aEvaluations(
@@ -702,6 +714,7 @@ export class Phase1aService {
         model: base.model,
         engineeringDefinition: definition.engineeringDefinition,
         evaluations: challengeEvaluations,
+        excludedCandidates: excludedChallengeCandidates,
       }),
       challenge: {
         record: challenge,
