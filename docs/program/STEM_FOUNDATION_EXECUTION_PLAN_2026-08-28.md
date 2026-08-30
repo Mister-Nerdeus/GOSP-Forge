@@ -263,6 +263,8 @@ Dependencies: R1 through R4.
 Acceptance: a non-expert and an advanced reviewer can answer Issue #4's acceptance questions from the same exact evaluation.
 Non-claims: the Clean Water demonstrator does not claim potability, treatment efficacy, field performance, or professional approval.
 
+Status: implemented and locally verified on 2026-08-29 at exact SHA `ea3441f73ee15f81f07657aae3853baebb15e3da`. See `docs/program/STEM_FOUNDATION_SLICE_L_2026-08-29.md` and `docs/product/STEM_FOUNDATION_CLEAN_WATER_DEMONSTRATOR.md`.
+
 ### M — Advanced challenge readiness gate
 
 This is a gate and validation plan, not authorization to build or launch a competition.
@@ -291,28 +293,28 @@ Non-claims: no school participation, sponsor involvement, manufacturer validatio
 
 ### R1 — STEM Foundation
 
-- [ ] A2 through F/G acceptance criteria pass for Sandbox and Clean Water;
-- [ ] contract/projection negative tests reject incomplete or contradictory inputs;
-- [ ] core-domain boundary scan passes;
-- [ ] intended-test discovery passes;
-- [ ] `pnpm verify` passes;
-- [ ] browser smoke covers System, Math, Science, Engineering, Technology, and Trace views;
-- [ ] material identity changes, if any, are explained and replay fixtures intentionally reconciled;
-- [ ] all non-claims are visible in the UI and handoff record.
+- [x] A2 through F/G acceptance criteria pass for Sandbox and Clean Water;
+- [x] contract/projection negative tests reject incomplete or contradictory inputs;
+- [x] core-domain boundary scan passes;
+- [x] intended-test discovery passes;
+- [x] `pnpm verify` passes;
+- [x] browser smoke covers System, Math, Science, Engineering, Technology, and Trace views;
+- [x] material identity changes, if any, are explained and replay fixtures intentionally reconciled;
+- [x] all non-claims are visible in the UI and handoff record.
 
 ### R2 — Learning Projection
 
-- [ ] all six depth manifests validate;
-- [ ] at least two depths render the same evaluation identity;
-- [ ] depth changes do not change material input/result hashes;
-- [ ] `pnpm verify` and depth-specific browser smoke pass.
+- [x] all six depth manifests validate;
+- [x] at least two depths render the same evaluation identity;
+- [x] depth changes do not change material input/result hashes;
+- [x] `pnpm verify` and depth-specific browser smoke pass.
 
 ### R3 — Dynamic STEM
 
-- [ ] parameter changes create canonical evaluations rather than local UI results;
-- [ ] causal highlighting matches canonical comparison records;
-- [ ] uncertainty/sensitivity/time displays distinguish unavailable data;
-- [ ] `pnpm verify` and interaction smoke pass.
+- [x] parameter changes create canonical evaluations rather than local UI results;
+- [x] causal highlighting matches canonical comparison records;
+- [x] uncertainty/sensitivity/time displays distinguish unavailable data;
+- [x] `pnpm verify` and interaction smoke pass.
 
 ### R4 — Simulation to Reality
 
@@ -323,11 +325,11 @@ Non-claims: no school participation, sponsor involvement, manufacturer validatio
 
 ### R5 — Foundation Demonstrator
 
-- [ ] Issue #4 non-expert questions pass as a documented manual acceptance script;
-- [ ] advanced drill-down reaches exact model, math, identities, evidence, and unknowns;
-- [ ] accessibility and failure-state smoke are recorded as observed results, not inferred;
-- [ ] local evidence record is generated only after a clean full gate;
-- [ ] independent review finds no blocking truth/architecture defect.
+- [x] Issue #4 non-expert questions pass as a documented manual acceptance script;
+- [x] advanced drill-down reaches exact model, math, identities, evidence, and unknowns;
+- [x] accessibility and failure-state smoke are recorded as observed results, not inferred;
+- [x] local evidence record is generated only after a clean full gate;
+- [x] a fresh read-only architecture/truth review found no blocking defect; independent third-party review is not claimed.
 
 ### R6 — Advanced challenge readiness
 
@@ -359,4 +361,4 @@ A package is not done because code exists. It is done only when:
 
 ## Current next action
 
-Begin L as Issue #15. Integrate the Clean Water teaching path, run the non-expert and advanced-reviewer acceptance scripts, generate the clean local evidence record, and complete an independent architecture/truth review. A2 through K are complete dependencies. Stop before Issue #16.
+Issues #5 through #15 are complete on `cipher/stem-foundation`. Stop at Issue #16 and request explicit owner direction before any advanced-challenge, solar-validation, release, or canonical-merge action.
